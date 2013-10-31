@@ -1,0 +1,4 @@
+filesystem.tgz
+database.sql
+wp-config-private.php
+wp-content/plugins/civicrm/civicrm.settings-private.php
