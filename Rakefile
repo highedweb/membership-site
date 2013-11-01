@@ -5,6 +5,12 @@ task :splitdbdump do
 	outf = File.open("database-#{filenum}.sql", "w")
 	File.open('database.sql', 'r').each_line do |line|
 		buffer = buffer + line
+		
+		## TODO: implement database translations.  This is possible here because the exports don't split records across lines
+		## * /homepages/41/d483464789/htdocs/membership/wp-content/ => /nas/wp/www/sites/woodwardjd/wp-content/
+		## * http://membership.highedweb.org => http://woodwardjd.wpengine.com
+		
+		
 		if buffer.size > (3.5 * 1024 * 1024) && line =~ /Table structure for/
 			outf.write buffer
 			outf.close
@@ -17,52 +23,50 @@ task :splitdbdump do
 	outf.close
 end
 
-### :prepsidekick was a false start in speeding up the copy to WPEngine.  Has since been replaced by git.  Committed for historical interest.
-
-desc "prepare sidekick.php and sidekick.tgz for uploading many files to WPEngine"
-task :prepsidekick do
-	outfname = File.join(File.dirname(__FILE__), 'sidekick.php')
-	File.open(outfname, 'w') do |f|
-		f.write <<EOS
-		<?php
-		try { 
-			$src = dirname(__FILE__) . "/sidekick.tgz";
-			$tar_tmpfile = dirname(__FILE__) . "/sidekick.tar";
-			$target_dir = dirname(__FILE__);
-			$phar = new PharData($src);
-			$phar->decompress();
-			echo "untarring from ". $src ." to ". $target_dir . "<br/><br/>";
-			$phar->extractTo($target_dir, null, true);
-			echo "Success.  Unlinking the .tgz and the newly created .tar...";
-			unlink($src);
-			unlink($tar_tmpfile);
-			echo "Success.  And finally, unlinking myself...";
-			unlink(__FILE__);
-			echo "Success.  Goodbye.";
-		} catch (Exception $e) {
-			echo "Trouble in paradise:<br/><br/>";
-			var_dump($e);
-		}
-		?>
-EOS
-	end
-
-	## TODO: implement fixups to civicrm files
-
-
-	root = File.dirname(__FILE__)
-	filez = []
-	filez << 'wp-content/plugins'
-	filez << 'wp-content/themes/HighEdWeb2010\\ Theme'
-	filez << 'wp-content/uploads'
-	
-	cmd = "pushd #{File.dirname(__FILE__)} ; tar -czf sidekick.tgz #{filez.join(' ')}; popd"
-	puts cmd
-	system cmd
-	
-	puts 'now, execute the following:'
-	puts 'printf "put sidekick.php\nput sidekick.tgz" | sftp woodwardjd@woodwardjd.wpengine.com'
-	
-	## TODO: add SFTP commands for deleting existing directories
+desc "output SFTP copy command to send up non-committed configuration files"
+task :sftp_private_config_files do
+	puts 'printf "put wp-config.php\nput wp-content/plugins/civicrm/civicrm.settings-private.php wp-content/plugins/civicrm/civicrm.settings-private.php" | sftp woodwardjd@woodwardjd.wpengine.com'
 end
 
+desc "seed non-committed configuration files.  Note that the deets will need to be filled in from elsewhere."
+task :seed_private_config_files do
+	### WordPress private configuration 
+	outfname = File.join(File.dirname(__FILE__), '/wp-config.php')
+	if File.exist? outfname
+		puts "file #{outfname} already exists; please delete before running me if you really meant to overwrite it"
+	else
+		File.open(outfname, 'w') do |f|
+			f.write <<EOS
+<?php
+define('DB_PASSWORD',      '---'); 
+define('AUTH_KEY',         '---');
+define('SECURE_AUTH_KEY',  '---');
+define('LOGGED_IN_KEY',    '---');
+define('NONCE_KEY',        '---');
+define('AUTH_SALT',        '---');
+define('SECURE_AUTH_SALT', '---');
+define('LOGGED_IN_SALT',   '---');
+define('NONCE_SALT',       '---');
+
+require_once('wp-config-public.php');
+?>		
+EOS
+		end
+	end
+	
+	### CiviCRM private configuration 
+	outfname = File.join(File.dirname(__FILE__), '/wp-content/plugins/civicrm/civicrm.settings-private.php')
+	if File.exist? outfname
+		puts "file #{outfname} already exists; please delete before running me if you really meant to overwrite it"
+	else
+		File.open(outfname, 'w') do |f|
+			f.write <<EOS
+<?php
+define( 'CIVICRM_UF_DSN'  , 'mysql://woodwardjd:---@localhost/wp_woodwardjd?new_link=true' );
+define( 'CIVICRM_DSN'     , 'mysql://woodwardjd:---@localhost/wp_woodwardjd?new_link=true' );
+define( 'CIVICRM_SITE_KEY', '---' );
+?>		
+EOS
+		end
+	end
+end
