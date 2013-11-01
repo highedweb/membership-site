@@ -14,8 +14,6 @@
  * @package WordPress
  */
 
-require_once('wp-config-private.php');
-
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
 define('DB_NAME', 'db483610499');
