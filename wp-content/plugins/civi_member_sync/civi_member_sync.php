@@ -102,28 +102,27 @@ function member_check($contactID,$currentUserID, $current_user_role) {
 		  }         
 	   } 
            //fetching member sync association rule to the corsponding membership type 
-	   $memSyncRulesDetails = $wpdb->get_results("SELECT * FROM `mtl_civi_member_sync` WHERE `civi_mem_type`='$membershipTypeID'"); 
+	   $memSyncRulesDetails = $wpdb->get_results("SELECT * FROM `mtl_civi_member_sync` WHERE `civi_mem_type`='$membershipTypeID'");
 	   if(!empty($memSyncRulesDetails)) {
 	       $current_rule =  unserialize($memSyncRulesDetails[0]->current_rule);
 	       $expiry_rule =  unserialize($memSyncRulesDetails[0]->expiry_rule );
 	       //checking membership status
 	       if (isset($memStatusID) && array_search($memStatusID,$current_rule)) {       
-		   $wp_role =  strtolower($memSyncRulesDetails[0]->wp_role);
-		   if($wp_role == $current_user_role){      
-		        return;
-		   }else{
-		        $wp_user_object = new WP_User($currentUserID);
-		        $wp_user_object->set_role("$wp_role"); 
-		   }
+			   $wp_role = strtolower($memSyncRulesDetails[0]->wp_role);
+			   if($wp_role == $current_user_role){      
+			        return;
+			   }else{
+			        $wp_user_object = new WP_User($currentUserID);
+			        $wp_user_object->set_role($wp_role);
+			   }
 	       }else{
-		   $wp_user_object = new WP_User($currentUserID);
-		   $expired_wp_role = strtolower($memSyncRulesDetails[0]->expire_wp_role);
-		   if(!empty($expired_wp_role)){            
-		   	$wp_user_object->set_role("$expired_wp_role"); 
-		   }else{
-		   	$wp_user_object->set_role("");           
-		   }
-		   
+			   $wp_user_object = new WP_User($currentUserID);
+			   $expired_wp_role = strtolower($memSyncRulesDetails[0]->expire_wp_role);
+			   if(!empty($expired_wp_role)){            
+			   	$wp_user_object->set_role($expired_wp_role); 
+			   }else{
+			   	$wp_user_object->set_role("");           
+			   }
 	       }   
 	   } 
 

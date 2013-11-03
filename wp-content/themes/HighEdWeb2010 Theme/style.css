@@ -998,7 +998,44 @@ code {
 	-webkit-text-size-adjust: none;
 }
 
+/* 
+CiviCRM - overrides
+*/
 
+#crm-container.crm-public input[type="password"], #crm-container.crm-public input[type="text"] {
+	font-size: 15px;
+	padding: 5px;
+	border-radius: 2px;
+	vertical-align: middle;
+	min-width: 300px;
+}
+
+.payment_options-group input[type="radio"] {
+	margin: 0 5px 0 0;
+}
+
+.payment_options-group label:after {
+	display: block;
+	content: '';
+}
+
+.crm-container fieldset legend {
+	padding-left: 0 !important;
+}
+
+.crm-container .crm-section .label, .crm-container-snippet .crm-section .label {
+	width: 23% !important;
+	padding-right: 1%;
+}
+
+.crm-container .crm-section .content, .crm-container-snippet .crm-section .content {
+	margin-left: 25% !important;
+}
+
+.crm-container .description {
+	display: block;
+	margin-top: -20px;
+}
 
 @media print{
 #PageOuterwrapper, #PageInnerWrapper, .container_12, .ContentColumn{display:inline;margin:0;}

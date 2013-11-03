@@ -42,6 +42,7 @@ get_header();
 
 
 					</div>
+					<!--
 					<div class="grid_4 omega">
 						<article class="Twitter">
 							<h2><img src="<?php echo bloginfo( 'template_directory') ?>/images/twitter-bird.png" alt="" />#heweb</h2>
@@ -49,7 +50,7 @@ get_header();
 							<a class="Button" href="http://twitter.com/#!/search/?q=highedweb+OR+heweb+-heweb.net+-heweb.exblog.jp+-@highedweb_ru">See all tweets</a>
 						</article>
 					</div>
-
+					-->
 				</div>
                 </section>
                 <section class="grid_6 Shaded News">
