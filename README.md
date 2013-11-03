@@ -18,10 +18,16 @@ A proper update consists of copying the following three categories of data, and 
 
 ## Updating non-versioned files from 1and1 to WPEngine
 
-The following trees are not stored in git (per WPEngine, and perhaps common sense), and must be manually copied to WPEngine.  Here's a fast-ish way to mirror stuff from the 1and1 fs to WPEngine's fs
+The following trees are not stored in git (per WPEngine, and perhaps common sense), and must be manually copied from 1and1 to WPEngine.  Jason uses cyberduck for this.  YMMV.
 
-* TODO: enumerate trees that must be copied (see civicrm upgrade and migration docs, as well as paths in civicrm.settings and in the database)
-* TODO: enumerate the make-zip, unpack-zip-locally, use-lftp-mirror-functionality steps
+* wp-content/uploads/...
+
+The following trees *are* currently stored in git, but *may* at some point be rejected by WPEngine rules, and if they are will need to be mirrored from 1and1 to WPEngine at the filesystem level.  That is not currently the case, and as such no extra action is required for these trees.
+
+* wp-content/plugins/files/civicrm/uploads/...
+* wp-content/plugins/files/civicrm/persist/contribute/...
+* wp-content/plugins/files/civicrm/custom/...
+
 
 ## Updating database from 1and1 to WPEngine
 
