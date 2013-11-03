@@ -42,5 +42,8 @@ The following trees are not stored in git (per WPEngine, and perhaps common sens
 
 With luck, it's as simple as the following, and updates made on this branch (like 5.3.3 => 5.3.2 and path and host changes in the public config files) will stick.  Be sure to manually check the merge to see that it's not doing anything stupid (for various values of "stupid").
 
-* `git merge master`
-
+* $ `git checkout wpengine`
+* $ `git merge master --no-commit` ## merges files that are in the .gitignore, too so watch out
+* inspect the diffs, manually fix merge problems, make sure it's "doing the right thing (not undoing stuff like the php 5.3.3 -> 5.3.2 change)
+* unstage the stuff that should have not been copied over (wp-content/uploads, wp-content/plugins/files/civicrm/template_c, etc; check the .gitignore section at the top, and the index changes made by `git merge`)
+* $ `git commit -m "merge changes to wpengine from latest 1and1 filesystem update"`
