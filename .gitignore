@@ -1,7 +1,14 @@
+# HighEdWeb / CiviCRM specific
+
 filesystem.tgz
 database.sql
 wp-config-private.php
 wp-content/plugins/civicrm/civicrm.settings-private.php
+wp-content/plugins/files/civicrm/templates_c
+wp-content/uploads
+wp-content/plugins/files/civicrm/ConfigAndLog
+
+# general
 *~
 .DS_Store
 .svn
