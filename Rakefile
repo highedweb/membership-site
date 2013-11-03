@@ -1,23 +1,62 @@
 desc "Split file `database.sql` into `database-1.sql`, `database-2.sql`, etc"
 task :splitdbdump do
+
+	## TODO: automatically add preamble / postamble to each -##.sql file (is this easy??)
+	## * tables / content that can be dropped per CiviCRM migration docs
+	##    - civicrm_domain
+	##    - civicrm_acl_cache
+	##    - civicrm_acl_contact_cache
+	##    - civicrm_cache
+	##    - civicrm_group_contact_cache
+	## TODO: can these actually not be migrated?  docs say so, but FKs and such in the dump file wouldn't migrate.  Are those shitty docs or do they get recreated?
+	## TODO: I'm thinking that the Right Way is to do a deep serialization-understood translation of the SQL - through the python sqlparse module I found.
+	## * /homepages/41/d483464789/htdocs/membership/wp-content/ => /nas/wp/www/sites/woodwardjd/wp-content/
+	##   - none of this exists after dropping the aforementioned tables; TODO: need to put in a warning if we see it
+	## * http://membership.highedweb.org => http://membership.jwoodward.com
+	##   - civicrm_setting, some includes PHP serialization
+	##   - wp_membership_options, includes PHP serialization
+	##   - wp_membership_postmeta, includes PHP serialization
+	##   - wp_membership_posts, includes PHP serialization
+	##   NOTE: using membership.jwoodward.com instead of woodwardjd.wpengine.com makes it so PHP serialization doesn't need to be fixed up (same length)
+
+	## CiviCRM URLs to hit and confirm entries after doing a flush and import of the database-NN.sql files
+	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/updateConfigBackend&reset=1
+	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/path&reset=1
+	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/menu/rebuild&reset=1
+	
 	filenum = 1
 	buffer = ''
 	outf = File.open("database-#{filenum}.sql", "w")
+	outf_written_bytes = 0
 	File.open('database.sql', 'r').each_line do |line|
-		buffer = buffer + line
-		
-		## TODO: implement database translations.  This is possible here because the exports don't split records across lines
-		## * /homepages/41/d483464789/htdocs/membership/wp-content/ => /nas/wp/www/sites/woodwardjd/wp-content/
-		## * http://membership.highedweb.org => http://woodwardjd.wpengine.com
-		## * tables / content that can be dropped per CiviCRM migration docs (after using WPEngine as an upgrade test host)
-		
-		
-		if buffer.size > (3.5 * 1024 * 1024) && line =~ /Table structure for/
-			outf.write buffer
-			outf.close
-			buffer = ''
-			filenum = filenum + 1
-			outf = File.open("database-#{filenum}.sql", "w")
+		## buffer includes all lines prior to it hitting "Table structure for"
+		if line =~ /Table structure for/
+			## encountering a new table.  Write out the buffer or skip it, translating it if necessary
+			if buffer =~ /Table structure for table \`(\w+)\`/
+				puts "found table #{$1}"
+				#if %w(civicrm_domain civicrm_acl_cache civicrm_acl_contact_cache civicrm_cache civicrm_group_contact_cache).include? $1
+					## do nothing; drop it!
+				#else 
+					## do translations
+					buffer.gsub! 'DEFINER=`dbo483610499`', 'DEFINER=`woodwardjd`'
+					buffer.gsub! 'membership.highedweb.org', 'membership.jwoodward.com'
+					outf.write buffer
+					outf_written_bytes = outf_written_bytes + buffer.size
+					if outf_written_bytes > (3.5 * 1024 * 1024)
+						outf_written_bytes = 0
+						outf.close
+						buffer = ''
+						filenum = filenum + 1
+						outf = File.open("database-#{filenum}.sql", "w")
+					end
+				#end
+			else
+				outf.write buffer
+				outf_written_bytes = outf_written_bytes + buffer.size
+			end
+			buffer = line
+		else
+			buffer = buffer + line
 		end
 	end
 	outf.write buffer
