@@ -48,7 +48,7 @@ function civi_member_sync_check() {
     //get username in post while login  
     if(!empty($_POST['log'])){        
          $username = $_POST['log']; 
-         $userDetails = $wpdb->get_results("SELECT * FROM wp_users WHERE user_login ='$username'");
+         $userDetails = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "users WHERE user_login ='$username'");
          $currentUserID = $userDetails[0]->ID;             
      }else{
          $currentUserID = $current_user->ID;          
