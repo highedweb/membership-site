@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 22:00:40
+<?php /* Smarty version 2.6.27, created on 2013-10-31 04:06:15
          compiled from string:%7Bstrip%7D%5BTEST%5D+%0A%7Bif+%24is_pay_later%7D%7Bts%7DInvoice%7B/ts%7D%7Belse%7D%7Bts%7DReceipt%7B/ts%7D%7B/if%7D+-+%7B%24title%7D%0A%7B/strip%7D */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('block', 'ts', 'string:{strip}[TEST] 

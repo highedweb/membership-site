@@ -162,7 +162,7 @@ define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/homepages/41/d483464789/htdocs/membersh
  *      define( 'CIVICRM_UF_BASEURL' , 'http://www.example.com/joomla/' );
  *
  */
-define( 'CIVICRM_UF_BASEURL'      , 'http://s483464761.onlinehome.us/' );
+define( 'CIVICRM_UF_BASEURL'      , 'http://membership.highedweb.org/' );
 
 /*
  * If you are using any CiviCRM script in the bin directory that

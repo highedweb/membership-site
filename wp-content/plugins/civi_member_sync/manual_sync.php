@@ -45,8 +45,7 @@ if($_GET['action'] == 'confirm') {
               	  $currentRole = $userData->roles[0];
                 }
                 //checking membership status and assign role
-                $check = member_check($cid,$uid, $currentRole);     
-                
+                $check = member_check($cid,$uid, $currentRole);
             }       
          }
     
