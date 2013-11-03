@@ -9,6 +9,7 @@ task :splitdbdump do
 		## TODO: implement database translations.  This is possible here because the exports don't split records across lines
 		## * /homepages/41/d483464789/htdocs/membership/wp-content/ => /nas/wp/www/sites/woodwardjd/wp-content/
 		## * http://membership.highedweb.org => http://woodwardjd.wpengine.com
+		## * tables / content that can be dropped per CiviCRM migration docs (after using WPEngine as an upgrade test host)
 		
 		
 		if buffer.size > (3.5 * 1024 * 1024) && line =~ /Table structure for/
