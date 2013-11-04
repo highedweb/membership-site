@@ -10,7 +10,7 @@ membership.highedweb.org Tech Deets
 Note: this shouldn't really need to be done once we "go git": folks should be committing to this repo before updating the filesystem on 1and1.  This is here to a) document the process, more or less, for confirming that this repo is up to date, and b) document how it was initially populated, and c) to handle committing to the 1and1 git stuff that got added to the filesystem on the server side (uploads, etc)
 
 * perform a [Simple Backup](http://membership.highedweb.org/wp-admin/tools.php?page=backup_manager) and download the resultant .tar.gz, then delete the backup in the manager interface
-* `$ mkdir -f /tmp/t ; rm -rf /tmp/t/*`
+* `$ mkdir /tmp/t ; rm -rf /tmp/t/*`
 * untar the file to /tmp/t
 * `$ mv /tmp/t/homepages/41/d483464789/htdocs/membership /tmp/t/membership`
 * `$ diff -bBr membership-site /tmp/t/membership` and inspect the differences.  Does this look sane?
@@ -19,5 +19,5 @@ Note: this shouldn't really need to be done once we "go git": folks should be co
     * `$ rm -rf membership-site/wp-content ; cp -a /tmp/t/membership/wp-content membership-site`
     * `$ cd membership-site ; rsync -av --delete /tmp/t/membership/* .  ` (or somesuch; this is somewhat untested)
 * `$ git status` and `$ git diff`
-* looks good?  `$ git add . ; git commit -m "update from filesystem at 1and1"`
+* looks good?  `$ git add -A . ; git commit -m "update from filesystem at 1and1"`
 
