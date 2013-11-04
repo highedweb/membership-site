@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 18:45:08
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:11:19
          compiled from CRM/common/displaySearchCriteria.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('block', 'ts', 'CRM/common/displaySearchCriteria.tpl', 36, false),)), $this); ?>
-<?php $_from = $this->_tpl_vars['qill']; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }$this->_foreach['sets'] = array('total' => count($_from), 'iteration' => 0);
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/common/displaySearchCriteria.tpl', 1, false),array('block', 'ts', 'CRM/common/displaySearchCriteria.tpl', 36, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php $_from = $this->_tpl_vars['qill']; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }$this->_foreach['sets'] = array('total' => count($_from), 'iteration' => 0);
 if ($this->_foreach['sets']['total'] > 0):
     foreach ($_from as $this->_tpl_vars['setKey'] => $this->_tpl_vars['orClauses']):
         $this->_foreach['sets']['iteration']++;
@@ -26,7 +26,7 @@ if ($this->_foreach['criteria']['total'] > 0):
         </ul>
 
                 <?php if (! ($this->_foreach['sets']['iteration'] == $this->_foreach['sets']['total'])): ?>
-            <ul class="menu"><li class="no-display"> 
+            <ul class="menu"><li class="no-display">
             <?php if ($this->_tpl_vars['setKey'] == 0): ?>AND<br />
             <?php else: ?>OR<br />
             <?php endif; ?>
@@ -55,3 +55,4 @@ if ($this->_foreach['criteria']['total'] > 0):
         <?php endforeach; endif; unset($_from); ?>
     <?php endif; ?>
 <?php endforeach; endif; unset($_from); ?>
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

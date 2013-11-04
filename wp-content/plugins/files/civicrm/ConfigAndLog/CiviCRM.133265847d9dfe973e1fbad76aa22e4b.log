@@ -50,3 +50,22 @@ Nov 01 21:04:24  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membersh
 #25 {main}
 
 
+Nov 03 21:03:57  [info] $Fatal Error Details = Array
+(
+    [message] => The page you requested is currently unavailable.
+    [code] => 
+)
+
+
+Nov 03 21:03:57  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(315): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Page/EventInfo.php(83): CRM_Core_Error::fatal("The page you requested is currently unavailable.")
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(292): CRM_Event_Page_EventInfo->run((Array:3), NULL)
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(70): CRM_Core_Invoke::runItem((Array:15))
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(344): CRM_Core_Invoke::invoke((Array:3))
+#6 [internal function](): civicrm_wp_invoke("")
+#7 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array("civicrm_wp_invoke", (Array:1))
+#8 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#9 {main}
+
+

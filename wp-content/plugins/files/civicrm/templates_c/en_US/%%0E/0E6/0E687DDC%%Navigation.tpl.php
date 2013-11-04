@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 18:35:37
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:09:27
          compiled from CRM/common/Navigation.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'CRM/common/Navigation.tpl', 30, false),array('function', 'crmKey', 'CRM/common/Navigation.tpl', 35, false),array('function', 'crmSetting', 'CRM/common/Navigation.tpl', 73, false),array('block', 'ts', 'CRM/common/Navigation.tpl', 32, false),)), $this); ?>
-<div id="menu-container" style="display:none;">
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/common/Navigation.tpl', 1, false),array('block', 'ts', 'CRM/common/Navigation.tpl', 32, false),array('function', 'crmURL', 'CRM/common/Navigation.tpl', 30, false),array('function', 'crmKey', 'CRM/common/Navigation.tpl', 35, false),array('function', 'crmSetting', 'CRM/common/Navigation.tpl', 73, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><div id="menu-container" style="display:none;">
     <ul id="civicrm-menu">
       <?php if (call_user_func ( array ( 'CRM_Core_Permission' , 'giveMeAllACLs' ) )): ?>
         <li id="crm-qsearch" class="menumain crm-link-home">
@@ -140,3 +140,5 @@ cj(function( ) {
   cj(\'#civicrm-menu\').menu( {arrowSrc: CRM.config.resourceBase + \'packages/jquery/css/images/arrow.png\'} );
 </script>
 '; ?>
+
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

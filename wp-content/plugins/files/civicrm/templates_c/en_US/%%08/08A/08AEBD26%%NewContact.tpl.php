@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 19:35:06
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:11:35
          compiled from CRM/Contact/Form/NewContact.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('modifier', 'cat', 'CRM/Contact/Form/NewContact.tpl', 28, false),array('block', 'ts', 'CRM/Contact/Form/NewContact.tpl', 36, false),array('function', 'crmURL', 'CRM/Contact/Form/NewContact.tpl', 78, false),)), $this); ?>
-<?php if (! in_array ( $this->_tpl_vars['context'] , array ( 'search' , 'advanced' , 'builder' ) )): ?>
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Contact/Form/NewContact.tpl', 1, false),array('block', 'ts', 'CRM/Contact/Form/NewContact.tpl', 36, false),array('modifier', 'cat', 'CRM/Contact/Form/NewContact.tpl', 28, false),array('function', 'crmURL', 'CRM/Contact/Form/NewContact.tpl', 78, false),array('function', 'crmSetting', 'CRM/Contact/Form/NewContact.tpl', 135, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php if (! in_array ( $this->_tpl_vars['context'] , array ( 'search' , 'advanced' , 'builder' ) )): ?>
   <?php $this->assign('fldName', ((is_array($_tmp=$this->_tpl_vars['prefix'])) ? $this->_run_mod_handler('cat', true, $_tmp, 'contact') : smarty_modifier_cat($_tmp, 'contact'))); ?>
   <?php $this->assign('profSelect', ((is_array($_tmp=$this->_tpl_vars['prefix'])) ? $this->_run_mod_handler('cat', true, $_tmp, 'profiles') : smarty_modifier_cat($_tmp, 'profiles'))); ?>
 
@@ -20,7 +20,7 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'cat', 'CRM/
       <?php else: ?>
         <?php echo $this->_tpl_vars['form'][$this->_tpl_vars['fldName']][$this->_tpl_vars['blockNo']]['html']; ?>
 
-        <?php if ($this->_tpl_vars['form'][$this->_tpl_vars['profSelect']]): ?>
+        <?php if ($this->_tpl_vars['form'][$this->_tpl_vars['profSelect']] && $this->_tpl_vars['showNewSelect']): ?>
           &nbsp;&nbsp;<?php $this->_tag_stack[] = array('ts', array()); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>OR<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>&nbsp;&nbsp;<?php echo $this->_tpl_vars['form'][$this->_tpl_vars['profSelect']][$this->_tpl_vars['blockNo']]['html']; ?>
 <div id="contact-dialog-<?php echo $this->_tpl_vars['prefix']; ?>
 <?php echo $this->_tpl_vars['blockNo']; ?>
@@ -136,9 +136,12 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'cat', 'CRM/
     '; ?>
 
     <?php if ($this->_tpl_vars['selectedContacts']): ?>
-      <?php echo ' var prePopulateData = cj.ajax({ url: contactUrl + "&cid='; ?>
+      <?php echo '
+        var prePopulateData = cj.ajax({ url: contactUrl + "&cid='; ?>
 <?php echo $this->_tpl_vars['selectedContacts']; ?>
-<?php echo '", async: false }).responseText;'; ?>
+<?php echo '", async: false }).responseText;
+        prePopulateData = cj.parseJSON(prePopulateData);
+      '; ?>
 
     <?php endif; ?>
     <?php echo '
@@ -167,7 +170,9 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'cat', 'CRM/
 <?php echo $this->_tpl_vars['prefix']; ?>
 <?php echo 'contact_select_id[\' + blockNo +\']"]\';
     cj( contactElement ).autocomplete( contactUrl, {
-      selectFirst : false, matchContains: true, minChars: 1
+      selectFirst : false, matchContains: true, minChars: 1, max: '; ?>
+<?php echo smarty_function_crmSetting(array('name' => 'search_autocomplete_count','group' => 'Search Preferences'), $this);?>
+<?php echo '
     }).result( function(event, data, formatted) {
       cj( contactHiddenElement ).val(data[1]);
       '; ?>
@@ -192,4 +197,4 @@ smarty_core_load_plugins(array('plugins' => array(array('modifier', 'cat', 'CRM/
 </script>
 '; ?>
 
-<?php endif; ?>
+<?php endif; ?><?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

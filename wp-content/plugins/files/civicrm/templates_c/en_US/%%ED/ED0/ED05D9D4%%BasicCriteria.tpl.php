@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-30 02:35:16
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:11:13
          compiled from CRM/Contact/Form/Search/BasicCriteria.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('block', 'ts', 'CRM/Contact/Form/Search/BasicCriteria.tpl', 30, false),array('modifier', 'crmAddClass', 'CRM/Contact/Form/Search/BasicCriteria.tpl', 79, false),)), $this); ?>
-
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Contact/Form/Search/BasicCriteria.tpl', 1, false),array('block', 'ts', 'CRM/Contact/Form/Search/BasicCriteria.tpl', 30, false),array('modifier', 'crmAddClass', 'CRM/Contact/Form/Search/BasicCriteria.tpl', 79, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>
 <?php if ($this->_tpl_vars['context'] == 'smog'): ?>
     <?php ob_start(); ?><?php $this->_tag_stack[] = array('ts', array()); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>Find Contacts within this Group<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?><?php $this->_smarty_vars['capture']['default'] = ob_get_contents();  $this->assign('editTitle', ob_get_contents());ob_end_clean(); ?>
 <?php elseif ($this->_tpl_vars['context'] == 'amtg' && ! $this->_tpl_vars['rows']): ?>
@@ -24,3 +24,5 @@ cj(function() {
 });
 </script>
 '; ?>
+
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

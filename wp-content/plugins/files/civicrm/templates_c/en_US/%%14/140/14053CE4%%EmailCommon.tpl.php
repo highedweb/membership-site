@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-30 02:36:46
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:12:55
          compiled from CRM/Contact/Form/Task/EmailCommon.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('block', 'ts', 'CRM/Contact/Form/Task/EmailCommon.tpl', 30, false),array('function', 'help', 'CRM/Contact/Form/Task/EmailCommon.tpl', 31, false),array('modifier', 'crmAddClass', 'CRM/Contact/Form/Task/EmailCommon.tpl', 89, false),)), $this); ?>
-
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Contact/Form/Task/EmailCommon.tpl', 1, false),array('block', 'ts', 'CRM/Contact/Form/Task/EmailCommon.tpl', 30, false),array('function', 'help', 'CRM/Contact/Form/Task/EmailCommon.tpl', 31, false),array('modifier', 'crmAddClass', 'CRM/Contact/Form/Task/EmailCommon.tpl', 86, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>
 <div class="crm-accordion-wrapper crm-html_email-accordion ">
 <div class="crm-accordion-header">
     <?php $this->_tag_stack[] = array('ts', array()); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>HTML Format<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>
@@ -32,9 +32,6 @@ smarty_core_load_plugins(array('plugins' => array(array('block', 'ts', 'CRM/Cont
     </div>
   </div><!-- /.crm-accordion-body -->
 </div><!-- /.crm-accordion-wrapper -->
-
-
-
 
 <div class="crm-accordion-wrapper crm-plaint_text_email-accordion collapsed">
 <div class="crm-accordion-header">
@@ -95,11 +92,5 @@ $this->_smarty_include(array('smarty_include_tpl_file' => "CRM/Mailing/Form/Inse
 $this->_tpl_vars = $_smarty_tpl_vars;
 unset($_smarty_tpl_vars);
  ?>
-<?php echo '
-<script type="text/javascript">
-cj(function() {
-   cj().crmAccordions();
-});
-</script>
-'; ?>
 
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

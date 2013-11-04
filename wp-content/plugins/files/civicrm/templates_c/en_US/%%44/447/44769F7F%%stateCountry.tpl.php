@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 18:36:56
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:09:39
          compiled from CRM/common/stateCountry.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'CRM/common/stateCountry.tpl', 44, false),)), $this); ?>
-<?php if ($this->_tpl_vars['config']->stateCountryMap): ?>
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/common/stateCountry.tpl', 1, false),array('function', 'crmURL', 'CRM/common/stateCountry.tpl', 44, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php if ($this->_tpl_vars['config']->stateCountryMap): ?>
 <script language="javaScript" type="text/javascript">
 <?php $_from = $this->_tpl_vars['config']->stateCountryMap; if (!is_array($_from) && !is_object($_from)) { settype($_from, 'array'); }if (count($_from)):
     foreach ($_from as $this->_tpl_vars['stateCountryMap']):
@@ -30,26 +30,26 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'C
 "<?php echo CRM_Utils_System::crmURL(array('p' => 'civicrm/ajax/jqState','h' => 0), $this);?>
 "<?php echo '
 
-        cj( \'#\' + countryID ).chainSelect( 
-          \'#\' + stateProvinceID, 
-          callbackURL, 
-          { 
+        cj( \'#\' + countryID ).chainSelect(
+          \'#\' + stateProvinceID,
+          callbackURL,
+          {
             before : function (target) {
               if (typeof(setdefault) === "undefined") { setdefault = new Array(); }
               targetid = cj(target).attr("id");
               eval(\'setdefault[targetid] = cj(target).val()\');
             },
-            after : function(target) { 
+            after : function(target) {
               targetid = cj(target).attr("id");
-              cj(target).val(setdefault[targetid]); 
-            } 
+              cj(target).val(setdefault[targetid]);
+            }
           }
         );
     });
     '; ?>
 
   <?php endif; ?>
-  
+
   <?php if ($this->_tpl_vars['stateCountryMap']['state_province'] && $this->_tpl_vars['stateCountryMap']['county']): ?>
     <?php echo '
     cj(function() {
@@ -70,18 +70,18 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'C
         callbackURL     = '; ?>
 "<?php echo CRM_Utils_System::crmURL(array('p' => 'civicrm/ajax/jqCounty','h' => 0), $this);?>
 "<?php echo '
-        
+
         cj( \'#\' + stateProvinceID ).chainSelect( \'#\' + countyID, callbackURL,
-          { 
+          {
             before : function (target) {
               if (typeof(setdefault) === "undefined") { setdefault = new Array(); }
               targetid = cj(target).attr("id");
               eval(\'setdefault[targetid] = cj(target).val()\');
             },
-            after : function(target) { 
+            after : function(target) {
               targetid = cj(target).attr("id");
-              cj(target).val(setdefault[targetid]); 
-            } 
+              cj(target).val(setdefault[targetid]);
+            }
           }
         );
     });
@@ -91,3 +91,4 @@ smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'C
 <?php endforeach; endif; unset($_from); ?>
 </script>
 <?php endif; ?>
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

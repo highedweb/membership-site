@@ -1,10 +1,10 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 18:38:35
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:09:27
          compiled from CRM/common/dashboard.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'CRM/common/dashboard.tpl', 51, false),array('function', 'crmKey', 'CRM/common/dashboard.tpl', 53, false),)), $this); ?>
-<?php echo '
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/common/dashboard.tpl', 1, false),array('function', 'crmURL', 'CRM/common/dashboard.tpl', 51, false),array('function', 'crmKey', 'CRM/common/dashboard.tpl', 53, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php echo '
 <script type="text/javascript">
-    
+
 cj(function($) {
   // The set of options we can use to initialize jQuery.dashboard().
   var options = {
@@ -23,7 +23,7 @@ cj(function($) {
     ajaxCallbacks: {
 
       // Server returns the configuration of widgets for this user;
-      // An array (keyed by zero-indexed column ID), of arrays (keyed by widget ID) of 
+      // An array (keyed by zero-indexed column ID), of arrays (keyed by widget ID) of
       // booleans; true if the widget is minimized.  False if not.
       // E.g. [{ widgetID: isMinimized, ...}, ...]
       getWidgetsByColumn: {
@@ -50,9 +50,9 @@ cj(function($) {
       //  * settings: Boolean.  True if widget has settings pane/display and server-side
       //    callback.
       //
-      // Server-side executable script callbacks are called and executed on certain 
+      // Server-side executable script callbacks are called and executed on certain
       // events.  They can use the widgets property of the dashboard object returned
-      // from jQuery.dashboard().  E.g. dashboard.widgets[widgetID].  They should be 
+      // from jQuery.dashboard().  E.g. dashboard.widgets[widgetID].  They should be
       // javascript files on the server.  Set the property to the path of the js file:
       //  * initScript:  Called when dashboard is initialising (but not finished).
       //  * fullscreenInitScript:  Called when the full screen element is initialising
@@ -77,7 +77,7 @@ cj(function($) {
         }
       },
 
-      // jQuery.dashboard() POSTs the widget-to-column settings here.  The server\'s 
+      // jQuery.dashboard() POSTs the widget-to-column settings here.  The server\'s
       // response is sent to console.log() (if it exists), but is not used.  No checks
       // for errors have been implemented yet.
       // The \'columns\' property of data is reserved for the widget-to-columns settings:
@@ -94,7 +94,7 @@ cj(function($) {
 "<?php echo '
         }
       },
-      
+
       // jQuery.dashboard() GETs a widget\'s settings object and POST\'s a users submitted
       // settings back to the server.  The return, in both cases, is an associative
       // array with the new settings markup and other info:
@@ -205,3 +205,5 @@ cj(function($) {
 
 </script>
 '; ?>
+
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-29 18:35:37
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:09:26
          compiled from CRM/common/wordpress.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('modifier', 'truncate', 'CRM/common/wordpress.tpl', 30, false),array('function', 'crmNavigationMenu', 'CRM/common/wordpress.tpl', 52, false),array('block', 'ts', 'CRM/common/wordpress.tpl', 71, false),array('block', 'crmRegion', 'CRM/common/wordpress.tpl', 90, false),)), $this); ?>
-<?php if ($this->_tpl_vars['config']->debug): ?>
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/common/wordpress.tpl', 1, false),array('block', 'ts', 'CRM/common/wordpress.tpl', 71, false),array('block', 'crmRegion', 'CRM/common/wordpress.tpl', 90, false),array('modifier', 'truncate', 'CRM/common/wordpress.tpl', 30, false),array('function', 'crmNavigationMenu', 'CRM/common/wordpress.tpl', 52, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?><?php if ($this->_tpl_vars['config']->debug): ?>
 <?php $_smarty_tpl_vars = $this->_tpl_vars;
 $this->_smarty_include(array('smarty_include_tpl_file' => "CRM/common/debug.tpl", 'smarty_include_vars' => array()));
 $this->_tpl_vars = $_smarty_tpl_vars;
@@ -48,7 +48,7 @@ unset($_smarty_tpl_vars);
 <?php else: ?>
 <div id="printer-friendly">
 <a href="<?php echo $this->_tpl_vars['printerFriendly']; ?>
-" title="<?php $this->_tag_stack[] = array('ts', array()); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>Printer-friendly view of this page.<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>">
+" target='_blank' title="<?php $this->_tag_stack[] = array('ts', array()); $_block_repeat=true;smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>Printer-friendly view of this page.<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_ts($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>">
   <div class="ui-icon ui-icon-print"></div>
 </a>
 </div>
@@ -111,3 +111,4 @@ unset($_smarty_tpl_vars);
 <?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmRegion($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>
 
 </div> 
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>

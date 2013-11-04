@@ -1,8 +1,8 @@
-<?php /* Smarty version 2.6.27, created on 2013-10-30 02:36:46
+<?php /* Smarty version 2.6.27, created on 2013-11-04 01:12:56
          compiled from CRM/Mailing/Form/InsertTokens.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
-smarty_core_load_plugins(array('plugins' => array(array('function', 'crmURL', 'CRM/Mailing/Form/InsertTokens.tpl', 147, false),array('block', 'ts', 'CRM/Mailing/Form/InsertTokens.tpl', 372, false),)), $this); ?>
-
+smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Mailing/Form/InsertTokens.tpl', 1, false),array('block', 'ts', 'CRM/Mailing/Form/InsertTokens.tpl', 374, false),array('function', 'crmURL', 'CRM/Mailing/Form/InsertTokens.tpl', 147, false),)), $this); ?>
+<?php $this->_tag_stack[] = array('crmScope', array('extensionKey' => "")); $_block_repeat=true;smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], null, $this, $_block_repeat);while ($_block_repeat) { ob_start(); ?>
 <script type="text/javascript" src="<?php echo $this->_tpl_vars['config']->resourceBase; ?>
 packages/jquery/plugins/jquery-fieldselection.js"></script>
 
@@ -94,9 +94,9 @@ function selectValue( val ) {
   document.getElementsByName("updateTemplate")[0].checked = false;
   showSaveUpdateChkBox();
   if ( !val ) {
+    document.getElementById("subject").value ="";
     if ( !isPDF ) {
       document.getElementById(text_message).value ="";
-      document.getElementById("subject").value ="";
     }
     if ( editor == "ckeditor" ) {
       oEditor = CKEDITOR.instances[html_message];
@@ -136,9 +136,8 @@ function selectValue( val ) {
 "<?php echo ';
 
   cj.post( dataUrl, {tid: val}, function( data ) {
+    cj("#subject").val( data.subject );
     if ( !isPDF ) {
-      cj("#subject").val( data.subject );
-
       if ( data.msg_text ) {
         cj("#"+text_message).val( data.msg_text );
         cj("div.text").show();
@@ -284,6 +283,9 @@ function tokenReplText(element) {
   var token     = cj("#"+element.id).val( )[0];
   if ( element.id == \'token3\' ) {
     ( isMailing ) ? text_message = "subject" : text_message = "msg_subject";
+  }
+  else if ( element.id == \'token1\' ) {
+    ( isMailing ) ? text_message = "text_message" : text_message = "msg_text";
   }
 
   cj( "#"+ text_message ).replaceSelection( token );
@@ -472,3 +474,5 @@ function setSignature( ) {
 }
 </script>
 '; ?>
+
+<?php $_block_content = ob_get_contents(); ob_end_clean(); $_block_repeat=false;echo smarty_block_crmScope($this->_tag_stack[count($this->_tag_stack)-1][1], $_block_content, $this, $_block_repeat); }  array_pop($this->_tag_stack); ?>
