@@ -9,7 +9,8 @@ task :splitdbdump do
 	##    - civicrm_cache
 	##    - civicrm_group_contact_cache
 	## TODO: can these actually not be migrated?  docs say so, but FKs and such in the dump file wouldn't migrate.  Are those shitty docs or do they get recreated?
-	## TODO: I'm thinking that the Right Way is to do a deep serialization-understood translation of the SQL - through the python sqlparse module I found.
+	## (not doing due to using this for a straight no-hostname-change migration)
+	## : I'm thinking that the Right Way is to do a deep serialization-understood translation of the SQL - through the python sqlparse module I found.
 	## * /homepages/41/d483464789/htdocs/membership/wp-content/ => /nas/wp/www/sites/woodwardjd/wp-content/
 	##   - none of this exists after dropping the aforementioned tables; TODO: need to put in a warning if we see it
 	## * http://membership.highedweb.org => http://membership.jwoodward.com

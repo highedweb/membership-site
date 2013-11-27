@@ -13,8 +13,8 @@ A proper update consists of copying the following three categories of data, and 
 
 * follow the "Updating master from 1and1" in the master branch's README, then follow "Updating the WPEngine branch from master" in this README
 * `git checkout wpengine`
-* `git remote add wpengine-prod git@git.wpengine.com:production/woodwardjd.git` if not already done locally
-* `git push wpengine-prod`
+* `git remote add wpengine-prod git@git.wpengine.com:production/hewmembership.git` if not already done locally
+* `git push wpengine-prod wpengine:master`
 
 ## Updating non-versioned files from 1and1 to WPEngine
 
@@ -34,6 +34,7 @@ The following trees *are* currently stored in git, but *may* at some point be re
 
 * Download the latest database dump from the `Simple Backup` WP plugin on 1and1, store it as `database.sql` in the root of a working copy checkout of this repo and branch
 * `rake splitdbdump` will split the database dump into bite size chunks `database-##.sql` for uploading into WPEngine, and do path and hostname translation between the two installations. 
+* update the `database-##.sql` chunks to each have the preamble that's in 1 and the postamble that's in the last one
 * use WPEngine's phpMyAdmin to drop every table in the database
 * Import `database-##.sql` order from 1..n through WPEngine's phpMyAdmin
 

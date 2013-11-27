@@ -16,10 +16,10 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'wp_woodwardjd');
+define('DB_NAME','wp_hewmembership');
 
 /** MySQL database username */
-define('DB_USER', 'woodwardjd');
+define('DB_USER','hewmembership');
 
 /** MySQL database password */
 //define('DB_PASSWORD', '---');
@@ -65,7 +65,9 @@ $table_prefix  = 'wp_membership_';
 
 define('WP_CACHE',TRUE);
 
-define('PWP_NAME','woodwardjd');
+define('WP_AUTO_UPDATE_CORE',false);
+
+define('PWP_NAME','hewmembership');
 
 define('FS_METHOD','direct');
 
@@ -75,11 +77,11 @@ define('FS_CHMOD_FILE',0664);
 
 define('PWP_ROOT_DIR','/nas/wp');
 
-define('WPE_APIKEY','a7d88ee515f9ba0ec3190efc4072ebe61dfc8573');
+define('WPE_APIKEY','07cf09e73966c1f08c25894dbf8b1d9ff025603d');
 
 define('WPE_FOOTER_HTML',"");
 
-define('WPE_CLUSTER_ID','1620');
+define('WPE_CLUSTER_ID','2021');
 
 define('WPE_CLUSTER_TYPE','pod');
 
@@ -123,9 +125,9 @@ $wpe_no_cdn_uris=array ();
 
 $wpe_content_regexs=array ();
 
-$wpe_all_domains=array (  0 => 'woodwardjd.wpengine.com',);
+$wpe_all_domains=array (  0 => 'hewmembership.wpengine.com',);
 
-$wpe_varnish_servers=array (  0 => 'pod-1620',);
+$wpe_varnish_servers=array (  0 => 'pod-2021',);
 
 $wpe_ec_servers=array ();
 
@@ -137,7 +139,7 @@ $wpe_netdna_push_domains=array ();
 
 $wpe_domain_mappings=array ();
 
-$memcached_servers=array ();
+$memcached_servers=array (  'default' =>   array (    0 => 'unix:///tmp/memcached.sock',  ),);
 define('WPLANG','');
 
 # WP Engine ID
