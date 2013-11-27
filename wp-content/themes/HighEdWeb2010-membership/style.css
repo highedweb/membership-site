@@ -1,0 +1,83 @@
+﻿/*
+Theme Name: HighEdWeb Membership
+Theme URI: http://www.highedweb.org/
+Description: Based on the Word Press Twenty Ten theme.
+Author: HighEdWeb Association
+Template: HighEdWeb2010
+*/
+
+@import url("../HighEdWeb2010/style.css");
+
+body {background: white url('http://www.highedweb.org/wp-content/uploads/2011/03/mastheadbackground.png') repeat-x}
+
+.home #HeaderImage {
+    background: url("http://www.highedweb.org/wp-content/themes/HighEdWeb2010/images/HeaderImageBackground.png") no-repeat scroll 1px -50px transparent;
+    height:170px;
+}
+
+#HeaderImage {height:170px;}
+
+html, body {line-height:24px;}
+h1, body.single h1.entry-title, body.page h1.entry-title, #content > .grid_inner > h1, h2 {color:#303031;border-bottom-color:#606061}
+h2 {font-size:24px;}
+h3 {margin-top:20px;color:#303031;}
+
+header img {position:absolute;top:30px;left:10px;}
+
+header > span , header .Title{font-weight:bold;margin-top:65px;margin-left:190px;font-size:44px;border-bottom:0;display:inline-block;color:#303031;font-family:arial,helvetica,sans-serif;line-height:44px}
+
+
+#access {margin-bottom:10px;}
+
+#canvas-content {
+	margin: 0;
+	width: 200px;
+	z-index: 1;
+	position: relative;
+	height:100%;
+	z-index:1;
+}
+
+header {height:125px;}
+.CountdownWrapper {width:340px;margin:50px 0 0 580px;}
+
+.home header h1 img {position:absolute;left:10px;bottom:25px;}
+.home #MastheadWrapper {z-index:1;}
+.home #PageInnerWrapper {z-index:2;}
+.home .container_12.MainContent {background-color:white;}
+.home h1.entry-title {border-bottom:1px solid #82a3c4;font-size:28px;line-height:34px;margin-top:10px;}
+.PhotoGallery a {display:inline-block;padding:0 5px 5px 0;height:80px;width:80px;}
+
+/*Commect with HighEdWeb*/
+#text-7.widget-container {
+    background-color: transparent;
+    padding: 0;
+}
+
+/*RSS Button*/
+#text-5 {padding:0;}
+.pp-feed a {
+    display:block;
+    height: 25px;
+    padding:10px;
+    font-family:arial,helvetica,sans-serif;
+    font-size:21px;
+    line-height:21px;
+    color:#00528B;
+    text-decoration:none;
+    background: url('http://attendees.highedweb.org/wp-content/uploads/2011/04/RSSFeed.png') no-repeat 195px 13px;
+    }
+
+#footer-widget-area .widget-container {margin-bottom:0;background-color:transparent;}
+
+.widget-container, .Shaded {background-color:#e9eff5}
+
+#PageFooter {background-image:none;padding-top:15px;z-index:5}
+.FooterWidgetWrapper {background-color:#CDDFF1;}
+
+.widget-area .Button {background-color: #00528B;color:white;font-weight:bold;padding:5px 20px }
+
+#PageFooter .container_12 {border-top: none;}
+
+.page-id-2 .TwoColumn dt {width:120px;}
+.page-id-2 .TwoColumn dd {margin-left:130px;}

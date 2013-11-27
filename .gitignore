@@ -4,6 +4,8 @@ filesystem.tgz
 database.sql
 wp-config.php
 wp-content/plugins/civicrm/civicrm.settings-private.php
+wp-content/plugins/files/civicrm/ConfigAndLog
+wp-content/plugins/files/civicrm/upload
 wp-content/plugins/files/civicrm/templates_c
 wp-content/uploads
 wp-content/plugins/files/civicrm/ConfigAndLog
