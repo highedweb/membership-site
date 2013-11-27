@@ -20,9 +20,9 @@ task :splitdbdump do
 	##   NOTE: using membership.jwoodward.com instead of woodwardjd.wpengine.com makes it so PHP serialization doesn't need to be fixed up (same length)
 
 	## CiviCRM URLs to hit and confirm entries after doing a flush and import of the database-NN.sql files
-	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/updateConfigBackend&reset=1
-	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/path&reset=1
-	## http://membership.jwoodward.com/wp-admin/admin.php?page=CiviCRM&q=civicrm/menu/rebuild&reset=1
+	## http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/updateConfigBackend&reset=1
+	## http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/path&reset=1
+	## http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/menu/rebuild&reset=1
 	
 	filenum = 1
 	buffer = ''
@@ -38,8 +38,9 @@ task :splitdbdump do
 					## do nothing; drop it!
 				#else 
 					## do translations
-					buffer.gsub! 'DEFINER=`dbo483610499`', 'DEFINER=`woodwardjd`'
-					buffer.gsub! 'membership.highedweb.org', 'membership.jwoodward.com'
+					buffer.gsub! 'DEFINER=`dbo483610499`', 'DEFINER=`hewmembership`'
+					## no hostname translation now that we're using this to do the real membership -> membership migration
+					#buffer.gsub! 'membership.highedweb.org', 'membership.jwoodward.com'
 					outf.write buffer
 					outf_written_bytes = outf_written_bytes + buffer.size
 					if outf_written_bytes > (3.5 * 1024 * 1024)
