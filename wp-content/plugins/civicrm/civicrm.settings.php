@@ -134,8 +134,8 @@ define('CIVICRM_LOGGING_DSN', CIVICRM_DSN);
 
 global $civicrm_root;
 
-$civicrm_root = '/nas/wp/www/sites/woodwardjd/wp-content/plugins/civicrm/civicrm/';
-define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/nas/wp/www/sites/woodwardjd/wp-content/plugins/files/civicrm/templates_c/' );
+$civicrm_root = '/nas/wp/www/sites/hewmembership/wp-content/plugins/civicrm/civicrm/';
+define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/nas/wp/www/sites/hewmembership/wp-content/plugins/files/civicrm/templates_c/' );
 
 /**
  * Site URLs:
@@ -162,7 +162,7 @@ define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/nas/wp/www/sites/woodwardjd/wp-content/
  *      define( 'CIVICRM_UF_BASEURL' , 'http://www.example.com/joomla/' );
  *
  */
-define( 'CIVICRM_UF_BASEURL'      , 'http://woodwardjd.wpengine.com/' );
+define( 'CIVICRM_UF_BASEURL'      , 'http://membership.highedweb.org/' );
 
 /*
  * If you are using any CiviCRM script in the bin directory that
