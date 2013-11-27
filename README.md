@@ -3,7 +3,7 @@ membership.highedweb.org Tech Deets
 
 # Updating WPEngine from 1and1
 
-A proper update consists of copying the following three categories of data, and doing host and pathname translation on them.  Database translation is encoded programmatically in the tooling.  Filesystem translation is contained in git and should be maintained manually throughout updates as described in `Updating the WPEngine branch from master`.  Unversioned files do not contain hard coded host and pathnames, at least as as been discovered so far.
+A proper update consists of copying the following three categories of data, and doing host and pathname translation on them.  Database translation is encoded programmatically in the tooling.  Filesystem translation is contained in git and should be maintained manually throughout updates as described in `Updating the WPEngine branch from master`.  Unversioned files do not contain hard coded host and pathnames, at least as has been discovered so far.
 
 * Versioned files
 * Unversioned files
