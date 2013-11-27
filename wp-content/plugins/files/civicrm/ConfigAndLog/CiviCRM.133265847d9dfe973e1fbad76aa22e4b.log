@@ -69,3 +69,604 @@ Nov 03 21:03:57  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membersh
 #9 {main}
 
 
+Nov 04 02:29:43  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495 [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495 [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495 [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 02:29:43  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(905): CRM_Core_DAO->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15495", TRUE)
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/BAO/Participant.php(931): CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_participant WHERE event_id = %1 AND contact_id = %2", (Array:2))
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1258): CRM_Event_BAO_Participant::checkDuplicate((Array:8), (Array:0))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1213): _civicrm_api3_deprecated_participant_check_params((Array:8), TRUE)
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser/Participant.php(407): _civicrm_api3_deprecated_create_participant_formatted((Array:8), "1")
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser.php(161): CRM_Event_Import_Parser_Participant->import("1", (Array:15))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Form/Preview.php(147): CRM_Event_Import_Parser->run((Array:2), ",", (Array:15), "1", 8, 1, "1")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Event_Import_Form_Preview->postProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Event_Import_Form_Preview), "next", "Next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Event_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Event_Import_Form_Preview), "next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#29 [internal function](): CiviCRM_For_WordPress->invoke("")
+#30 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#31 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#32 {main}
+
+
+Nov 04 02:30:24  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249 [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249 [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249 [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 02:30:24  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(905): CRM_Core_DAO->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 15249", TRUE)
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/BAO/Participant.php(931): CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_participant WHERE event_id = %1 AND contact_id = %2", (Array:2))
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1258): CRM_Event_BAO_Participant::checkDuplicate((Array:8), (Array:0))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1213): _civicrm_api3_deprecated_participant_check_params((Array:8), TRUE)
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser/Participant.php(407): _civicrm_api3_deprecated_create_participant_formatted((Array:8), "1")
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser.php(161): CRM_Event_Import_Parser_Participant->import("1", (Array:15))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Form/Preview.php(147): CRM_Event_Import_Parser->run((Array:2), ",", (Array:15), "1", 8, 1, "1")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Event_Import_Form_Preview->postProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Event_Import_Form_Preview), "next", "Next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Event_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Event_Import_Form_Preview), "next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#29 [internal function](): CiviCRM_For_WordPress->invoke("")
+#30 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#31 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#32 {main}
+
+
+Nov 04 02:31:49  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535 [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535 [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535 [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 02:31:49  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(905): CRM_Core_DAO->query("SELECT id FROM civicrm_participant WHERE event_id = 21 AND contact_id = 11535", TRUE)
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/BAO/Participant.php(931): CRM_Core_DAO::executeQuery("SELECT id FROM civicrm_participant WHERE event_id = %1 AND contact_id = %2", (Array:2))
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1258): CRM_Event_BAO_Participant::checkDuplicate((Array:8), (Array:0))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1213): _civicrm_api3_deprecated_participant_check_params((Array:8), TRUE)
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser/Participant.php(407): _civicrm_api3_deprecated_create_participant_formatted((Array:8), "1")
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Parser.php(161): CRM_Event_Import_Parser_Participant->import("1", (Array:15))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Event/Import/Form/Preview.php(147): CRM_Event_Import_Parser->run((Array:2), ",", (Array:15), "1", 8, 1, "1")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Event_Import_Form_Preview->postProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Event_Import_Form_Preview), "next", "Next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Event_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Event_Import_Form_Preview), "next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#29 [internal function](): CiviCRM_For_WordPress->invoke("")
+#30 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#31 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#32 {main}
+
+
+Nov 04 02:51:30  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(756): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::exceptionHandler(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(441): DB_DataObject->_query("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(757): DB_DataObject->find(TRUE)
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(428): CRM_Core_DAO::getFieldValue("CRM_Member_DAO_Membership", "1185", "membership_type_id")
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(2043): CRM_Member_BAO_Membership::checkMembershipRelationship("1185", "11667", 1)
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(378): CRM_Member_BAO_Membership::createRelatedMemberships((Array:14), Object(CRM_Member_BAO_Membership))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(126): CRM_Member_BAO_Membership::create((Array:14), (Array:1), TRUE)
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(87): civicrm_api3_membership_create((Array:12))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(270): civicrm_api("membership", "create", (Array:11))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(466): civicrm_api3("membership", "create", (Array:10))
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:18))
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:18), "1", 8, 1, "1")
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#29 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#30 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#31 [internal function](): CiviCRM_For_WordPress->invoke("")
+#32 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#33 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#34 {main}
+
+
+Nov 04 02:53:39  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 02:53:39  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/Finder.php(124): CRM_Core_DAO->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1131): CRM_Dedupe_Finder::dupesByParams((Array:2), "Individual", "Unsupervised")
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(654): _civicrm_api3_deprecated_duplicate_formatted_contact((Array:2))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(418): _civicrm_api3_deprecated_check_contact_dedupe((Array:9))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:18))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:18), "1", 8, 1, "1")
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#28 [internal function](): CiviCRM_For_WordPress->invoke("")
+#29 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#30 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#31 {main}
+
+
+Nov 04 02:54:20  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT dedupe.id1 as id
+                FROM dedupe JOIN civicrm_contact ON dedupe.id1 = civicrm_contact.id 
+                WHERE contact_type = 'Individual' AND civicrm_contact.is_deleted = 0
+                AND weight >= 10 [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 02:54:20  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/Finder.php(124): CRM_Core_DAO->query("SELECT dedupe.id1 as id\n                FROM dedupe JOIN civicrm_contact ON ...")
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1131): CRM_Dedupe_Finder::dupesByParams((Array:2), "Individual", "Unsupervised")
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(654): _civicrm_api3_deprecated_duplicate_formatted_contact((Array:2))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(418): _civicrm_api3_deprecated_check_contact_dedupe((Array:9))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:18))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:18), "1", 8, 1, "1")
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#28 [internal function](): CiviCRM_For_WordPress->invoke("")
+#29 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#30 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#31 {main}
+
+
+Nov 04 02:55:35  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(756): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::exceptionHandler(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(441): DB_DataObject->_query("SELECT  membership_type_id  \n FROM civicrm_membership \n \n WHERE (  civicrm...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(757): DB_DataObject->find(TRUE)
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(428): CRM_Core_DAO::getFieldValue("CRM_Member_DAO_Membership", "2436", "membership_type_id")
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(2043): CRM_Member_BAO_Membership::checkMembershipRelationship("2436", "15615", 1)
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(378): CRM_Member_BAO_Membership::createRelatedMemberships((Array:14), Object(CRM_Member_BAO_Membership))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(126): CRM_Member_BAO_Membership::create((Array:14), (Array:1), TRUE)
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(87): civicrm_api3_membership_create((Array:12))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(270): civicrm_api("membership", "create", (Array:11))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(466): civicrm_api3("membership", "create", (Array:10))
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:18))
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:18), "1", 8, 1, "1")
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#29 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#30 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#31 [internal function](): CiviCRM_For_WordPress->invoke("")
+#32 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#33 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#34 {main}
+
+
+Nov 04 03:08:21  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 03:08:21  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(441): DB_DataObject->_query("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/BAO/RuleGroup.php(128): DB_DataObject->find(TRUE)
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/BAO/RuleGroup.php(178): CRM_Dedupe_BAO_RuleGroup->tableQuery()
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/Finder.php(122): CRM_Dedupe_BAO_RuleGroup->fillTable()
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1131): CRM_Dedupe_Finder::dupesByParams((Array:2), "Individual", "Unsupervised")
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(654): _civicrm_api3_deprecated_duplicate_formatted_contact((Array:2))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(418): _civicrm_api3_deprecated_check_contact_dedupe((Array:9))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:11))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:11), "1", 8, 1, "1")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#29 [internal function](): CiviCRM_For_WordPress->invoke("")
+#30 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#31 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#32 {main}
+
+
+Nov 04 03:12:47  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT * 
+ FROM civicrm_dedupe_rule_group 
+ 
+ WHERE (  civicrm_dedupe_rule_group.id = 4 )  AND (  civicrm_dedupe_rule_group.contact_type  = 'Individual' ) AND (  civicrm_dedupe_rule_group.threshold = 10 ) AND (  civicrm_dedupe_rule_group.used  = 'Unsupervised' ) AND (  civicrm_dedupe_rule_group.name  = 'IndividualUnsupervised' ) AND (  civicrm_dedupe_rule_group.title  = 'Email (reserved)' ) AND (  civicrm_dedupe_rule_group.is_reserved = 1 ) 
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 04 03:12:47  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(197): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::handle(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(441): DB_DataObject->_query("SELECT * \n FROM civicrm_dedupe_rule_group \n \n WHERE (  civicrm_dedupe_rule...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/BAO/RuleGroup.php(128): DB_DataObject->find(TRUE)
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/BAO/RuleGroup.php(178): CRM_Dedupe_BAO_RuleGroup->tableQuery()
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Dedupe/Finder.php(122): CRM_Dedupe_BAO_RuleGroup->fillTable()
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(1131): CRM_Dedupe_Finder::dupesByParams((Array:2), "Individual", "Unsupervised")
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Utils/DeprecatedUtils.php(654): _civicrm_api3_deprecated_duplicate_formatted_contact((Array:2))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser/Membership.php(418): _civicrm_api3_deprecated_check_contact_dedupe((Array:9))
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Parser.php(160): CRM_Member_Import_Parser_Membership->import("1", (Array:11))
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/Import/Form/Preview.php(166): CRM_Member_Import_Parser->run((Array:2), ",", (Array:11), "1", 8, 1, "1")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Form.php(261): CRM_Member_Import_Form_Preview->postProcess()
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/StateMachine.php(160): CRM_Core_Form->mainProcess()
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/QuickForm/Action/Next.php(60): CRM_Core_StateMachine->perform(Object(CRM_Member_Import_Form_Preview), "next", "Next")
+#22 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Controller.php(203): CRM_Core_QuickForm_Action_Next->perform(Object(CRM_Member_Import_Form_Preview), "next")
+#23 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/HTML/QuickForm/Page.php(103): HTML_QuickForm_Controller->handle(Object(CRM_Member_Import_Form_Preview), "next")
+#24 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Controller.php(345): HTML_QuickForm_Page->handle("next")
+#25 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(323): CRM_Core_Controller->run((Array:3), NULL)
+#26 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(72): CRM_Core_Invoke::runItem((Array:14))
+#27 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Invoke.php(52): CRM_Core_Invoke::_invoke((Array:3))
+#28 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm.php(463): CRM_Core_Invoke::invoke((Array:3))
+#29 [internal function](): CiviCRM_For_WordPress->invoke("")
+#30 /homepages/41/d483464789/htdocs/membership/wp-includes/plugin.php(429): call_user_func_array((Array:2), (Array:1))
+#31 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(217): do_action("toplevel_page_CiviCRM")
+#32 {main}
+
+
+Nov 05 13:35:46  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(756): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::exceptionHandler(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(441): DB_DataObject->_query("SELECT * \n FROM civicrm_membership \n \n WHERE (  civicrm_membership.contact...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Member/BAO/Membership.php(197): DB_DataObject->find()
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(235): CRM_Member_BAO_Membership::getValues((Array:1), (Array:0), NULL)
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(196): _civicrm_api3_membership_get_customv2behaviour((Array:6), NULL, NULL)
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(87): civicrm_api3_membership_get((Array:6))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_sync/civi_member_sync.php(97): civicrm_api("Membership", "get", (Array:5))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_sync/manual_sync.php(48): member_check("13024", 56, "professionalmember")
+#17 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(245): include("/homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_syn...")
+#18 {main}
+
+
+Nov 05 08:53:18  [info] Contribution record updated successfully
+
+Nov 05 13:53:20  [info] Receipt sent
+
+Nov 05 13:53:20  [info] Success: Database updated
+
+Nov 05 15:38:59  [info] $backTrace = #0 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/Error.php(756): CRM_Core_Error::backtrace("backTrace", TRUE)
+#1 [internal function](): CRM_Core_Error::exceptionHandler(Object(DB_Error))
+#2 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(931): call_user_func((Array:2), Object(DB_Error))
+#3 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB.php(969): PEAR_Error->PEAR_Error("DB Error: unknown error", -1, 16, (Array:2), "\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#4 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/PEAR.php(564): DB_Error->DB_Error(-1, 16, (Array:2), "\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#5 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1905): PEAR->raiseError(NULL, -1, NULL, NULL, "\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...", "DB_Error", TRUE)
+#6 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(898): DB_common->raiseError(-1, NULL, NULL, NULL, "2008 ** MySQL client ran out of memory")
+#7 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/mysql.php(327): DB_mysql->mysqlRaiseError()
+#8 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/common.php(1216): DB_mysql->simpleQuery("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#9 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(2421): DB_common->query("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#10 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/packages/DB/DataObject.php(1613): DB_DataObject->_query("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#11 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(158): DB_DataObject->query("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#12 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/DAO.php(905): CRM_Core_DAO->query("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...", TRUE)
+#13 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/BAO/CustomGroup.php(687): CRM_Core_DAO::executeQuery("\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...")
+#14 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/BAO/CustomGroup.php(650): CRM_Core_BAO_CustomGroup::buildTreeEntityDataFromQuery((Array:2), "\n      SELECT civicrm_value_import_id_3.id as civicrm_value_import_id_3_id, ...", (Array:1))
+#15 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/CRM/Core/BAO/CustomGroup.php(596): CRM_Core_BAO_CustomGroup::buildEntityTreeSingleFields((Array:2), 3341, (Array:3), (Array:1))
+#16 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/utils.php(1086): CRM_Core_BAO_CustomGroup::getTree("Membership", NULL, 3341, NULL, "1", NULL)
+#17 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(264): _civicrm_api3_custom_data_get((Array:19), "Membership", 3341, NULL, "1")
+#18 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/v3/Membership.php(214): _civicrm_api3_membership_relationsship_get_customv2behaviour((Array:6), (Array:1), "11897")
+#19 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civicrm/civicrm/api/api.php(87): civicrm_api3_membership_get((Array:6))
+#20 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_sync/civi_member_sync.php(97): civicrm_api("Membership", "get", (Array:5))
+#21 /homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_sync/manual_sync.php(48): member_check("11897", 106, "professionalmember")
+#22 /homepages/41/d483464789/htdocs/membership/wp-admin/admin.php(245): include("/homepages/41/d483464789/htdocs/membership/wp-content/plugins/civi_member_syn...")
+#23 {main}
+
+
+Nov 12 03:54:30  [info] $Fatal Error Details = Array
+(
+    [callback] => Array
+        (
+            [0] => CRM_Core_Error
+            [1] => handle
+        )
+
+    [code] => -1
+    [message] => DB Error: unknown error
+    [mode] => 16
+    [debug_info] => SELECT * 
+ FROM civicrm_membership_status 
+ 
+ WHERE (  civicrm_membership_status.is_current_member = 0 )  
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [type] => DB_Error
+    [user_info] => SELECT * 
+ FROM civicrm_membership_status 
+ 
+ WHERE (  civicrm_membership_status.is_current_member = 0 )  
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]
+    [to_string] => [db_error: message="DB Error: unknown error" code=-1 mode=callback callback=CRM_Core_Error::handle prefix="" info="SELECT * 
+ FROM civicrm_membership_status 
+ 
+ WHERE (  civicrm_membership_status.is_current_member = 0 )  
+ 
+ 
+ 
+ [nativecode=2008 ** MySQL client ran out of memory]"]
+)
+
+
+Nov 26 14:50:24  [info] Contribution record updated successfully
+
+Nov 26 19:50:26  [info] Receipt sent
+
+Nov 26 19:50:26  [info] Success: Database updated
+

@@ -16,7 +16,7 @@ Note: this shouldn't really need to be done once we "go git": folks should be co
 * `$ diff -bBr membership-site /tmp/t/membership` and inspect the differences.  Does this look sane?
 * `$ git status`, making sure your workspace is clean
 * make the trees the same, more or less (ignore crap like .DS_store and such). updates usually are only to wp-content/..., but won't be if WP is upgraded on 1and1 for instance.  Try one of following to make them the same:
-    * _WARNING:_ these commands also copy wp-content/plugins/files/civicrm/uploads/... which tends to contain stuff we don't want versioned.  This should be protected by the .gitignore, but watch out.
+    * _WARNING:_ these commands also copy wp-content/plugins/files/civicrm/upload/... which tends to contain stuff we don't want versioned.  This should be protected by the .gitignore, but watch out.
     * `$ rm -rf membership-site/wp-content ; cp -a /tmp/t/membership/wp-content membership-site`
     * `$ cd membership-site ; rsync -av --delete /tmp/t/membership/* .  ` (or somesuch; this is somewhat untested)
 * `$ git status` and `$ git diff`

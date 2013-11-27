@@ -161,7 +161,7 @@ class CRM_Core_BAO_CMSUser {
 
       global $wpdb;
       $wpUserIds = $wpdb->get_col(
-        $wpdb->prepare("SELECT $wpdb->users.ID FROM $wpdb->users")
+        "SELECT $wpdb->users.ID FROM $wpdb->users"
       );
 
       foreach ($wpUserIds as $wpUserId) {
