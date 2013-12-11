@@ -35,6 +35,21 @@ The following trees *are* currently stored in git, but *may* at some point be re
 * Download the latest database dump from the `Simple Backup` WP plugin on 1and1, store it as `database.sql` in the root of a working copy checkout of this repo and branch
 * `rake splitdbdump` will split the database dump into bite size chunks `database-##.sql` for uploading into WPEngine, and do path and hostname translation between the two installations. 
 * update the `database-##.sql` chunks to each have the preamble that's in 1 and the postamble that's in the last one
+```shell
+rake splitdbdump
+head -20 database.sql | grep ^/ > sqlprepend.txt
+cat sqlprepend.txt |cat - database-2.sql > out && mv out database-2.sql
+cat sqlprepend.txt |cat - database-3.sql > out && mv out database-3.sql
+cat sqlprepend.txt |cat - database-4.sql > out && mv out database-4.sql
+cat sqlprepend.txt |cat - database-5.sql > out && mv out database-5.sql
+tail -10 database.sql |grep ^/ > sqlappend.txt
+cat sqlappend.txt >> database-1.sql
+cat sqlappend.txt >> database-2.sql
+cat sqlappend.txt >> database-3.sql
+cat sqlappend.txt >> database-4.sql
+rm sqlappend.txt sqlprepend.txt
+```
+
 * use WPEngine's phpMyAdmin to drop every table in the database
 * Import `database-##.sql` order from 1..n through WPEngine's phpMyAdmin
 
