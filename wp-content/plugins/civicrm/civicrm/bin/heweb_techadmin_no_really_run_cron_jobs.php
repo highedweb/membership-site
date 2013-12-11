@@ -1,6 +1,6 @@
 <?php
 
-require_once( dirname(__FILE__) . '../../civicrm.settings-private.php');
+require_once( dirname(__FILE__) . '/../../civicrm.settings-private.php');
 
 $_REQUEST['name'] = HEWEB_TECHADMIN_USER; 
 $_REQUEST['pass'] = HEWEB_TECHADMIN_PASSWORD;
