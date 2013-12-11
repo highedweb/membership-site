@@ -52,6 +52,7 @@ rm sqlappend.txt sqlprepend.txt
 
 * use WPEngine's phpMyAdmin to drop every table in the database
 * Import `database-##.sql` order from 1..n through WPEngine's phpMyAdmin
+* hit the URLs found in `Rakefile`
 
 # Miscellaneous Notes
 
