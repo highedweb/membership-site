@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.27, created on 2013-11-04 01:11:19
+<?php /* Smarty version 2.6.27, created on 2013-12-11 15:16:25
          compiled from CRM/Contact/Form/Selector.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Contact/Form/Selector.tpl', 1, false),array('block', 'ts', 'CRM/Contact/Form/Selector.tpl', 29, false),array('function', 'counter', 'CRM/Contact/Form/Selector.tpl', 53, false),array('function', 'cycle', 'CRM/Contact/Form/Selector.tpl', 57, false),array('function', 'crmURL', 'CRM/Contact/Form/Selector.tpl', 67, false),array('modifier', 'crmMoney', 'CRM/Contact/Form/Selector.tpl', 72, false),array('modifier', 'crmDate', 'CRM/Contact/Form/Selector.tpl', 74, false),array('modifier', 'replace', 'CRM/Contact/Form/Selector.tpl', 82, false),array('modifier', 'mb_truncate', 'CRM/Contact/Form/Selector.tpl', 100, false),)), $this); ?>

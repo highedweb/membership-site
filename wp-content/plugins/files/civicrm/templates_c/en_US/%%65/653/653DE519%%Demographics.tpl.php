@@ -1,4 +1,4 @@
-<?php /* Smarty version 2.6.27, created on 2013-11-04 01:11:24
+<?php /* Smarty version 2.6.27, created on 2013-12-11 15:16:31
          compiled from CRM/Contact/Page/Inline/Demographics.tpl */ ?>
 <?php require_once(SMARTY_CORE_DIR . 'core.load_plugins.php');
 smarty_core_load_plugins(array('plugins' => array(array('block', 'crmScope', 'CRM/Contact/Page/Inline/Demographics.tpl', 1, false),array('block', 'ts', 'CRM/Contact/Page/Inline/Demographics.tpl', 27, false),array('modifier', 'crmDate', 'CRM/Contact/Page/Inline/Demographics.tpl', 41, false),)), $this); ?>
