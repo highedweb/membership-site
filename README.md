@@ -1,6 +1,13 @@
 membership.highedweb.org Tech Deets
 ===============
 
+# Changes, updates and configurations maintained inside CiviCRM and its source tree
+
+Herein is documented stuff that may get blown away across upgrades and server moves.  Be wary!
+
+* `techadmin_cron` as `HEWEB_TECHADMIN_USER` configured in `wp-content/plugins/civicrm/civicrm.settings-private.php` and set up as anonymous user in WordPress
+* `wp-content/plugins/civicrm/civicrm/bin/heweb_techadmin_no_really_run_cron_jobs.php` which is executed by [http://easycron.com](Easy Cron)
+
 # Updating WPEngine from 1and1
 
 A proper update consists of copying the following three categories of data, and doing host and pathname translation on them.  Database translation is encoded programmatically in the tooling.  Filesystem translation is contained in git and should be maintained manually throughout updates as described in `Updating the WPEngine branch from master`.  Unversioned files do not contain hard coded host and pathnames, at least as has been discovered so far.
