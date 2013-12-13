@@ -6,75 +6,41 @@ membership.highedweb.org Tech Deets
 Herein is documented stuff that may get blown away across upgrades and server moves.  Be wary!
 
 * `techadmin_cron` as `HEWEB_TECHADMIN_USER` configured in `wp-content/plugins/civicrm/civicrm.settings-private.php` and set up as anonymous user in WordPress
-* `wp-content/plugins/civicrm/civicrm/bin/heweb_techadmin_no_really_run_cron_jobs.php` which is executed by [http://easycron.com](Easy Cron)
+* `wp-content/plugins/civicrm/civicrm/bin/heweb_techadmin_no_really_run_cron_jobs.php` which is executed by [Easy Cron](http://easycron.com)
 
-# Updating WPEngine from 1and1
+# Pushing to WPEngine
 
-A proper update consists of copying the following three categories of data, and doing host and pathname translation on them.  Database translation is encoded programmatically in the tooling.  Filesystem translation is contained in git and should be maintained manually throughout updates as described in `Updating the WPEngine branch from master`.  Unversioned files do not contain hard coded host and pathnames, at least as has been discovered so far.
+Get Jason or Curtiss to request you and your SSH key be added to `hewmembership` by WPEngine
 
-* Versioned files
-* Unversioned files
-* Database
+## Staging
 
-## Updating versioned files from 1and1 to WPEngine
+Use this for tests.  See WPEngine docs for how to update staging to latest from production.
 
-* follow the "Updating master from 1and1" in the master branch's README, then follow "Updating the WPEngine branch from master" in this README
-* `git checkout wpengine`
+* `git remote add wpengine-staging git@git.wpengine.com:staging/hewmembership.git` if not already done locally
+* `git push wpengine-staging <working_branch_name>:master`
+
+## Production
+
 * `git remote add wpengine-prod git@git.wpengine.com:production/hewmembership.git` if not already done locally
-* `git push wpengine-prod wpengine:master`
+* `git push wpengine-prod master`
 
-## Updating non-versioned files from 1and1 to WPEngine
+# Nonversioned trees
 
-The following trees are not stored in git (per WPEngine, and perhaps common sense), and must be manually copied from 1and1 to WPEngine.  Jason uses cyberduck for this.  YMMV.
+The following trees are not stored in git (per WPEngine, and perhaps common sense).  This may be incomplete.
 
 * wp-content/uploads/...
 * wp-content/plugins/files/civicrm/upload/...
 * wp-content/HighEdWeb website pre 2009.zip
 
-The following trees *are* currently stored in git, but *may* at some point be rejected by WPEngine rules, and if they are will need to be mirrored from 1and1 to WPEngine at the filesystem level.  That is not currently the case, and as such no extra action is required for these trees.
+The following trees *are* currently stored in git, but *may* at some point be rejected by WPEngine rules.
 
 * wp-content/plugins/files/civicrm/persist/contribute/...
 * wp-content/plugins/files/civicrm/custom/...
 
-
-## Updating database from 1and1 to WPEngine
-
-* Download the latest database dump from the `Simple Backup` WP plugin on 1and1, store it as `database.sql` in the root of a working copy checkout of this repo and branch
-* `rake splitdbdump` will split the database dump into bite size chunks `database-##.sql` for uploading into WPEngine, and do path and hostname translation between the two installations. 
-* update the `database-##.sql` chunks to each have the preamble that's in 1 and the postamble that's in the last one
-```shell
-rake splitdbdump
-head -20 database.sql | grep ^/ > sqlprepend.txt
-cat sqlprepend.txt |cat - database-2.sql > out && mv out database-2.sql
-cat sqlprepend.txt |cat - database-3.sql > out && mv out database-3.sql
-cat sqlprepend.txt |cat - database-4.sql > out && mv out database-4.sql
-cat sqlprepend.txt |cat - database-5.sql > out && mv out database-5.sql
-tail -10 database.sql |grep ^/ > sqlappend.txt
-cat sqlappend.txt >> database-1.sql
-cat sqlappend.txt >> database-2.sql
-cat sqlappend.txt >> database-3.sql
-cat sqlappend.txt >> database-4.sql
-rm sqlappend.txt sqlprepend.txt
-```
-
-* use WPEngine's phpMyAdmin to drop every table in the database
-* Import `database-##.sql` order from 1..n through WPEngine's phpMyAdmin
-* hit the URLs found in `Rakefile`
-
-# Miscellaneous Notes
-
-## Private Configuration File Notes
+# Private Configuration File Notes
 * `wp-config.php` is not versionable per WPEngine, so private stuff is kept in here and public stuff is kept in the peer file `wp-config-public.php` which is versionable
 * `wp-content/plugins/civicrm/civicrm.settings.php` has been split to include a `-private` version, where the latter are not stored in git, as enforced by an entry in `.gitignore`
-* the Rakefile has seed versions of these files, and can create them with `rake seed_private_config_files`
-* copy these files to production with the command output by `rake sftp_private_config_files`
 
-## Updating the WPEngine branch from master
+# Updating WPEngine from 1and1 (OLD)
 
-With luck, it's as simple as the following, and updates made on this branch (like 5.3.3 => 5.3.2 and path and host changes in the public config files) will stick.  Be sure to manually check the merge to see that it's not doing anything stupid (for various values of "stupid").
-
-* $ `git checkout wpengine`
-* $ `git merge master --no-commit` ## merges files that are in the .gitignore, too so watch out
-* inspect the diffs, manually fix merge problems, make sure it's "doing the right thing (not undoing stuff like the php 5.3.3 -> 5.3.2 change)
-* unstage the stuff that should have not been copied over (wp-content/uploads, wp-content/plugins/files/civicrm/template_c, etc; check the .gitignore section at the top, and the index changes made by `git merge`)
-* $ `git commit -m "merge changes to wpengine from latest 1and1 filesystem update"`
+* Migration from 1and1 is complete, and `master` now represents WPEngine current production state.  See older revisions of this file for details of how migration was performed.
