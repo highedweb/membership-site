@@ -25,7 +25,7 @@ define('DB_USER','hewmembership');
 //define('DB_PASSWORD', '---');
 
 /** MySQL hostname */
-define('DB_HOST', '127.0.0.1');
+//define('DB_HOST', '127.0.0.1');  // will be forced-set by WPEngine in wp-config.php
 
 /** Database Charset to use in creating database tables. */
 define('DB_CHARSET', 'utf8');
@@ -61,100 +61,4 @@ define('DB_COLLATE', 'utf8_unicode_ci');
  */
 $table_prefix  = 'wp_membership_';
 
-# Localized Language Stuff
-
-define('WP_CACHE',TRUE);
-
-define('WP_AUTO_UPDATE_CORE',false);
-
-define('PWP_NAME','hewmembership');
-
-define('FS_METHOD','direct');
-
-define('FS_CHMOD_DIR',0775);
-
-define('FS_CHMOD_FILE',0664);
-
-define('PWP_ROOT_DIR','/nas/wp');
-
-define('WPE_APIKEY','07cf09e73966c1f08c25894dbf8b1d9ff025603d');
-
-define('WPE_FOOTER_HTML',"");
-
-define('WPE_CLUSTER_ID','2021');
-
-define('WPE_CLUSTER_TYPE','pod');
-
-define('WPE_ISP',true);
-
-define('WPE_BPOD',false);
-
-define('WPE_RO_FILESYSTEM',false);
-
-define('WPE_LARGEFS_BUCKET','largefs.wpengine');
-
-define('WPE_CDN_DISABLE_ALLOWED',true);
-
-define('DISALLOW_FILE_EDIT',FALSE);
-
-define('DISALLOW_FILE_MODS',FALSE);
-
-define('DISABLE_WP_CRON',false);
-
-define('WPE_FORCE_SSL_LOGIN',false);
-
-define('FORCE_SSL_LOGIN',false);
-
-/*SSLSTART*/ if ( isset($_SERVER['HTTP_X_WPE_SSL']) && $_SERVER['HTTP_X_WPE_SSL'] ) $_SERVER['HTTPS'] = 'on'; /*SSLEND*/
-
-define('WPE_EXTERNAL_URL',false);
-
-define('WP_POST_REVISIONS',FALSE);
-
-define('WPE_WHITELABEL','wpengine');
-
-define('WP_TURN_OFF_ADMIN_BAR',false);
-
-define('WPE_BETA_TESTER',false);
-
-umask(0002);
-
-$wpe_cdn_uris=array ();
-
-$wpe_no_cdn_uris=array ();
-
-$wpe_content_regexs=array ();
-
-$wpe_all_domains=array (  0 => 'hewmembership.wpengine.com',);
-
-$wpe_varnish_servers=array (  0 => 'pod-2021',);
-
-$wpe_ec_servers=array ();
-
-$wpe_largefs=array ();
-
-$wpe_netdna_domains=array ();
-
-$wpe_netdna_push_domains=array ();
-
-$wpe_domain_mappings=array ();
-
-$memcached_servers=array (  'default' =>   array (    0 => 'unix:///tmp/memcached.sock',  ),);
 define('WPLANG','');
-
-# WP Engine ID
-
-
-# WP Engine Settings
-
-
-
-
-
-
-# That's It. Pencils down
-if ( !defined('ABSPATH') )
-	define('ABSPATH', dirname(__FILE__) . '/');
-require_once(ABSPATH . 'wp-settings.php');
-
-$_wpe_preamble_path = null; if(false){}
