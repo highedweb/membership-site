@@ -135,6 +135,7 @@ class CRM_Report_Form extends CRM_Core_Form {
    * @var null
    */
   protected $_customGroupExtends = NULL;
+  protected $_customGroupExtendsJoin = array();
   protected $_customGroupFilters = TRUE;
   protected $_customGroupGroupBy = FALSE;
   protected $_customGroupJoin    = 'LEFT JOIN';
@@ -239,6 +240,7 @@ class CRM_Report_Form extends CRM_Core_Form {
 
   public $_having = NULL;
   public $_select = NULL;
+  public $_selectClauses = array();
   public $_columnHeaders = array();
   public $_orderBy = NULL;
   public $_orderByFields = array();
@@ -513,7 +515,7 @@ class CRM_Report_Form extends CRM_Core_Form {
             }
 
             // a few auto fills for filters
-            if ($fieldGrp == 'filters') { 
+            if ($fieldGrp == 'filters') {
               // fill operator types
               if (!array_key_exists('operatorType', $this->_columns[$tableName][$fieldGrp][$fieldName])) {
                 switch (CRM_Utils_Array::value('type', $this->_columns[$tableName][$fieldGrp][$fieldName])) {
@@ -525,18 +527,18 @@ class CRM_Report_Form extends CRM_Core_Form {
                     $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_INT;
                     break;
                   case CRM_Utils_Type::T_DATE:
-                    $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_DATE;  
+                    $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_DATE;
                     break;
                   case CRM_Utils_Type::T_BOOLEAN:
                     $this->_columns[$tableName][$fieldGrp][$fieldName]['operatorType'] = CRM_Report_Form::OP_SELECT;
                     if (!array_key_exists('options', $this->_columns[$tableName][$fieldGrp][$fieldName])) {
-                      $this->_columns[$tableName][$fieldGrp][$fieldName]['options'] = 
+                      $this->_columns[$tableName][$fieldGrp][$fieldName]['options'] =
                         array('' => ts('Any'), '0' => ts('No'), '1' => ts('Yes'));
                     }
                     break;
                   default:
-                    if ($daoOrBaoName && 
-                      (array_key_exists('pseudoconstant', $this->_columns[$tableName][$fieldGrp][$fieldName]) 
+                    if ($daoOrBaoName &&
+                      (array_key_exists('pseudoconstant', $this->_columns[$tableName][$fieldGrp][$fieldName])
                         || array_key_exists('enumValues', $this->_columns[$tableName][$fieldGrp][$fieldName]))
                     ) {
                       // with multiple options operator-type is generally multi-select
@@ -1726,7 +1728,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
   // still be having their own select() method. We should fix them as and when encountered and move
   // towards generalizing the select() method below.
   function select() {
-    $select = array();
+    $select = $this->_selectAliases = array();
 
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
@@ -1878,6 +1880,7 @@ WHERE cg.extends IN ('" . implode("','", $this->_customGroupExtends) . "') AND
       }
     }
 
+    $this->_selectClauses = $select;
     $this->_select = "SELECT " . implode(', ', $select) . " ";
   }
 
@@ -2875,10 +2878,11 @@ ORDER BY cg.weight, cf.weight";
         if (!$this->isFieldSelected($prop)) {
           continue;
         }
+        $baseJoin = CRM_Utils_Array::value($prop['extends'], $this->_customGroupExtendsJoin, "{$this->_aliases[$extendsTable]}.id");
 
         $customJoin   = is_array($this->_customGroupJoin) ? $this->_customGroupJoin[$table] : $this->_customGroupJoin;
         $this->_from .= "
-{$customJoin} {$table} {$this->_aliases[$table]} ON {$this->_aliases[$table]}.entity_id = {$this->_aliases[$extendsTable]}.id";
+{$customJoin} {$table} {$this->_aliases[$table]} ON {$this->_aliases[$table]}.entity_id = {$baseJoin}";
         // handle for ContactReference
         if (array_key_exists('fields', $prop)) {
           foreach ($prop['fields'] as $fieldName => $field) {
@@ -3119,6 +3123,10 @@ LEFT JOIN civicrm_contact {$field['alias']} ON {$field['alias']}.id = {$this->_a
           'postal_code' =>
           array('title' => ts('Postal Code'),
             'default' => CRM_Utils_Array::value('postal_code', $defaults, FALSE),
+          ),
+          'postal_code_suffix' =>
+          array('title' => ts('Postal Code Suffix'),
+            'default' => CRM_Utils_Array::value('postal_code_suffix', $defaults, FALSE),
           ),
           'county_id' =>
           array('title' => ts('County'),

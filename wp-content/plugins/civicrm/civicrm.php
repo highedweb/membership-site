@@ -71,7 +71,9 @@ define( 'CIVICRM_PLUGIN_VERSION', '4.4' );
 
 // define commonly used items as constants
 define( 'CIVICRM_PLUGIN_DIR', plugin_dir_path(__FILE__) );
-define( 'CIVICRM_SETTINGS_PATH', CIVICRM_PLUGIN_DIR . 'civicrm.settings.php' );
+if (!defined('CIVICRM_SETTINGS_PATH')) {
+  define( 'CIVICRM_SETTINGS_PATH', CIVICRM_PLUGIN_DIR . 'civicrm.settings.php' );
+}
 
 // prevent CiviCRM from rendering its own header
 define( 'CIVICRM_UF_HEAD', TRUE );
@@ -427,6 +429,7 @@ class CiviCRM_For_WordPress {
     $wpUserTimezone = get_option('timezone_string');
     if ($wpUserTimezone) {
       date_default_timezone_set($wpUserTimezone);
+      CRM_Core_Config::singleton()->userSystem->setMySQLTimeZone();
     }
 
     // Add our standard css & js

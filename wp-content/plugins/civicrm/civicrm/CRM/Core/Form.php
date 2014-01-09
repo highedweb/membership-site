@@ -358,9 +358,12 @@ class CRM_Core_Form extends HTML_QuickForm_Page {
     ) {
       $this->addElement('hidden', 'qfKey', $this->controller->_key);
       $this->assign('qfKey', $this->controller->_key);
+
     }
 
-    if ($this->controller->_entryURL) {
+    // _generateQFKey suppresses the qfKey generation on form snippets that
+    // are part of other forms, hence we use that to avoid adding entryURL
+    if ($this->controller->_generateQFKey && $this->controller->_entryURL) {
       $this->addElement('hidden', 'entryURL', $this->controller->_entryURL);
     }
 
@@ -718,6 +721,28 @@ class CRM_Core_Form extends HTML_QuickForm_Page {
    */
   function assign_by_ref($var, &$value) {
     self::$_template->assign_by_ref($var, $value);
+  }
+
+  /**
+   * appends values to template variables
+   *
+   * @param array|string $tpl_var the template variable name(s)
+   * @param mixed $value the value to append
+   * @param bool $merge
+   */
+  function append($tpl_var, $value=NULL, $merge=FALSE) {
+    self::$_template->append($tpl_var, $value, $merge);
+  }
+
+  /**
+   * Returns an array containing template variables
+   *
+   * @param string $name
+   * @param string $type
+   * @return array
+   */
+  function get_template_vars($name=null) {
+    return self::$_template->get_template_vars($name);
   }
 
   function &addRadio($name, $title, &$values, $attributes = NULL, $separator = NULL, $required = FALSE) {

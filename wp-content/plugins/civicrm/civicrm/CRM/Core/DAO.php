@@ -70,6 +70,8 @@ class CRM_Core_DAO extends DB_DataObject {
    */
   static $_factory = NULL;
 
+  static $_checkedSqlFunctionsExist = FALSE;
+
   /**
    * Class constructor
    *
@@ -598,7 +600,7 @@ LIKE %1
    *
    * @return boolean true if CONSTRAINT keyword exists, false otherwise
    */
-  function schemaRequiresRebuilding($tables = array("civicrm_contact")) {
+  static function schemaRequiresRebuilding($tables = array("civicrm_contact")) {
     $show = array();
     foreach($tables as $tableName){
       if (!array_key_exists($tableName, $show)) {
@@ -1526,11 +1528,11 @@ SELECT contact_id
     * @param $tableName string the specific table requiring a rebuild; or NULL to rebuild all tables
     * @see CRM-9716
     */
-  static function triggerRebuild($tableName = NULL) {
+  static function triggerRebuild($tableName = NULL, $force = FALSE) {
     $info = array();
 
     $logging = new CRM_Logging_Schema;
-    $logging->triggerInfo($info, $tableName);
+    $logging->triggerInfo($info, $tableName, $force);
 
     CRM_Core_I18n_Schema::triggerInfo($info, $tableName);
     CRM_Contact_BAO_Contact::triggerInfo($info, $tableName);
@@ -1542,6 +1544,23 @@ SELECT contact_id
 
     // now create the set of new triggers
     self::createTriggers($info);
+  }
+
+  /**
+   * Because sql functions are sometimes lost, esp during db migration, we check here to avoid numerous support requests
+   * @see http://issues.civicrm.org/jira/browse/CRM-13822
+   * TODO: Alternative solutions might be
+   *  * Stop using functions and find another way to strip numeric characters from phones
+   *  * Give better error messages (currently a missing fn fatals with "unknown error")
+   */
+  static function checkSqlFunctionsExist() {
+    if (!self::$_checkedSqlFunctionsExist) {
+      self::$_checkedSqlFunctionsExist = TRUE;
+      $dao = CRM_Core_DAO::executeQuery("SHOW function status WHERE db = database() AND name = 'civicrm_strip_non_numeric'");
+      if (!$dao->fetch()) {
+        self::triggerRebuild();
+      }
+    }
   }
 
   /**

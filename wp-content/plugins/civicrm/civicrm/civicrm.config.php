@@ -1,5 +1,7 @@
 <?php
 
+// WORD PRESS VARIANT of civicrm.config.php
+
 /**
  * This function has been copied from DRUPAL_ROOT/includes/bootstrap.inc
  */

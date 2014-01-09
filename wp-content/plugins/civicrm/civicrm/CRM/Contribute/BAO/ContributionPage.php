@@ -55,7 +55,7 @@ class CRM_Contribute_BAO_ContributionPage extends CRM_Contribute_DAO_Contributio
     $dao = new CRM_Contribute_DAO_ContributionPage();
     $dao->copyValues($params);
     $dao->save();
-    if ($financialTypeId && CRM_Utils_Array::value('financial_type_id', $params) 
+    if ($financialTypeId && CRM_Utils_Array::value('financial_type_id', $params)
       && $financialTypeId != $params['financial_type_id']) {
       CRM_Price_BAO_PriceFieldValue::updateFinancialType($params['id'], 'civicrm_contribution_page', $params['financial_type_id']);
     }
@@ -240,7 +240,7 @@ class CRM_Contribute_BAO_ContributionPage extends CRM_Contribute_DAO_Contributio
 
       // get the billing location type
       if (!array_key_exists('related_contact', $values)) {
-        $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id');
+        $locationTypes = CRM_Core_PseudoConstant::get('CRM_Core_DAO_Address', 'location_type_id', array(), 'validate');
         $billingLocationTypeId = array_search('Billing', $locationTypes);
       }
       else {
@@ -491,7 +491,11 @@ class CRM_Contribute_BAO_ContributionPage extends CRM_Contribute_DAO_Contributio
         'toName' => $displayName,
         'toEmail' => $email,
       );
-
+      //CRM-13811 
+      if ($pageID) {
+        $templatesParams['cc'] = CRM_Utils_Array::value('cc_receipt', $value[$pageID]);
+        $templatesParams['bcc'] = CRM_Utils_Array::value('bcc_receipt', $value[$pageID]);
+      }
       if ($recur->id) {
         // in some cases its just recurringNotify() thats called for the first time and these urls don't get set.
         // like in PaypalPro, & therefore we set it here additionally.
