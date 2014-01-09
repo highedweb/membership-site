@@ -26,14 +26,6 @@ class WP_OAuthConsumer extends OP_OAuthConsumer {
 	}
 
 	function __toString() {
-		$tokenstring = parent::__toString();
-		if(isset($this->email)) {
-			$tokenstring .= '&email=' . OP_OAuthUtil::urlencode_rfc3986($this->email);
-		}
-
-		if(isset($this->display_name)) {
-			$tokenstring .= '&display_name=' . OP_OAuthUtil::urlencode_rfc3986($this->display_name);
-		}
 		return parent::__toString();
 	}
 }
@@ -53,7 +45,15 @@ class WP_OAuthToken extends OP_OAuthToken {
 	}
 
 	function __toString() {
-		return parent::__toString();
+		$tokenstring = parent::__toString();
+		
+		if(isset($this->email)) {
+			$tokenstring .= '&user_id=' . OP_OAuthUtil::urlencode_rfc3986($this->userid) .
+				'&email=' . OP_OAuthUtil::urlencode_rfc3986($this->email) .
+				'&display_name=' . OP_OAuthUtil::urlencode_rfc3986($this->display_name);
+		}
+
+		return $tokenstring;
 	}
 }
 
