@@ -518,7 +518,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 				$access_token = new WP_OAuthToken( $key, $secret, $userid, NULL, $user->email, $user->display_name );
 			return $access_token;
 		} else {
-			throw new OP_OAuthException( 'Unauthorized Access Token!\nProvided verifier: ' . $verifier . '\nToken verifier: ' . $token->verifier );
+			throw new OP_OAuthException( 'Unauthorized Access Token!' );
 		}
 	}
 }
