@@ -1007,7 +1007,7 @@ class WP_OAuthProvider {
 
 			$callbackurl .= ( strpos( $callbackurl, '?') ? '&' : '?' ) .
 				'oauth_token=' . OP_OAuthUtil::urlencode_rfc3986($token_key) .
-				'oauth_verifier=' . OP_OAuthUtil::urlencode_rfc3986($verifier);
+				'&oauth_verifier=' . OP_OAuthUtil::urlencode_rfc3986($verifier);
 
 			header( 'Location: ' . $callbackurl );
 			nocache_headers();
