@@ -957,15 +957,20 @@ class WP_OAuthProvider {
 		if (is_array($token_key))
 			$token_key = $token_key[0];
 
+		/**
+		 * OAuth 1.0A change - callback parameters are not supported. Callback urls
+		 * must be specified and stored with the request for a request_token.
+		 */
 		// get callback url
-		$callbackurl = $request->get_parameter('oauth_callback');
-		if (is_array($callbackurl))
-			$callbackurl = $callbackurl[0];
-		$callbackurl = esc_attr($this->safe_url($callbackurl ? $callbackurl : $_SERVER['HTTP_REFERER']));
+		//$callbackurl = $request->get_parameter('oauth_callback');
+		//if (is_array($callbackurl))
+		//	$callbackurl = $callbackurl[0];
+		//$callbackurl = esc_attr($this->safe_url($callbackurl ? $callbackurl : $_SERVER['HTTP_REFERER']));
 
 		// get request and consumer info
 		try {
 			$consumer  = $this->datastore->lookup_consumer_from_request_token($token_key);
+			$callbackurl = $consumer->callback_url;
 		} catch ( OP_OAuthException $e ) {
 			header("HTTP/1.0 401 Unauthorized");
 			nocache_headers();

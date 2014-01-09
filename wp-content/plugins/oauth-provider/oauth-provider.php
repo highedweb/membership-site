@@ -1,8 +1,8 @@
 <?php
 /*
 Plugin Name: OAuth Provider
-Version: 0.5.4
-Plugin URI: http://wordpress.org/extend/plugins/oauth-provider/
+Version: 0.5.4 (modified for OAuth 1.0A by Chad Killingsworth)
+Plugin URI: https://github.com/highedweb/membership-site
 Description: A plugin to allow WordPress to use an OAuth authenticator.
 Author: wokamoto
 Author URI: http://dogmap.jp/

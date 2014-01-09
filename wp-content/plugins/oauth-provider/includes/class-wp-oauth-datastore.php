@@ -92,6 +92,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 			secret tinytext  NOT NULL,
 			authorized tinyint(1) NOT NULL,
 			userid bigint(20) UNSIGNED NULL,
+			callback text NOT NULL,
 			PRIMARY KEY (id)
 			) $charset_collate;" );
 
@@ -187,14 +188,16 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 	public function lookup_consumer_from_request_token( $key ) {
 		$result = NULL;
 		$tokens = $this->db->get_results($this->db->prepare(
-			"SELECT consumerid, oauthkey, secret
+			"SELECT consumerid, oauthkey, secret, callback
 			FROM {$this->api_tables['request_tokens']}
 			WHERE oauthkey = %s;" ,
 			$key
 			));
 		$consumerid = NULL;
+		$callback = NULL;
 		foreach ( (array) $tokens as $token ) {
 			$consumerid = $token->consumerid;
+			$callback = $token->callback;
 		}
 
 		if ($consumerid) {
@@ -205,7 +208,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 				(int) $consumerid
 				));
 			foreach ( (array) $consumers as $consumer ) {
-				$result = new WP_OAuthConsumer( $consumer->id, $consumer->oauthkey, $consumer->secret, $consumer->name, NULL);
+				$result = new WP_OAuthConsumer( $consumer->id, $consumer->oauthkey, $consumer->secret, $consumer->name, $callback);
 				break;
 			}
 		}
@@ -439,12 +442,13 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 		$consumerid = isset($consumer->id) ? $consumer->id : NULL;
 
 		$request_token = $this->db->query($this->db->prepare(
-			"INSERT INTO {$this->api_tables['request_tokens']} ( consumerid, oauthkey, secret, authorized )
-			VALUES ( %d, %s, %s, %d );" ,
+			"INSERT INTO {$this->api_tables['request_tokens']} ( consumerid, oauthkey, secret, authorized, callback )
+			VALUES ( %d, %s, %s, %d, %s );" ,
 			(int)$consumerid ,
 			$key ,
 			$secret ,
-			0
+			0,
+			$callback
 			));
 		if ($request_token)
 			$request_token = new WP_OAuthToken( $key, $secret, NULL, NULL );
