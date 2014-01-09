@@ -1001,12 +1001,13 @@ class WP_OAuthProvider {
 
 		// Allow
 		if ( isset($_POST['allow']) ) {
-			$this->datastore->allow_request_token($userid, $consumer->id, $token_key);
+			$verifier = $this->datastore->allow_request_token($userid, $consumer->id, $token_key);
 			$this->datastore->delete_nonce( $this->server->get_expired() );
 			$message  = '<p><strong>' . __('Allowed.', $this->textdomain) . "</strong></p>\n";
 
 			$callbackurl .= ( strpos( $callbackurl, '?') ? '&' : '?' ) .
-				'oauth_token=' . OP_OAuthUtil::urlencode_rfc3986($token_key);
+				'oauth_token=' . OP_OAuthUtil::urlencode_rfc3986($token_key) .
+				'oauth_verifier=' . OP_OAuthUtil::urlencode_rfc3986($verifier);
 
 			header( 'Location: ' . $callbackurl );
 			nocache_headers();

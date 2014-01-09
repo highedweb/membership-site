@@ -93,6 +93,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 			authorized tinyint(1) NOT NULL,
 			userid bigint(20) UNSIGNED NULL,
 			callback text NOT NULL,
+			verifier tinytext NULL,
 			PRIMARY KEY (id)
 			) $charset_collate;" );
 
@@ -321,16 +322,19 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 
 	// allow request token
 	public function allow_request_token($userid, $consumerid, $token_key) {
-		return $this->db->query($this->db->prepare(
+		list($key, $secret) = $this->generate_key( 'verifier' );
+		$this->db->query($this->db->prepare(
 			"UPDATE {$this->api_tables['request_tokens']}
 			SET authorized = 1
-			, userid = %d
+			, userid = %d, verifier = %s
 			WHERE consumerid = %d
 			AND oauthkey = %s" ,
 			(int) $userid ,
+			$key,
 			(int) $consumerid ,
 			$token_key
 			) );
+		return $key;
 	}
 
 	// deny request token

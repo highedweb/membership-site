@@ -1,12 +1,12 @@
 <?php
 /*
-Plugin Name: OAuth Provider
-Version: 0.5.4 (modified for OAuth 1.0A by Chad Killingsworth)
+Plugin Name: HighEdWeb Membership OAuth Provider
 Plugin URI: https://github.com/highedweb/membership-site
-Description: A plugin to allow WordPress to use an OAuth authenticator.
-Author: wokamoto
+Version: 1.0
+Description: A plugin to allow WordPress to used as an OAuth authenticator.
+Author: wokamoto (modified by Chad Killingsworth)
 Author URI: http://dogmap.jp/
-Text Domain: oauth-provider
+Text Domain: heweb-oauth-provider
 Domain Path: /languages/
 
 License:
