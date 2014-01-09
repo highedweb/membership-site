@@ -26,18 +26,30 @@ class WP_OAuthConsumer extends OP_OAuthConsumer {
 	}
 
 	function __toString() {
+		$tokenstring = parent::__toString();
+		if(isset($this->email)) {
+			$tokenstring .= '&email=' . OP_OAuthUtil::urlencode_rfc3986($this->email);
+		}
+
+		if(isset($this->display_name)) {
+			$tokenstring .= '&display_name=' . OP_OAuthUtil::urlencode_rfc3986($this->display_name);
+		}
 		return parent::__toString();
 	}
 }
 
 class WP_OAuthToken extends OP_OAuthToken {
 	public $userid;
+	public $email;
+	public $display_name;
 	public $authorized;
 
-	function __construct($key, $secret, $userid = NULL, $authorized = NULL) {
+	function __construct($key, $secret, $userid = NULL, $authorized = NULL, $email = NULL, $display_name = NULL) {
 		parent::__construct($key, $secret);
 		$this->userid = $userid;
 		$this->authorized = $authorized;
+		$this->email = $email;
+		$this->display_name = $display_name;
 	}
 
 	function __toString() {
@@ -461,8 +473,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 
 	// add new access token
 	public function new_access_token($request_token, $consumer, $verifier = null) {
-		if( isset($request_token->authorized) && $request_token->authorized ) {
-
+		if( $request_token->verifier == $verifier && isset($request_token->authorized) && $request_token->authorized ) {
 			list($key, $secret) = $this->generate_key( 'access_token' );
 			if (!isset($consumer->id))
 				$consumer = $this->lookup_consumer($consumer->key);
@@ -494,10 +505,14 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 				(int)$userid
 				));
 
+			$user = get_userdata($userid);
+			if($user === false) {
+				throw new OP_OAuthException( 'Unauthorized Access Token!' );
+			}
+			
 			if ($access_token)
-				$access_token = new WP_OAuthToken( $key, $secret, $userid, NULL );
+				$access_token = new WP_OAuthToken( $key, $secret, $userid, NULL, $user->email, $user->display_name );
 			return $access_token;
-
 		} else {
 			throw new OP_OAuthException( 'Unauthorized Access Token!' );
 		}
