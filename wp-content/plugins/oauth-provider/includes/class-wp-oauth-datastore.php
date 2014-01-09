@@ -35,6 +35,7 @@ class WP_OAuthToken extends OP_OAuthToken {
 	public $email;
 	public $display_name;
 	public $authorized;
+	public $verifier;
 
 	function __construct($key, $secret, $userid = NULL, $authorized = NULL, $email = NULL, $display_name = NULL) {
 		parent::__construct($key, $secret);
@@ -243,7 +244,7 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 
 		if ($token_type === 'request' ) {
 			$sql =
-				"SELECT consumerid, oauthkey, secret, userid, authorized
+				"SELECT consumerid, oauthkey, secret, userid, authorized, verifier
 				FROM {$this->api_tables['request_tokens']}
 				WHERE oauthkey = %s;";
 		} else if ( $token_type === 'access' ) {
@@ -259,6 +260,9 @@ class WP_OAuthDataStore extends OP_OAuthDataStore {
 		foreach ( (array) $tokens as $token ) {
 			if ( $consumerid === $token->consumerid ) {
 				$result = new WP_OAuthToken( $token->oauthkey, $token->secret, $token->userid, isset($token->authorized) ? $token->authorized : NULL );
+				if(isset($token->verifier)) {
+					$result->verifier = $token->verifier;
+				}
 				break;
 			}
 		}
