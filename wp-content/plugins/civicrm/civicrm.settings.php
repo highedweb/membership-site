@@ -135,7 +135,7 @@ define('CIVICRM_LOGGING_DSN', CIVICRM_DSN);
 global $civicrm_root;
 
 $civicrm_root = '/nas/wp/www/sites/hewmembership/wp-content/plugins/civicrm/civicrm/';
-define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/nas/wp/www/sites/hewmembership/wp-content/plugins/files/civicrm/templates_c/' );
+define( 'CIVICRM_TEMPLATE_COMPILEDIR', '/nas/wp/www/sites/hewmembership/heweb-civicrm/files/civicrm/templates_c/' );
 
 /**
  * Site URLs:
@@ -190,7 +190,7 @@ define( 'CIVICRM_MAIL_SMARTY', 0 );
  * The CIVICRM_MAIL_LOG is a debug option which disables MTA (mail transport agent) interaction.
  * You must disable CIVICRM_MAIL_LOG before CiviCRM will talk to your MTA.
  */
-// define( 'CIVICRM_MAIL_LOG', /nas/wp/www/sites/woodwardjd/wp-content/plugins/files/civicrm/templates_c//mail.log' );
+// define( 'CIVICRM_MAIL_LOG', /nas/wp/www/sites/hewmembership/heweb-civicrm/files/civicrm/templates_c//mail.log' );
 
 define( 'CIVICRM_DOMAIN_ID'      , 1 );
 
