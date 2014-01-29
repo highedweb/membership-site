@@ -51,6 +51,50 @@ if (isset($_GET['oauth']) || isset($_POST['oauth'])) {
 
 function hewebmembershipinfo_oauth($request, $userid, $username) {
 	$member_email = $request->get_parameter('member_email');
+	
+	// Added by CAG
+	if ( ! is_email( $member_email ) ) {
+		return array( 
+			'message' => __( 'Email address was not valid' ), 
+		);
+	}
+	
+	$user = get_user_by( 'email', $member_email );
+	if ( is_wp_error( $user ) || ! is_object( $user ) ) {
+		return array(
+			'message' => __( 'WordPress user could not be retrieved' ), 
+		);
+	}
+	$is_admin = user_can( $user->id, 'administrator' ); // Put the appropriate capability or role in the "administrator" spot
+	if ( ! $is_admin ) {
+		return array(
+			'message' => __( 'User is not authorized' ), 
+		);
+	}
+	
+	// Globalize the WPDB class object so we can use it for queries against the WordPress database
+	global $wpdb;
+	// Run the prepare() method to sanitize our query; this works like sprintf()
+	$query = $wpdb->prepare( "SELECT mem.id, display_name, first_name, last_name, job_title, organization_name, max(email.email) as email, memstatus.name ast status, end_date 
+	FROM civicrm_contact as c
+	INNER JOIN civicrm membership as mem on c.id = mem.contact_id
+	INNER JOIN civicrm_membership_status as memstatus on me.status_id = memstatus.id
+	INNER JOIN civicrm_email as email on c.id = email.contact_id
+	WHERE c.is_deleted = %2$d and email.email = %1$s
+	GROUP BY mem.id LIMIT 1", $member_email, 0 );
+	// Run the query itself; our results will be returned as an object, by default. You can change the output if desired. Since we're only trying to pull a single result, we're using get_row(). If we need multiple rows, we can use get_results() instead
+	$result = $wpdb->get_row( $query );
+	if ( is_wp_error( $result ) || ! is_object( $result ) ) {
+		return array(
+			'message' => __( 'CiviCRM member could not be retrieved' ), 
+		);
+	}
+	
+	return array( 
+		'message' => sprintf( __( 'Hello %s' ), $result->username ), 
+	);
+	// Done with code added by CAG
+	
 	// if user is not administrator
 	// 		return Array("message" => "not authorized");
 	
