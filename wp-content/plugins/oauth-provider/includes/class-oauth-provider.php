@@ -980,6 +980,13 @@ class WP_OAuthProvider {
 
 		// not loged in
 		if ( !is_user_logged_in() ) {
+			$action_url  = site_url('wp-login.php', 'login_post');
+			$redirect_to = $this->get_httpurl();
+			
+			header( 'Location: ' . $action_url . '?redirect_to=' . urlencode($redirect_to));
+			nocache_headers();
+			exit;
+		
 			$message  = '<h1>';
 			$message .= __('Not Login', $this->textdomain);
 			$message .= "</h1>\n";
@@ -999,8 +1006,11 @@ class WP_OAuthProvider {
 
 		list($userid, $username) = $this->get_current_user();
 
-		// Allow
-		if ( isset($_POST['allow']) ) {
+		/**
+		 * Only used for highedweb sites. Always allow. There is no need for this form.
+		 */
+		//Allow
+		//if ( isset($_POST['allow']) ) {
 			$verifier = $this->datastore->allow_request_token($userid, $consumer->id, $token_key);
 			$this->datastore->delete_nonce( $this->server->get_expired() );
 			$message  = '<p><strong>' . __('Allowed.', $this->textdomain) . "</strong></p>\n";
@@ -1014,7 +1024,7 @@ class WP_OAuthProvider {
 			exit;
 
 		// Deny
-		} elseif ( isset($_POST['deny']) ) {
+		/*} elseif ( isset($_POST['deny']) ) {
 			$this->datastore->deny_request_token($userid, $consumer->id, $token_key);
 			$this->datastore->delete_nonce( $this->server->get_expired() );
 			$message  = '<p><strong>' . __('Denied.', $this->textdomain) . "</strong></p>\n";
@@ -1048,7 +1058,7 @@ class WP_OAuthProvider {
 			$form .= '<input type="submit" name="deny" class="button-primary" value="' . __('Deny', $this->textdomain) . '" class="button" />';
 			$form .= '</form>'."\n";
 
-		}
+		}*/
 		$this->ob_end_all_clean();
 
 		$this->authorize_form($title, $message, $form);
