@@ -52,7 +52,6 @@ if (isset($_GET['oauth']) || isset($_POST['oauth'])) {
 function hewebmembershipinfo_oauth($request, $userid, $username) {
 	$member_email = $request->get_parameter('member_email');
 	
-	// Added by CAG
 	if ( ! is_email( $member_email ) ) {
 		return array( 
 			'message' => __( 'Email address was not valid' ), 
@@ -65,7 +64,7 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 			'message' => __( 'WordPress user could not be retrieved' ), 
 		);
 	}
-	$is_admin = user_can( $user->id, 'administrator' ); // Put the appropriate capability or role in the "administrator" spot
+	$is_admin = user_can( $user->id, 'delete_users' ); // Put the appropriate capability or role in the "administrator" spot
 	if ( ! $is_admin ) {
 		return array(
 			'message' => __( 'User is not authorized' ), 
@@ -75,7 +74,7 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	// Globalize the WPDB class object so we can use it for queries against the WordPress database
 	global $wpdb;
 	// Run the prepare() method to sanitize our query; this works like sprintf()
-	$query = $wpdb->prepare( "SELECT mem.id, display_name, first_name, last_name, job_title, organization_name, max(email.email) as email, memstatus.name ast status, end_date 
+	$query = $wpdb->prepare( "SELECT mem.id as member_id, display_name, first_name, last_name, job_title, organization_name, max(email.email) as email, memstatus.name as status, end_date 
 	FROM civicrm_contact as c
 	INNER JOIN civicrm membership as mem on c.id = mem.contact_id
 	INNER JOIN civicrm_membership_status as memstatus on me.status_id = memstatus.id
@@ -91,28 +90,19 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	}
 	
 	return array( 
-		'message' => sprintf( __( 'Hello %s' ), $result->username ), 
+		'message' => 'ok',
+		'membership_id' => sprintf( __( '%s' ), $result->member_id ),
+		'display_name' => sprintf( __( '%s' ), $result->display_name ),
+		'first_name' => sprintf( __( '%s' ), $result->display_name ),
+		'last_name' => sprintf( __( '%s' ), $result->display_name ),
+		'job_title' => sprintf( __( '%s' ), $result->display_name ),
+		'organization_name' => sprintf( __( '%s' ), $result->display_name ),
+		'email' => sprintf( __( '%s' ), $result->display_name ),
+		'membership_status' => sprintf( __( '%s' ), $result->status ),
+		'membership_expiration' => sprintf( __( '%s' ), $result->end_date )
 	);
-	// Done with code added by CAG
-	
-	// if user is not administrator
-	// 		return Array("message" => "not authorized");
-	
-	// Lookup membership info by email.
-	/*
-SELECT mem.id, display_name, first_name, last_name, job_title,
-organization_name, max(email.email) as email, memstatus.name as status, end_date
-FROM civicrm_contact as c
-INNER JOIN civicrm_membership as mem ON c.id = mem.contact_id
-INNER JOIN civicrm_membership_status as memstatus on mem.status_id = memstatus.id
-INNER JOIN civicrm_email as email on c.id = email.contact_id
-WHERE c.is_deleted = 0 and email.email = '$member_email'
-GROUP BY mem.id, display_name, first_name, last_name, job_title,
-organization_name, memstatus.name, end_date */
-
-	return array("message" => "Hello {$username}!");
 } 
-add_oauth_method('member_info', create_function('$request, $userid, $username', 'return array("message" => "Hello {$username}!");'));
+add_oauth_method('member_info', hewebmembershipinfo_oauth);
 
 if (function_exists('register_activation_hook'))
 	register_activation_hook(__FILE__, 'flush_rewrite_rules');
