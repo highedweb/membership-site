@@ -48,7 +48,6 @@ if (isset($_GET['oauth']) || isset($_POST['oauth'])) {
 // Add Method Sample
 //add_oauth_method('sayHello', create_function('$request, $userid, $username', 'return array("message" => "Hello {$username}!");'));
 
-
 function hewebmembershipinfo_oauth($request, $userid, $username) {
 	$member_email = $request->get_parameter('member_email');
 	
@@ -76,8 +75,8 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	// Run the prepare() method to sanitize our query; this works like sprintf()
 	$query = $wpdb->prepare( "SELECT mem.id as member_id, display_name, first_name, last_name, job_title, organization_name, max(email.email) as email, memstatus.name as status, end_date 
 	FROM civicrm_contact as c
-	INNER JOIN civicrm membership as mem on c.id = mem.contact_id
-	INNER JOIN civicrm_membership_status as memstatus on me.status_id = memstatus.id
+	INNER JOIN civicrm_membership as mem on c.id = mem.contact_id
+	INNER JOIN civicrm_membership_status as memstatus on mem.status_id = memstatus.id
 	INNER JOIN civicrm_email as email on c.id = email.contact_id
 	WHERE c.is_deleted = %2$d and email.email = %1$s
 	GROUP BY mem.id LIMIT 1", $member_email, 0 );
@@ -86,6 +85,7 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	if ( is_wp_error( $result ) || ! is_object( $result ) ) {
 		return array(
 			'message' => __( 'CiviCRM member could not be retrieved' ), 
+			'email' => $member_email
 		);
 	}
 	
@@ -93,11 +93,11 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 		'message' => 'ok',
 		'membership_id' => sprintf( __( '%s' ), $result->member_id ),
 		'display_name' => sprintf( __( '%s' ), $result->display_name ),
-		'first_name' => sprintf( __( '%s' ), $result->display_name ),
-		'last_name' => sprintf( __( '%s' ), $result->display_name ),
-		'job_title' => sprintf( __( '%s' ), $result->display_name ),
-		'organization_name' => sprintf( __( '%s' ), $result->display_name ),
-		'email' => sprintf( __( '%s' ), $result->display_name ),
+		'first_name' => sprintf( __( '%s' ), $result->first_name ),
+		'last_name' => sprintf( __( '%s' ), $result->last_name ),
+		'job_title' => sprintf( __( '%s' ), $result->job_title ),
+		'organization_name' => sprintf( __( '%s' ), $result->organization_name ),
+		'email' => sprintf( __( '%s' ), $result->email ),
 		'membership_status' => sprintf( __( '%s' ), $result->status ),
 		'membership_expiration' => sprintf( __( '%s' ), $result->end_date )
 	);
