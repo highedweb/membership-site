@@ -981,9 +981,15 @@ class WP_OAuthProvider {
 		// not loged in
 		if ( !is_user_logged_in() ) {
 			$action_url  = site_url('wp-login.php', 'login_post');
-			$redirect_to = $this->get_httpurl();
+			$redirect_to = urlencode($this->get_httpurl());
 			
-			header( 'Location: ' . $action_url . '?redirect_to=' . urlencode($redirect_to));
+			if(strpos($action_url, '?') === FALSE) {
+				$redirect_to = '?redirect_to=' . $redirect_to;
+			} else {
+				$redirect_to = '&redirect_to=' . $redirect_to;
+			}
+			
+			header( 'Location: ' . $action_url . $redirect_to);
 			nocache_headers();
 			exit;
 		
