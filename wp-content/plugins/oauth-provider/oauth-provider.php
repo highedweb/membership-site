@@ -78,8 +78,8 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	INNER JOIN civicrm_membership as mem on c.id = mem.contact_id
 	INNER JOIN civicrm_membership_status as memstatus on mem.status_id = memstatus.id
 	INNER JOIN civicrm_email as email on c.id = email.contact_id
-	WHERE c.is_deleted = %2$d and email.email = %1$s
-	GROUP BY mem.id LIMIT 1", $member_email, 0 );
+	WHERE c.is_deleted = %d and email.email = %s
+	GROUP BY mem.id LIMIT 1", 0, $member_email );
 	// Run the query itself; our results will be returned as an object, by default. You can change the output if desired. Since we're only trying to pull a single result, we're using get_row(). If we need multiple rows, we can use get_results() instead
 	$result = $wpdb->get_row( $query );
 	if ( is_wp_error( $result ) || ! is_object( $result ) ) {
