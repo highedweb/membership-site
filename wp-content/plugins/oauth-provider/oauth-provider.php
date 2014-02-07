@@ -89,7 +89,8 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 			$error = __( 'The result was not an object' );
 		return array(
 			'message' => sprintf( __( 'CiviCRM member could not be retrieved. Error: %s' ), $error ), 
-			'email' => $member_email
+			'email' => $member_email, 
+			'query' => $query /* Remove this line before running in production */
 		);
 	}
 	
