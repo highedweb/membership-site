@@ -83,8 +83,12 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	// Run the query itself; our results will be returned as an object, by default. You can change the output if desired. Since we're only trying to pull a single result, we're using get_row(). If we need multiple rows, we can use get_results() instead
 	$result = $wpdb->get_row( $query );
 	if ( is_wp_error( $result ) || ! is_object( $result ) ) {
+		if ( is_wp_error( $result ) )
+			$error = $result->get_error_message();
+		else
+			$error = __( 'The result was not an object' );
 		return array(
-			'message' => __( 'CiviCRM member could not be retrieved' ), 
+			'message' => sprintf( __( 'CiviCRM member could not be retrieved. Error: %s' ), $error ), 
 			'email' => $member_email
 		);
 	}
