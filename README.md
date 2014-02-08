@@ -7,10 +7,23 @@ Herein is documented stuff that may get blown away across upgrades and server mo
 
 * `techadmin_cron` as `HEWEB_TECHADMIN_USER` configured in `wp-content/plugins/civicrm/civicrm.settings-private.php` and set up as anonymous user in WordPress
 * `wp-content/plugins/civicrm/civicrm/bin/heweb_techadmin_no_really_run_cron_jobs.php` which is executed by [Easy Cron](http://easycron.com)
+* 5.3.3 as a minimum PHP version is changed to 5.3.2 in several places, notably:
+    * `wp-content/plugins/civicrm/civicrm.php`
+    * `wp-content/plugins/civicrm/civicrm/CRM/Upgrade/Form.php`
+    * `wp-content/plugins/civicrm/civicrm/install/index.php`
+
+## Other CiviCRM upgrade tasks
+
+These are documented in CiviCRM's docs, but sometimes are scattered and nonobvious (to me), so I'm recording them here, too.
+
+* Execute [http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/upgrade&reset=1](http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/upgrade&reset=1)
+* Do [these urls](http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/url&reset=1) make sense?
+* Do [these paths](http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/path&reset=1) make sense?
+* Execute [cleanup caches](http://membership.highedweb.org/wp-admin/admin.php?page=CiviCRM&q=civicrm/admin/setting/updateConfigBackend&reset=1)
 
 # Pushing to WPEngine
 
-Get Jason or Curtiss to request you and your SSH key be added to `hewmembership` by WPEngine
+Get Jason or Curtiss or Chad to add you and your SSH key be added to `hewmembership`.
 
 ## Staging
 
@@ -18,6 +31,7 @@ Use this for tests.  See WPEngine docs for how to update staging to latest from 
 
 * `git remote add wpengine-staging git@git.wpengine.com:staging/hewmembership.git` if not already done locally
 * `git push wpengine-staging <working_branch_name>:master`
+
 
 ## Production
 
