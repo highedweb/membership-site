@@ -107,7 +107,7 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 		'membership_expiration' => sprintf( __( '%s' ), $result->end_date )
 	);
 } 
-add_oauth_method('member_info', hewebmembershipinfo_oauth);
+add_oauth_method('member_info', 'hewebmembershipinfo_oauth');
 
 if (function_exists('register_activation_hook'))
 	register_activation_hook(__FILE__, 'flush_rewrite_rules');
