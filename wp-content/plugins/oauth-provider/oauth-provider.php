@@ -108,6 +108,9 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 	  $role = 'StudentMember';
 	} elseif (in_array('Administrator', $roles)) {
 	  $role = 'ProfessionalMember';
+	} elseif ($result->status == 'Current') {
+	  // handle un-syncronized roles from CiviCRM.  Sorta.  Buggy, need to fix
+	  $role = 'ProfessionalMember';
 	}
 	return array( 
 		'message' => 'ok',
