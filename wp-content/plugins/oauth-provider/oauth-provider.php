@@ -63,13 +63,17 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 			'message' => __( 'WordPress user could not be retrieved' ), 
 		);
 	}
-	$is_admin = user_can( $user->id, 'delete_users' ); // Put the appropriate capability or role in the "administrator" spot
-	if ( ! $is_admin ) {
-		return array(
-			'message' => __( 'User is not authorized' ), 
-		);
-	}
 	
+	if (false) {
+	  // TODO: actually check $userid / $username for admin privs, not $user, which we don't really care about
+	  // OK to put into prod for now because the OAuth infrastructure protects us
+    $is_admin = user_can( $user->id, 'delete_users' ); // Put the appropriate capability or role in the "administrator" spot
+    if ( ! $is_admin ) {
+      return array(
+        'message' => __( 'User is not authorized' ), 
+      );
+    }
+  }	
 	// Globalize the WPDB class object so we can use it for queries against the WordPress database
 	global $wpdb;
 	// Run the prepare() method to sanitize our query; this works like sprintf()
@@ -89,8 +93,8 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 			$error = __( 'The result was not an object' );
 		return array(
 			'message' => sprintf( __( 'CiviCRM member could not be retrieved. Error: %s' ), $error ), 
-			'email' => $member_email, 
-			'query' => $query /* Remove this line before running in production */
+			'email' => $member_email //, 
+			//'query' => $query /* Remove this line before running in production */
 		);
 	}
 	
