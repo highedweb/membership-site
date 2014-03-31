@@ -98,6 +98,17 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 		);
 	}
 	
+	$role = '';
+	$roles = wpse_58916_user_roles_by_id($user->id);
+	if (in_array('ProfessionalMember', $roles)) {
+	  $role = 'ProfessionalMember';
+	} elseif (in_array('AffiliateMember', $roles)) {
+	  $role = 'AffiliateMember';
+	} elseif (in_array('StudentMember', $roles)) {
+	  $role = 'StudentMember';
+	} elseif (in_array('Administrator', $roles)) {
+	  $role = 'ProfessionalMember';
+	}
 	return array( 
 		'message' => 'ok',
 		'membership_id' => sprintf( __( '%s' ), $result->member_id ),
@@ -108,10 +119,31 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 		'organization_name' => sprintf( __( '%s' ), $result->organization_name ),
 		'email' => sprintf( __( '%s' ), $result->email ),
 		'membership_status' => sprintf( __( '%s' ), $result->status ),
-		'membership_expiration' => sprintf( __( '%s' ), $result->end_date )
+		'membership_expiration' => sprintf( __( '%s' ), $result->end_date ),
+		'role' => $role
 	);
 } 
 add_oauth_method('member_info', 'hewebmembershipinfo_oauth');
+
+function wpse_58916_user_roles_by_id( $id )
+{
+    $user = new WP_User( $id );
+
+    if ( empty ( $user->roles ) or ! is_array( $user->roles ) )
+        return array ();
+
+    $wp_roles = new WP_Roles;
+    $names    = $wp_roles->get_names();
+    $out      = array ();
+
+    foreach ( $user->roles as $role )
+    {
+        if ( isset ( $names[ $role ] ) )
+            $out[ $role ] = $names[ $role ];
+    }
+
+    return $out;
+}
 
 if (function_exists('register_activation_hook'))
 	register_activation_hook(__FILE__, 'flush_rewrite_rules');
