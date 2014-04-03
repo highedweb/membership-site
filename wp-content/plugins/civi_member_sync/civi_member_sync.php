@@ -92,7 +92,7 @@ function member_check($contactID,$currentUserID, $current_user_role) {
   global $wpdb;
   global $user;
   global $current_user;  
- if($current_user_role !='administrator') {
+ if($current_user_role !='administrator' && $current_user_role !='eventcoordinator') {
           //fetching membership details
 	  $memDetails=civicrm_api("Membership","get", array ('version' => '3','page' =>'CiviCRM', 'q' =>'civicrm/ajax/rest', 'sequential' =>'1','contact_id' =>$contactID));
 	   if (!empty($memDetails['values'])) {
