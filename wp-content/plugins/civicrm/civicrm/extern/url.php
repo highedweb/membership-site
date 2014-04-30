@@ -21,8 +21,6 @@ if (!$url_id) {
   exit();
 }
 
-$queue_id = preg_replace("/[^\d]/", "", $queue_id);
-
 require_once 'CRM/Mailing/Event/BAO/TrackableURLOpen.php';
 $url = CRM_Mailing_Event_BAO_TrackableURLOpen::track($queue_id, $url_id);
 

@@ -1025,7 +1025,7 @@ class Smarty
                         'auto_source' => $tpl_file,
                         'auto_id' => $compile_id,
                         'exp_time' => $exp_time,
-                        'extensions' => array('.inc', '.phpinc'));
+                        'extensions' => array('.inc', '.php'));
         require_once(SMARTY_CORE_DIR . 'core.rm_auto.php');
         return smarty_core_rm_auto($_params, $this);
     }
@@ -1514,7 +1514,7 @@ class Smarty
         $compilePath = $this->_get_auto_filename( $this->compile_dir,
                                                   $resource_name,
                                                   $this->_compile_id );
-        $compilePath .= '.phpinc';
+        $compilePath .= '.php';
 
         //for 'string:' resource smarty might going to fail to create
         //compile file, so make sure we should have valid path, CRM-5890
@@ -1524,7 +1524,7 @@ class Smarty
                 $compilePath = $this->_get_auto_filename( $this->compile_dir,
                                                           time().rand(),
                                                           $this->_compile_id );
-                $compilePath .= '.phpinc';
+                $compilePath .= '.php';
             }
         }
 

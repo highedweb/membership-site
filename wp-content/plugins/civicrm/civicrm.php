@@ -289,7 +289,7 @@ class CiviCRM_For_WordPress {
     if ( ! $initialized ) {
 
       // Check for php version and ensure its greater than minPhpVersion
-      $minPhpVersion = '5.3.2';
+      $minPhpVersion = '5.3.3';
       if ( version_compare( PHP_VERSION, $minPhpVersion ) < 0 ) {
         echo '<p>' .
            sprintf(
