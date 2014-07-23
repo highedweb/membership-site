@@ -40,7 +40,7 @@ register_activation_hook(__FILE__,'jal_install');
 /**
  function to check user's membership record while login and logout
 **/   
-function civi_member_sync_check() {    
+function civi_member_sync_check($for_this_user = null) {    
     
     global $wpdb;
     global $user;
@@ -50,6 +50,8 @@ function civi_member_sync_check() {
          $username = $_POST['log']; 
          $userDetails = $wpdb->get_results("SELECT * FROM " . $wpdb->prefix . "users WHERE user_login ='$username'");
          $currentUserID = $userDetails[0]->ID;             
+     }else if (!is_null($for_this_user)) {
+         $currentUserID = $for_this_user->ID;
      }else{
          $currentUserID = $current_user->ID;          
      }  

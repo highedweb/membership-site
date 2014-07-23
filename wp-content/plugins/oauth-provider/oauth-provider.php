@@ -98,6 +98,9 @@ function hewebmembershipinfo_oauth($request, $userid, $username) {
 		);
 	}
 	
+	// sync the role using the method exposed by the civi_member_sync plugin
+	civi_member_sync_check($user);
+	
 	$role = '';
 	$roles = wpse_58916_user_roles_by_id($user->id);
 	if (in_array('ProfessionalMember', $roles)) {
