@@ -3,7 +3,7 @@
   Plugin Name: HighEdWeb S3 Utilities
   URI: http://woodwardjd.com
   Description: A collection of WordPress helpers (like shortcodes) for dealing with S3
-  Version: 0.1
+  Version: 0.2
   Author: Jason Woodward 
   Author URI: http://woodwardjd.com 
   License: GPL2
@@ -20,6 +20,7 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
     public function __construct() { 
 			add_action( 'admin_init', array(&$this, 'admin_init' ) );
       add_shortcode( 's3-sign', array(&$this, 's3_sign'));
+      add_shortcode( 'heweb-video-embed', array(&$this, 'heweb_video_embed'));
     }
     
     public static function activate() { }
@@ -154,7 +155,31 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
       $keypairid = isset($attrs['keypairid']) ? $attrs['keypairid'] : $options['keypairid'];
       return $this->getUrl( $attrs['src'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid );
     }
-
+    
+    public function heweb_video_embed($attrs, $content = "") {
+      // expires: number of minutes URL expires in
+      // keypair id: from cloudfront / s3 signing.
+      // style: text to embed in the style attribute of the video element
+      // webm-url: link to WebM version of video
+      // mp4-url: link to mp4 version of video
+      // transcript-url: link to transcript of video
+      // poster-url: link to the video poster image
+      $options = $this->_get_options();
+      $minutes = isset($attrs['expires']) ? $attrs['expires'] : $options['expires'];
+      $keypairid = isset($attrs['keypairid']) ? $attrs['keypairid'] : $options['keypairid'];
+      $webm_url = isset($attrs['webm_url']) ? $this->getUrl( $attrs['webm_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      $mp4_url = isset($attrs['mp4_url']) ? $this->getUrl( $attrs['mp4_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      $transcript_url = isset($attrs['transcript_url']) ? $this->getUrl( $attrs['transcript_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      $poster_url = isset($attrs['poster_url']) ? $this->getUrl( $attrs['poster_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      ob_start(); ?>
+<video controls style="<?php echo $attrs['style'] ?>" <?php if (!is_null($poster_url)) { ?>poster="<?php echo $poster_url ?>"<?php } ?> >
+  <?php if (!is_null($webm_url)) { ?><source src="<?php echo $webm_url ?>" type="video/webm" /><?php } ?>
+  <?php if (!is_null($mp4_url)) { ?><source src="<?php echo $mp4_url ?>" type="video/mp4" /><?php } ?>
+  <?php if (!is_null($transcript_url)) { ?><track src="<?php echo $transcript_url ?>" label="English Captions" kind="subtitles" srclang="en-us" default /><?php } ?>
+  Your browser does not support the <code>video</code> element. Please try a different browser.
+</video>      
+      <?php return ob_get_clean();
+    }
   }
 }
 
