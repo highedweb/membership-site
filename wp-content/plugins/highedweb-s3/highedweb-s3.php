@@ -21,6 +21,7 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
 			add_action( 'admin_init', array(&$this, 'admin_init' ) );
       add_shortcode( 's3-sign', array(&$this, 's3_sign'));
       add_shortcode( 'heweb-video-embed', array(&$this, 'heweb_video_embed'));
+      add_shortcode( 'heweb-audio-embed', array(&$this, 'heweb_audio_embed'));
     }
     
     public static function activate() { }
@@ -178,6 +179,29 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
   <?php if (!is_null($transcript_url)) { ?><track src="<?php echo $transcript_url ?>" label="English Captions" kind="subtitles" srclang="en-us" default /><?php } ?>
   Your browser does not support the <code>video</code> element. Please try a different browser.
 </video>      
+      <?php return ob_get_clean();
+    }
+    public function heweb_audio_embed($attrs, $content = "") {
+      // expires: number of minutes URL expires in
+      // keypair id: from cloudfront / s3 signing.
+      // style: text to embed in the style attribute of the video element
+      // audio_url: link to audio file
+      // transcript_vtt_url: link to transcript of audio in vtt format
+      // transcript_txt_url: link to transcript of audio in text format
+      $options = $this->_get_options();
+      $minutes = isset($attrs['expires']) ? $attrs['expires'] : $options['expires'];
+      $keypairid = isset($attrs['keypairid']) ? $attrs['keypairid'] : $options['keypairid'];
+      $audio_url = isset($attrs['audio_url']) ? $this->getUrl( $attrs['audio_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      $transcript_vtt_url = isset($attrs['transcript_vtt_url']) ? $this->getUrl( $attrs['transcript_vtt_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      $transcript_txt_url = isset($attrs['transcript_txt_url']) ? $this->getUrl( $attrs['transcript_txt_url'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid ) : null;
+      ob_start(); ?>
+<audio controls style="<?php echo $attrs['style'] ?>" <?php if (!is_null($audio_url)) { ?>src="<?php echo $audio_url ?>"<?php } ?> >
+  <?php if (!is_null($transcript_vtt_url)) { ?><track src="<?php echo $transcript_vtt_url ?>" label="English Captions" kind="captions" srclang="en-us" default /><?php } ?>
+  Your browser does not support the <code>audio</code> element. Please try a different browser.
+</audio>
+<?php if (!is_null($transcript_txt_url)) { ?>
+<a href="<?php echo $transcript_txt_url ?>">Text Transcript</a>
+<?php } ?>
       <?php return ob_get_clean();
     }
   }
