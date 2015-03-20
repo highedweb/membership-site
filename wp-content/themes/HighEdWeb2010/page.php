@@ -18,6 +18,7 @@ get_header(); ?>
 				 * called loop-page.php and that will be used instead.
 				 */
 				get_template_part( 'loop', 'page' );
+				echo get_the_tag_list('<p>Tags: ',', ','</p>');
 				?>
 
 				</div><!-- #content -->
