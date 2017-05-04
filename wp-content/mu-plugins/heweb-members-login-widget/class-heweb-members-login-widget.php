@@ -2,7 +2,7 @@
 class HEWeb_Members_Login_Widget extends Members_Widget_Login {
 	function __construct() {
 		unregister_widget( 'Members_Widget_Login' );
-		parent::Members_Widget_Login();
+		parent::__construct();
 	}
 	
 	/**
