@@ -1,0 +1,15 @@
+civicrm.settings.php
+settings.php
+wp-config.php
+files
+civicrm-extend
+plugins/civicrm
+plugins/wordfence
+themes/twentyfifteen
+themes/twentyfourteen
+uploads
+_wpeprivate
+wflogs
+heweb-cf.pem
+themes/*/cache
+plugins/*/cache
