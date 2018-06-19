@@ -5,11 +5,9 @@ files
 civicrm-extend
 plugins/civicrm
 plugins/wordfence
+plugins/user-last-login
 themes/twentyfifteen
 themes/twentyfourteen
 uploads
-_wpeprivate
-wflogs
-heweb-cf.pem
 themes/*/cache
 plugins/*/cache
