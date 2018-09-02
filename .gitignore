@@ -6,7 +6,6 @@ civicrm-extend
 plugins/civicrm
 plugins/wordfence
 plugins/user-last-login
-themes/twentyfifteen
 themes/twentyfourteen
 uploads
 themes/*/cache
