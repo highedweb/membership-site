@@ -3,7 +3,7 @@
 Plugin Name: CiviEvent Widget
 Plugin URI: http://www.aghstrategies.com/civievent-widget
 Description: The CiviEvent Widget plugin displays public CiviCRM events in a widget.
-Version: 3.1
+Version: 3.2
 Author: AGH Strategies, LLC
 Author URI: http://aghstrategies.com/
 */
@@ -56,6 +56,7 @@ add_action( 'widgets_init', function() {
  *                    	'custom' - use custom_display and custom_filter
  *                    - custom_display string JSON of custom display options (see documentation).
  *                    - custom_filter string JSON of custom filter options (see documentation).
+ *                    - event_type_id int filter the event listing to a single event type
  *                    All booleans default to false; any value makes them true.
  *
  * @return string The widget to drop into the post body.
@@ -135,6 +136,7 @@ class civievent_Widget extends WP_Widget {
 		'divider' => ', ',
 		'custom_display' => '',
 		'custom_filter' => '',
+		'event_type_id' => '',
 	);
 
 	/**
@@ -293,8 +295,7 @@ class civievent_Widget extends WP_Widget {
 						$content = '';
 					}
 				} catch (CiviCRM_API3_Exception $e) {
-					// TODO: log the error.
-					$error = $e->getMessage();
+					CRM_Core_Error::debug_log_message( $e->getMessage() );
 				}
 			}
 		} else {
@@ -303,7 +304,9 @@ class civievent_Widget extends WP_Widget {
 
 		if ( $standardDisplay ) {
 			// Outputs the content of the widget.
-			$cal = CRM_Event_BAO_Event::getCompleteInfo();
+			// apply event type filter on standard output.
+			$event_type_id = empty( $instance['event_type_id'] ) ? null : intval( $instance['event_type_id'] );
+			$cal = CRM_Event_BAO_Event::getCompleteInfo( null, $event_type_id );
 			$index = 0;
 			$content = '<div class="civievent-widget-list">';
 			foreach ( $cal as $event ) {
@@ -362,6 +365,58 @@ class civievent_Widget extends WP_Widget {
 			$content = "$wTitle<div class=\"$classes\">$content</div>";
 			echo $args['before_widget'] . $content . $args['after_widget'];
 		}
+	}
+
+	/**
+	 * Format a select list of event types
+	 *
+	 * @param string $field_name
+	 *   The name for the event type field.
+	 * @param string $field_id
+	 *   The ID of the event type field.
+	 * @param string $event_type_id
+	 *   The event type currently in the instance
+	 * @return string
+	 *   A formatted `<select>` element with all the options.
+	 */
+	protected static function event_type_select( $field_name, $field_id, $event_type_id ) {
+		if ( empty( $event_type_id ) ) {
+			$event_type_id = 0;
+		}
+
+		// Always show the "Any" option
+		$options = array(
+			0 => __( 'Any', 'civievent-widget' ),
+		);
+
+		// Look up event types
+		try {
+			$event_types = civicrm_api3( 'Event', 'getoptions', array(
+				'field' => 'event_type_id',
+				'context' => 'search',
+			));
+			if ( ! empty( $event_types['values'] ) ) {
+				$options += $event_types['values'];
+			}
+		} catch ( CiviCRM_API3_Exception $e ) {
+			CRM_Core_Error::debug_log_message( $e->getMessage() );
+		}
+
+		// Render options from array of values
+		$rendered_options = '';
+		foreach ( $options as $id => $label ) {
+			$selected = selected( $event_type_id, $id, false );
+			$rendered_options .= <<<HEREDOC
+			<option value="$id" $selected>$label</option>
+HEREDOC;
+		}
+
+		// Return a formatted `<select>` element
+		return <<<HEREDOC
+		<select name="$field_name" id="$field_id">
+$rendered_options
+		</select>
+HEREDOC;
 	}
 
 	/**
@@ -437,6 +492,10 @@ class civievent_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'admin_type' ); ?>-simple" class="civievent-widget-admin-type-label">Simple</label>
 			<label for="<?php echo $this->get_field_id( 'admin_type' ); ?>-custom" class="civievent-widget-admin-type-label">Custom</label>
 			<div class="civievent-widget-admin-simple">
+				<p>
+				<label for="<?php echo $this->get_field_id( 'event_type_id' ); ?>"><?php _e( 'Event type:', 'civievent-widget' ); ?></label>
+					<?php echo self::event_type_select( $this->get_field_name( 'event_type_id' ), $this->get_field_id( 'event_type_id' ), $event_type_id ); ?>
+				</p>
 				<p><input type="checkbox" <?php checked( $city ); ?> name="<?php echo $this->get_field_name( 'city' ); ?>" id="<?php echo $this->get_field_id( 'city' ); ?>" class="checkbox">
 				<label for="<?php echo $this->get_field_id( 'city' ); ?>"><?php _e( 'Display city?', 'civievent-widget' ); ?></label>
 				</p>
@@ -498,6 +557,7 @@ class civievent_Widget extends WP_Widget {
 		$instance['limit'] = ( ! empty( $new_instance['limit'] ) ) ? intval( strip_tags( $new_instance['limit'] ) ) : 5;
 		$instance['admin_type'] = ( 'custom' == $new_instance['admin_type'] ) ? 'custom' : 'simple';
 		$instance['summary'] = isset( $new_instance['summary'] ) ? (bool) $new_instance['summary'] : false;
+		$instance['event_type_id'] = ( 0 === $new_instance['event_type_id'] ) ? null : $new_instance['event_type_id'];
 		$instance['city'] = isset( $new_instance['city'] ) ? (bool) $new_instance['city'] : false;
 		$instance['state'] = ( 'none' === $new_instance['state'] ) ? null : $new_instance['state'];
 		$instance['country'] = isset( $new_instance['country'] ) ? (bool) $new_instance['country'] : false;
@@ -519,34 +579,53 @@ class civievent_Widget extends WP_Widget {
 	 * @param boolean $country Return country.
 	 */
 	public static function locationInfo( $eventId, $city = true, $state = null, $country = false ) {
-		$result = civicrm_api('Event', 'getsingle', array(
-			'version' => 3,
-			'id' => $eventId,
-			'is_show_location' => 1,
-			'return' => 'loc_block_id',
-			'api.LocBlock.getsingle' => array(
-				'id' => '$value.loc_block_id',
-				'api.Address.getsingle' => array( 'id' => '$value.address_id' ),
-			),
-		));
-
-		if ( ! empty( $result['is_error'] ) ) {
-			return array();
-		}
-
 		$return = array();
-		$loc = CRM_Utils_Array::value( 'api.Address.getsingle', CRM_Utils_Array::value( 'api.LocBlock.getsingle', $result, array() ), array() );
-		if ( $city ) {
-			$return['city'] = CRM_Utils_Array::value( 'city', $loc );
+
+		// Get the API names for each field we're potentially showing
+		$field_map = array(
+			'city' => 'city',
+			'state' => ( 'abbreviate' === $state ) ? 'state_province_id.abbreviation' : 'state_province_id.name',
+			'country' => 'country_id.name',
+		);
+
+		// Ignore the fields we don't need
+		foreach ( $field_map as $disp_field => $api_field ) {
+			if ( ! $$disp_field ) {
+				unset( $field_map[ $disp_field ] );
+			}
 		}
-		if ( $state ) {
-			$abbreviate = ( 'abbreviate' === $state ) ? 'abbreviate' : null;
-			$states = CRM_Core_BAO_Address::buildOptions( 'state_province_id', $abbreviate, array( 'country_id' => CRM_Utils_Array::value( 'country_id', $loc ) ) );
-			$return['state'] = CRM_Utils_Array::value( CRM_Utils_Array::value( 'state_province_id', $loc ), $states );
+
+		try {
+			$loc_block_id = civicrm_api3('Event', 'getvalue', array(
+				'return' => 'loc_block_id',
+				'id' => $eventId,
+				'is_show_location' => 1,
+			));
+
+			if ( empty( $loc_block_id ) ) {
+				return $return;
+			}
+
+			$address_id = civicrm_api3( 'LocBlock', 'getvalue', array(
+				'return' => 'address_id',
+				'id' => $loc_block_id,
+			));
+
+			if ( empty( $address_id ) ) {
+				return $return;
+			}
+
+			$loc = civicrm_api3( 'Address', 'getsingle', array(
+				'id' => $address_id,
+				'return' => array_values( $field_map ),
+			));
+
+		} catch (CiviCRM_API3_Exception $e) {
+			return $return;
 		}
-		if ( $country ) {
-			$countries = CRM_Core_BAO_Address::buildOptions( 'country_id', 'get' );
-			$return['country'] = CRM_Utils_Array::value( CRM_Utils_Array::value( 'country_id', $loc ), $countries );
+
+		foreach ( $field_map as $disp_field => $api_field ) {
+			$return[ $disp_field ] = $loc[ $api_field ];
 		}
 		return $return;
 	}
@@ -644,8 +723,7 @@ class civievent_Widget extends WP_Widget {
 					}
 				}
 			} catch (CiviCRM_API3_Exception $e) {
-				// TODO: log the error.
-				$error = $e->getMessage();
+				CRM_Core_Error::debug_log_message( $e->getMessage() );
 			}
 			$return = array_merge( $return, self::getCustomDisplayTitles() );
 			asort( $return );
