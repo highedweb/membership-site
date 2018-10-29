@@ -18,7 +18,7 @@ var itsecSettingsPage = {
 	},
 
 	initFilters: function() {
-		var module_type = this.getUrlParameter( 'module_type' );
+		var module_type = itsecUtil.getUrlParameter( 'module_type' );
 		if ( false === module_type || 0 === jQuery( '#itsec-module-filter-' + module_type.replace( /[^\w-]/g, '' ) ).length ) {
 			module_type = 'recommended';
 		}
@@ -27,7 +27,7 @@ var itsecSettingsPage = {
 
 	initCurrentModule: function() {
 
-		var module = this.getUrlParameter( 'module' );
+		var module = itsecUtil.getUrlParameter( 'module' );
 		if ( 'string' === typeof module ) {
 			jQuery( '#itsec-module-card-' + module.replace( /[^\w-]/g, '' ) + ' button.itsec-toggle-settings' ).trigger( 'click' );
 		}
@@ -213,7 +213,7 @@ var itsecSettingsPage = {
 			'--itsec-form-serialized-data': jQuery( '#itsec-module-settings-form' ).serialize()
 		};
 
-		itsecSettingsPage.sendAJAXRequest( module, 'save', data, itsecSettingsPage.saveSettingsCallback );
+		itsecUtil.sendAJAXRequest( module, 'save', data, itsecSettingsPage.saveSettingsCallback );
 	},
 
 	saveSettingsCallback: function( results ) {
@@ -381,7 +381,7 @@ var itsecSettingsPage = {
 		// We use this to avoid pushing a new state when we're trying to handle a popstate
 		if ( 'itsec-popstate' !== e.type ) {
 			var url = '?page=itsec&module_type=' + type;
-			var module = itsecSettingsPage.getUrlParameter( 'module' );
+			var module = itsecUtil.getUrlParameter( 'module' );
 			if ( 'string' === typeof module ) {
 				url += '&module=' + module;
 			}
@@ -486,7 +486,7 @@ var itsecSettingsPage = {
 		if ( 'itsec-popstate' !== e.type ) {
 			var module_id = jQuery(this).closest('.itsec-module-card').data( 'module-id' );
 
-			var module_type = itsecSettingsPage.getUrlParameter( 'module_type' );
+			var module_type = itsecUtil.getUrlParameter( 'module_type' );
 			if ( false === module_type || 0 === jQuery( '#itsec-module-filter-' + module_type.replace( /[^\w-]/g, '' ) ).length ) {
 				module_type = 'recommended';
 			}
@@ -516,13 +516,13 @@ var itsecSettingsPage = {
 						offset: { top: -30 },
 						onAfter: function() {
 							var $el = jQuery( 'input[type!="button"], textarea, select', $highlighted ).not( ':hidden' ).first();
-							itsecSettingsPage.focus( $el, $highlighted );
+							itsecUtil.focus( $el, $highlighted );
 						}
 					} );
 				}, 50 );
 			} else {
 				var $el = jQuery( 'input[type!="button"], textarea, select', $settings ).not( ':hidden' ).first();
-				itsecSettingsPage.focus( $el, $settings );
+				itsecUtil.focus( $el, $settings );
 			}
 		}
 
@@ -572,32 +572,13 @@ var itsecSettingsPage = {
 				offset: { top: -20 },
 				onAfter: function() {
 					var $el = jQuery( 'input[type!="button"], textarea, select', $highlighted ).not( ':hidden' ).first();
-					itsecSettingsPage.focus( $el, $highlighted );
+					itsecUtil.focus( $el, $highlighted );
 				}
 			} );
 		} else {
 			var $el = jQuery( 'input[type!="button"], textarea, select', $settingsContainer ).not( ':hidden' ).first();
-			itsecSettingsPage.focus( $el, $settingsContainer );
+			itsecUtil.focus( $el, $settingsContainer );
 		}
-	},
-
-	focus: function( $el, $fallback ) {
-		if ( itsecSettingsPage.isElementVisible( $el ) && jQuery( window ).height() > 800 ) {
-			$el.focus();
-		} else {
-			$fallback.prop( 'tabindex', -1 ).focus();
-		}
-	},
-
-	isElementVisible: function( $el ) {
-
-		var $window = jQuery( window ), height = $window.height(), width = $window.width(), offset = $el.offset();
-
-		if ( ! $el || ! offset ) {
-			return false;
-		}
-
-		return offset.top < height && offset.left < width;
 	},
 
 	closeGridSettingsModal: function( e ) {
@@ -615,7 +596,7 @@ var itsecSettingsPage = {
 		jQuery( 'body' ).removeClass( 'itsec-modal-open' );
 
 		if ( 'undefined' === typeof e || 'popstate' !== e.type ) {
-			var module_type = itsecSettingsPage.getUrlParameter( 'module_type' );
+			var module_type = itsecUtil.getUrlParameter( 'module_type' );
 			if ( false === module_type || 0 === jQuery( '#itsec-module-filter-' + module_type.replace( /[^\w-]/g, '' ) ).length ) {
 				module_type = 'recommended';
 			}
@@ -644,7 +625,7 @@ var itsecSettingsPage = {
 			var method = 'deactivate';
 		}
 
-		itsecSettingsPage.sendAJAXRequest( module, method, {}, itsecSettingsPage.toggleModuleActivationCallback );
+		itsecUtil.sendAJAXRequest( module, method, {}, itsecSettingsPage.toggleModuleActivationCallback );
 	},
 
 	setModuleToActive: function( module ) {
@@ -733,7 +714,7 @@ var itsecSettingsPage = {
 			'method': 'is_active'
 		};
 
-		itsecSettingsPage.sendAJAXRequest( module, 'is_active', {}, itsecSettingsPage.isModuleActiveCallback );
+		itsecUtil.sendAJAXRequest( module, 'is_active', {}, itsecSettingsPage.isModuleActiveCallback );
 	},
 
 	isModuleActiveCallback: function( results ) {
@@ -758,7 +739,7 @@ var itsecSettingsPage = {
 		var method = 'get_refreshed_module_settings';
 		var data = {};
 
-		itsecSettingsPage.sendAJAXRequest( module, method, data, function( results ) {
+		itsecUtil.sendAJAXRequest( module, method, data, function( results ) {
 			if ( results.success && results.response ) {
 				var $card = jQuery( '#itsec-module-card-' + module );
 				var isHidden = $card.is( ':hidden' );
@@ -783,7 +764,7 @@ var itsecSettingsPage = {
 	},
 
 	reloadAllModules: function( _, initialResponse) {
-		itsecSettingsPage.sendAJAXRequest( '#', 'get_refreshed_module_form', null, function ( response ) {
+		itsecUtil.sendAJAXRequest( '#', 'get_refreshed_module_form', null, function ( response ) {
 
 			if ( ! response.success || response.errors.length ) {
 				return;
@@ -832,7 +813,7 @@ var itsecSettingsPage = {
 		var method = 'get_refreshed_widget_settings';
 		var data = {};
 
-		itsecSettingsPage.sendAJAXRequest( module, method, data, function( results ) {
+		itsecUtil.sendAJAXRequest( module, method, data, function( results ) {
 			if ( results.success && results.response ) {
 				jQuery( '#itsec-sidebar-widget-' + module + ' .inside' ).html( results.response );
 			} else {
@@ -840,143 +821,6 @@ var itsecSettingsPage = {
 				itsecSettingsPage.showErrors( results.warnings, results.module, 'closed', 'warning' );
 			}
 		} );
-	},
-
-	sendAJAXRequest: function( module, method, data, callback ) {
-		var postData = {
-			'action': itsec_page.ajax_action,
-			'nonce':  itsec_page.ajax_nonce,
-			'module': module,
-			'method': method,
-			'data':   data,
-		};
-
-		jQuery.post( ajaxurl, postData )
-			.always(function( a, status, b ) {
-				itsecSettingsPage.processAjaxResponse( a, status, b, module, method, data, callback );
-			});
-	},
-
-	processAjaxResponse: function( a, status, b, module, method, data, callback ) {
-		var results = {
-			'module':        module,
-			'method':        method,
-			'data':          data,
-			'status':        status,
-			'jqxhr':         null,
-			'success':       false,
-			'response':      null,
-			'errors':        [],
-			'warnings':      [],
-			'messages':      [],
-			'infos':		 [],
-			'functionCalls': [],
-			'redirect':      false,
-			'closeModal':    true
-		};
-
-
-		if ( 'ITSEC_Response' === a.source && 'undefined' !== a.response ) {
-			// Successful response with a valid format.
-			results.jqxhr = b;
-			results.success = a.success;
-			results.response = a.response;
-			results.errors = a.errors;
-			results.warnings = a.warnings;
-			results.messages = a.messages;
-			results.infos = a.infos;
-			results.functionCalls = a.functionCalls;
-			results.redirect = a.redirect;
-			results.closeModal = a.closeModal;
-		} else if ( a.responseText ) {
-			// Failed response.
-			results.jqxhr = a;
-			var errorThrown = b;
-
-			if ( 'undefined' === typeof results.jqxhr.status ) {
-				results.jqxhr.status = -1;
-			}
-
-			if ( 'timeout' === status ) {
-				var error = itsec_page.translations.ajax_timeout;
-			} else if ( 'parsererror' === status ) {
-				var error = itsec_page.translations.ajax_parsererror;
-			} else if ( 403 == results.jqxhr.status ) {
-				var error = itsec_page.translations.ajax_forbidden;
-			} else if ( 404 == results.jqxhr.status ) {
-				var error = itsec_page.translations.ajax_not_found;
-			} else if ( 500 == results.jqxhr.status ) {
-				var error = itsec_page.translations.ajax_server_error;
-			} else {
-				var error = itsec_page.translations.ajax_unknown;
-			}
-
-			error = error.replace( '%1$s', status );
-			error = error.replace( '%2$s', errorThrown );
-
-			results.errors = [ error ];
-		} else {
-			// Successful response with an invalid format.
-			results.jqxhr = b;
-
-			results.response = a;
-			results.errors = [ itsec_page.translations.ajax_invalid ];
-		}
-
-
-		if ( results.redirect ) {
-			window.location = results.redirect;
-		}
-
-
-		if ( 'function' === typeof callback ) {
-			callback( results );
-		} else if ( 'function' === typeof console.log ) {
-			console.log( 'ERROR: Unable to handle settings AJAX request due to an invalid callback:', callback, {'data': postData, 'results': results} );
-		}
-
-
-		if ( results.functionCalls ) {
-			for ( var i = 0; i < results.functionCalls.length; i++ ) {
-				if ( 'object' === typeof results.functionCalls[i] && 'string' === typeof results.functionCalls[i][0] && 'function' === typeof itsecSettingsPage[results.functionCalls[i][0]] ) {
-					itsecSettingsPage[results.functionCalls[i][0]]( results.functionCalls[i][1], results );
-				} else if ( 'string' === typeof results.functionCalls[i] && 'function' === typeof window[results.functionCalls[i]] ) {
-					window[results.functionCalls[i]]();
-				} else if ( 'object' === typeof results.functionCalls[i] && 'string' === typeof results.functionCalls[i][0] && 'function' === typeof window[results.functionCalls[i][0]] ) {
-					window[results.functionCalls[i][0]]( results.functionCalls[i][1] );
-				} else if ( 'function' === typeof console.log ) {
-					console.log( 'ERROR: Unable to call missing function:', results.functionCalls[i] );
-				}
-			}
-		}
-	},
-
-	sendModuleAJAXRequest: function( module, data, callback ) {
-		itsecSettingsPage.sendAJAXRequest( module, 'handle_module_request', data, callback );
-	},
-
-	sendWidgetAJAXRequest: function( widget, data, callback ) {
-		itsecSettingsPage.sendAJAXRequest( widget, 'handle_widget_request', data, callback );
-	},
-
-	getUrlParameter: function( name ) {
-		var pageURL = decodeURIComponent( window.location.search.substring( 1 ) ),
-			URLParameters = pageURL.split( '&' ),
-			parameterName,
-			i;
-
-		// Loop through all parameters
-		for ( i = 0; i < URLParameters.length; i++ ) {
-			parameterName = URLParameters[i].split( '=' );
-
-			// If this is the parameter we're looking for
-			if ( parameterName[0] === name ) {
-				// Return the value or true if there is no value
-				return parameterName[1] === undefined ? true : parameterName[1];
-			}
-		}
-		// If the requested parameter doesn't exist, return false
-		return false;
 	},
 
 	// Make notices dismissible
