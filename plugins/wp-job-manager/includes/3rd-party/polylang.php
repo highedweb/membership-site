@@ -1,6 +1,8 @@
 <?php
 /**
  * Only load these if Polylang plugin is installed and active.
+ *
+ * @package wp-job-manager
  */
 
 /**
@@ -41,8 +43,8 @@ function polylang_wpjm_query_language( $query_args ) {
  */
 function polylang_wpjm_get_job_listings_lang( $lang ) {
 	if ( function_exists( 'pll_current_language' )
-	     && function_exists( 'pll_is_translated_post_type' )
-	     && pll_is_translated_post_type( 'job_listing' ) ) {
+		 && function_exists( 'pll_is_translated_post_type' )
+		 && pll_is_translated_post_type( 'job_listing' ) ) {
 		return pll_current_language();
 	}
 	return $lang;
