@@ -326,7 +326,6 @@ function monsterinsights_remove_conflicting_asset_files() {
 		'c2c_BlogTime', //  Fix for Blog Time plugin
 		'material-wp', // Fix for MaterialWP plugin
 		'wp-color-picker-alpha', // Fix for MaterialWP plugin
-		'grandtour-theme-script', // Grandtour Theme
 		'swifty-img-widget-admin-script', // Fix for Swifty Image Widget.
 	);
 

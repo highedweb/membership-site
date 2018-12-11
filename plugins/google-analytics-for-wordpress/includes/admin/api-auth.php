@@ -1,6 +1,6 @@
 <?php
 /**
- * Google Client admin class.
+ * Google Client admin class.  
  *
  * Handles retrieving whether a particular notice has been dismissed or not,
  * as well as marking a notice as dismissed.
@@ -37,7 +37,7 @@ final class MonsterInsights_API_Auth {
 		add_action( 'admin_init',          							 array( $this, 'reauthenticate_listener' ) );
 
 		add_action( 'wp_ajax_nopriv_monsterinsights_is_installed',    array( $this, 'is_installed' ) );
-		add_action( 'wp_ajax_nopriv_monsterinsights_rauthenticate',   array( $this, 'rauthenticate' ) );
+		add_action( 'wp_ajax_nopriv_monsterinsights_rauthenticate',   array( $this, 'authenticate' ) );
 	}
 
 	public function get_tt(){
@@ -122,7 +122,7 @@ final class MonsterInsights_API_Auth {
 		wp_send_json_success( array( 'redirect' => $siteurl ) );
 	}
 
-	public function rauthenticate() {
+	public function authenticate() {
 		// Check for missing params
 		$reqd_args = array( 'key', 'token', 'ua', 'miview', 'a', 'w', 'p', 'tt', 'network' );
 		foreach ( $reqd_args as $arg ) {
@@ -149,7 +149,59 @@ final class MonsterInsights_API_Auth {
 			);
 		}
 
-		// If the tt is validated, send a success response to trigger the regular auth process.
+		// Invalid UA code
+		$ua = monsterinsights_is_valid_ua( $_REQUEST['ua'] );
+		if ( empty( $ua ) ) {
+			wp_send_json_error(
+				array(
+					'error'   => 'authenticate_invalid_ua',
+					'message' => 'Invalid UA code sent',
+					'version'   => MONSTERINSIGHTS_VERSION,
+					'pro'   	=> monsterinsights_is_pro_version(),
+				)
+			);
+		}
+
+		$profile = array( 
+			'key'      => sanitize_text_field( $_REQUEST['key'] ),
+			'token'    => sanitize_text_field( $_REQUEST['token'] ),
+			'ua'       => monsterinsights_is_valid_ua( $_REQUEST['ua'] ),
+			'viewname' => sanitize_text_field( $_REQUEST['miview'] ),
+			'a'        => sanitize_text_field( $_REQUEST['a'] ),
+			'w'        => sanitize_text_field( $_REQUEST['w'] ),
+			'p'        => sanitize_text_field( $_REQUEST['p'] ),
+			'siteurl'  => site_url(),
+			'neturl'   => network_admin_url(),
+		);
+
+		$worked = $this->verify_auth( $profile );
+		if ( ! $worked || is_wp_error( $worked ) ) {
+			wp_send_json_error(
+				array(
+					'error'     => 'authenticate_auth_verification_failed',
+					'message'   => 'Authenticate verification failed',
+					'version'   => MONSTERINSIGHTS_VERSION,
+					'pro'   	=> monsterinsights_is_pro_version(),
+					'payload'   => is_wp_error( $worked ) ? $worked->get_error_messages() : false,
+				)
+			);
+		}
+
+		// Rotate tt
+		$this->rotate_tt();
+
+		// Save Profile
+		$is_network = $_REQUEST['network'] === 'network';
+		if ( $is_network ) {
+			MonsterInsights()->auth->set_network_analytics_profile( $profile );
+		} else {
+			MonsterInsights()->auth->set_analytics_profile( $profile );
+		}
+
+		// Clear cache
+		$where = $is_network ? 'network' : 'site';
+		MonsterInsights()->reporting->delete_aggregate_data( $where );
+
 		wp_send_json_success();
 	}
 
@@ -187,7 +239,7 @@ final class MonsterInsights_API_Auth {
 			return;
 		}
 
-		$profile = array(
+		$profile = array( 
 			'key'      => sanitize_text_field( $_REQUEST['key'] ),
 			'token'    => sanitize_text_field( $_REQUEST['token'] ),
 			'ua'       => monsterinsights_is_valid_ua( $_REQUEST['ua'] ),
@@ -294,7 +346,7 @@ final class MonsterInsights_API_Auth {
 			 empty( $_REQUEST['miview'] )   ||
 			 empty( $_REQUEST['a'] )        ||
 			 empty( $_REQUEST['w'] )        ||
-			 empty( $_REQUEST['p'] )
+			 empty( $_REQUEST['p'] )       
 		) {
 			return;
 		}
@@ -386,7 +438,7 @@ final class MonsterInsights_API_Auth {
 		$network = ! empty( $_REQUEST['network'] ) ? $_REQUEST['network'] === 'network' : $this->is_network_admin();
 		$api   = new MonsterInsights_API_Request( $this->get_route( 'auth/verify/{type}/' ), array( 'network' => $network, 'tt' => $this->get_tt(), 'key' => $creds['key'], 'token' => $creds['token'] ) );
 		$ret   = $api->request();
-
+		
 		if ( is_wp_error( $ret ) ) {
 			return $ret;
 		} else {
