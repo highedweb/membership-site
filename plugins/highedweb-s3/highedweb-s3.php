@@ -3,8 +3,8 @@
   Plugin Name: HighEdWeb S3 Utilities
   URI: http://woodwardjd.com
   Description: A collection of WordPress helpers (like shortcodes) for dealing with S3
-  Version: 0.2
-  Author: Jason Woodward 
+  Version: 0.3
+  Author: Jason Woodward
   Author URI: http://woodwardjd.com 
   License: GPL2
 */
@@ -20,6 +20,7 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
     public function __construct() { 
 			add_action( 'admin_init', array(&$this, 'admin_init' ) );
       add_shortcode( 's3-sign', array(&$this, 's3_sign'));
+	  add_shortcode( 'heweb-link', array(&$this, 'heweb_link'));
       add_shortcode( 'heweb-video-embed', array(&$this, 'heweb_video_embed'));
       add_shortcode( 'heweb-audio-embed', array(&$this, 'heweb_audio_embed'));
     }
@@ -155,6 +156,21 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
       $minutes = isset($attrs['expires']) ? $attrs['expires'] : $options['expires'];
       $keypairid = isset($attrs['keypairid']) ? $attrs['keypairid'] : $options['keypairid'];
       return $this->getUrl( $attrs['src'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid );
+    }
+	
+    public function heweb_link($attrs, $content = '') {
+      // src: resource source url
+	  // link_text: text within the a tag
+      // expires: number of minutes URL expires in
+      // keypair id: from cloudfront / s3 signing.
+      $options = $this->_get_options();
+      $minutes = isset($attrs['expires']) ? $attrs['expires'] : $options['expires'];
+      $keypairid = isset($attrs['keypairid']) ? $attrs['keypairid'] : $options['keypairid'];
+	  $src = $this->getUrl( $attrs['src'], strtotime( "+" . intval( $minutes ) . " minutes" ), $keypairid );
+	  $link_text = isset($attrs['link_text']) ? $attrs['link_text'] : "link";
+	  ob_start(); ?>
+	  <a href="<?php echo $src ?>"><?php echo $link_text ?></a>
+	  <?php return ob_get_clean();
     }
     
     public function heweb_video_embed($attrs, $content = "") {
