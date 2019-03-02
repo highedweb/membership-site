@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -204,6 +204,14 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
   protected $statusMessageTitle;
 
   /**
+   * @var int
+   *
+   * Max row count for soft credits. The value here is +1 the actual number of
+   * rows displayed.
+   */
+  public $_softCreditItemCount = 11;
+
+  /**
    * Explicitly declare the form context.
    */
   public function getDefaultContext() {
@@ -237,10 +245,12 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
     // Get the contribution id if update
     $this->_id = CRM_Utils_Request::retrieve('id', 'Positive', $this);
     if (!empty($this->_id)) {
+      $this->assignPaymentInfoBlock();
       $this->assign('contribID', $this->_id);
+      $this->assign('isUsePaymentBlock', TRUE);
     }
 
-    $this->_context = CRM_Utils_Request::retrieve('context', 'String', $this);
+    $this->_context = CRM_Utils_Request::retrieve('context', 'Alphanumeric', $this);
     $this->assign('context', $this->_context);
 
     $this->_compId = CRM_Utils_Request::retrieve('compId', 'Positive', $this);
@@ -248,7 +258,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
     $this->_compContext = CRM_Utils_Request::retrieve('compContext', 'String', $this);
 
     //set the contribution mode.
-    $this->_mode = CRM_Utils_Request::retrieve('mode', 'String', $this);
+    $this->_mode = CRM_Utils_Request::retrieve('mode', 'Alphanumeric', $this);
 
     $this->assign('contributionMode', $this->_mode);
     if ($this->_action & CRM_Core_Action::DELETE) {
@@ -368,7 +378,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
       }
     }
 
-    $amountFields = array('non_deductible_amount', 'fee_amount', 'net_amount');
+    $amountFields = array('non_deductible_amount', 'fee_amount');
     foreach ($amountFields as $amt) {
       if (isset($defaults[$amt])) {
         $defaults[$amt] = CRM_Utils_Money::format($defaults[$amt], NULL, '%a');
@@ -486,8 +496,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
 
     // build price set form.
     $buildPriceSet = FALSE;
-    $invoiceSettings = Civi::settings()->get('contribution_invoice_settings');
-    $invoicing = CRM_Utils_Array::value('invoicing', $invoiceSettings);
+    $invoicing = CRM_Invoicing_Utils::isInvoicingEnabled();
     $this->assign('invoicing', $invoicing);
 
     $buildRecurBlock = FALSE;
@@ -525,7 +534,6 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
       'invoice_id',
       'non_deductible_amount',
       'fee_amount',
-      'net_amount',
     );
     foreach ($additionalDetailFields as $key) {
       if (!empty($defaults[$key])) {
@@ -627,11 +635,13 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
 
     $paymentInstrument = FALSE;
     if (!$this->_mode) {
+      // payment_instrument isn't required in edit and will not be present when payment block is enabled.
+      $required = $this->_id ? FALSE : TRUE;
       $checkPaymentID = array_search('Check', CRM_Contribute_PseudoConstant::paymentInstrument('name'));
       $paymentInstrument = $this->add('select', 'payment_instrument_id',
         ts('Payment Method'),
         array('' => ts('- select -')) + CRM_Contribute_PseudoConstant::paymentInstrument(),
-        TRUE, array('onChange' => "return showHideByValue('payment_instrument_id','{$checkPaymentID}','checkNumber','table-row','select',false);")
+        $required, array('onChange' => "return showHideByValue('payment_instrument_id','{$checkPaymentID}','checkNumber','table-row','select',false);")
       );
     }
 
@@ -643,6 +653,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
     $this->add('select', 'from_email_address', ts('Receipt From'), $this->_fromEmails);
 
     $component = 'contribution';
+    $componentDetails = [];
     if ($this->_id) {
       $componentDetails = CRM_Contribute_BAO_Contribution::getComponentDetails($this->_id);
       if (CRM_Utils_Array::value('membership', $componentDetails)) {
@@ -688,7 +699,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
     }
 
     // add various dates
-    $this->addField('receive_date', array('entity' => 'contribution'), FALSE, FALSE);
+    $this->addField('receive_date', array('entity' => 'contribution'), !$this->_mode, FALSE);
     $this->addField('receipt_date', array('entity' => 'contribution'), FALSE, FALSE);
     $this->addField('cancel_date', array('entity' => 'contribution', 'label' => ts('Cancelled / Refunded Date')), FALSE, FALSE);
 
@@ -709,7 +720,6 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
       // don't allow price set for contribution if it is related to participant, or if it is a pledge payment
       // and if we already have line items for that participant. CRM-5095
       if ($buildPriceSet && $this->_id) {
-        $componentDetails = CRM_Contribute_BAO_Contribution::getComponentDetails($this->_id);
         $pledgePaymentId = CRM_Core_DAO::getFieldValue('CRM_Pledge_DAO_PledgePayment',
           $this->_id,
           'id',
@@ -808,23 +818,24 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
       )
     );
 
-    // if status is Cancelled freeze Amount, Payment Instrument, Check #, Financial Type,
-    // Net and Fee Amounts are frozen in AdditionalInfo::buildAdditionalDetail
-    if ($this->_id && ($this->_values['contribution_status_id'] == CRM_Core_PseudoConstant::getKey('CRM_Contribute_BAO_Contribution', 'contribution_status_id', 'Cancelled'))) {
-      if ($totalAmount) {
-        $totalAmount->freeze();
-      }
-      $paymentInstrument->freeze();
-      $trxnId->freeze();
-      $financialType->freeze();
-    }
-
     // if contribution is related to membership or participant freeze Financial Type, Amount
-    if ($this->_id && isset($this->_values['tax_amount'])) {
+    if ($this->_id) {
       $componentDetails = CRM_Contribute_BAO_Contribution::getComponentDetails($this->_id);
-      if (CRM_Utils_Array::value('membership', $componentDetails) || CRM_Utils_Array::value('participant', $componentDetails)) {
+      $isCancelledStatus = ($this->_values['contribution_status_id'] == CRM_Core_PseudoConstant::getKey('CRM_Contribute_BAO_Contribution', 'contribution_status_id', 'Cancelled'));
+
+      if (CRM_Utils_Array::value('membership', $componentDetails) ||
+        CRM_Utils_Array::value('participant', $componentDetails) ||
+        // if status is Cancelled freeze Amount, Payment Instrument, Check #, Financial Type,
+        // Net and Fee Amounts are frozen in AdditionalInfo::buildAdditionalDetail
+        $isCancelledStatus
+      ) {
         if ($totalAmount) {
           $totalAmount->freeze();
+          $this->getElement('currency')->freeze();
+        }
+        if ($isCancelledStatus) {
+          $paymentInstrument->freeze();
+          $trxnId->freeze();
         }
         $financialType->freeze();
         $this->assign('freezeFinancialType', TRUE);
@@ -869,13 +880,6 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
     }
 
     $softErrors = CRM_Contribute_Form_SoftCredit::formRule($fields, $errors, $self);
-
-    if (!empty($fields['total_amount']) && (!empty($fields['net_amount']) || !empty($fields['fee_amount']))) {
-      $sum = CRM_Utils_Rule::cleanMoney($fields['net_amount']) + CRM_Utils_Rule::cleanMoney($fields['fee_amount']);
-      if (CRM_Utils_Rule::cleanMoney($fields['total_amount']) != $sum) {
-        $errors['total_amount'] = ts('The sum of fee amount and net amount must be equal to total amount');
-      }
-    }
 
     //CRM-16285 - Function to handle validation errors on form, for recurring contribution field.
     CRM_Contribute_BAO_ContributionRecur::validateRecurContribution($fields, $files, $self, $errors);
@@ -1044,14 +1048,6 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
 
     $now = date('YmdHis');
 
-    // we need to retrieve email address
-    if ($this->_context == 'standalone' && !empty($submittedValues['is_email_receipt'])) {
-      list($this->userDisplayName,
-        $this->userEmail
-        ) = CRM_Contact_BAO_Contact_Location::getEmailDetails($contactID);
-      $this->assign('displayName', $this->userDisplayName);
-    }
-
     $this->_contributorEmail = $this->userEmail;
     $this->_contributorContactID = $contactID;
     $this->processBillingAddress();
@@ -1159,7 +1155,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
       // NOTE - I expect this is obsolete.
       $payment = Civi\Payment\System::singleton()->getByProcessor($this->_paymentProcessor);
       try {
-        $statuses = CRM_Contribute_BAO_Contribution::buildOptions('contribution_status_id');
+        $completeStatusId = CRM_Core_PseudoConstant::getKey('CRM_Contribute_BAO_Contribution', 'contribution_status_id', 'Completed');
         $result = $payment->doPayment($paymentParams, 'contribute');
         $this->assign('trxn_id', $result['trxn_id']);
         $contribution->trxn_id = $result['trxn_id'];
@@ -1173,7 +1169,7 @@ class CRM_Contribute_Form_Contribution extends CRM_Contribute_Form_AbstractEditP
          * as historically we have had to guess from the context - ie doDirectPayment
          * = error or success, unless it is a recurring contribution in which case it is pending.
          */
-        if ($result['payment_status_id'] == array_search('Completed', $statuses)) {
+        if ($result['payment_status_id'] == $completeStatusId) {
           try {
             civicrm_api3('contribution', 'completetransaction', array(
               'id' => $contribution->id,

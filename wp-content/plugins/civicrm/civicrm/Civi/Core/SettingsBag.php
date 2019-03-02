@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -139,7 +139,7 @@ class SettingsBag {
 
     $isUpgradeMode = \CRM_Core_Config::isUpgradeMode();
 
-    if ($isUpgradeMode && empty($this->contactId) && \CRM_Core_DAO::checkFieldExists('civicrm_domain', 'config_backend', FALSE)) {
+    if ($isUpgradeMode && empty($this->contactId) && \CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_domain', 'config_backend', FALSE)) {
       $config_backend = \CRM_Core_DAO::singleValueQuery('SELECT config_backend FROM civicrm_domain WHERE id = %1',
         array(1 => array($this->domainId, 'Positive')));
       $oldSettings = \CRM_Upgrade_Incremental_php_FourSeven::convertBackendToSettings($this->domainId, $config_backend);
@@ -326,11 +326,6 @@ class SettingsBag {
    *   The new value of the setting.
    */
   protected function setDb($name, $value) {
-    if (\CRM_Core_BAO_Setting::isUpgradeFromPreFourOneAlpha1()) {
-      // civicrm_setting table is not going to be present.
-      return;
-    }
-
     $fields = array();
     $fieldsToSet = \CRM_Core_BAO_Setting::validateSettingsInput(array($name => $value), $fields);
     //We haven't traditionally validated inputs to setItem, so this breaks things.
@@ -378,7 +373,7 @@ class SettingsBag {
     if (!isset(\Civi::$statics[__CLASS__]['upgradeMode'])) {
       \Civi::$statics[__CLASS__]['upgradeMode'] = \CRM_Core_Config::isUpgradeMode();
     }
-    if (\Civi::$statics[__CLASS__]['upgradeMode'] && \CRM_Core_DAO::checkFieldExists('civicrm_setting', 'group_name')) {
+    if (\Civi::$statics[__CLASS__]['upgradeMode'] && \CRM_Core_BAO_SchemaHandler::checkIfFieldExists('civicrm_setting', 'group_name')) {
       $dao->group_name = 'placeholder';
     }
 

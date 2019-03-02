@@ -1,9 +1,9 @@
 <?php
 /*
   +--------------------------------------------------------------------+
-  | CiviCRM version 4.7                                                |
+  | CiviCRM version 5                                                  |
   +--------------------------------------------------------------------+
-  | Copyright CiviCRM LLC (c) 2004-2017                                |
+  | Copyright CiviCRM LLC (c) 2004-2019                                |
   +--------------------------------------------------------------------+
   | This file is a part of CiviCRM.                                    |
   |                                                                    |
@@ -331,10 +331,6 @@ function _civicrm_api3_get_DAO($name) {
   // but am not confident mailing_recipients is tested so have not tackled.
   if ($name == 'MailingRecipients') {
     return 'CRM_Mailing_DAO_Recipients';
-  }
-  // FIXME: DAO should be renamed CRM_Mailing_DAO_MailingComponent
-  if ($name == 'MailingComponent') {
-    return 'CRM_Mailing_DAO_Component';
   }
   // FIXME: DAO should be renamed CRM_ACL_DAO_AclRole
   if ($name == 'AclRole') {
@@ -819,7 +815,7 @@ function _civicrm_api3_get_options_from_params(&$params, $queryObject = FALSE, $
 
   $options = array(
     'offset' => CRM_Utils_Rule::integer($offset) ? $offset : NULL,
-    'limit' => CRM_Utils_Rule::integer($limit) ? $limit : NULL,
+    'limit' => (!$is_count && CRM_Utils_Rule::integer($limit)) ? $limit : NULL,
     'is_count' => $is_count,
     'return' => !empty($returnProperties) ? $returnProperties : array(),
   );
@@ -1977,41 +1973,13 @@ function _civicrm_api_get_custom_fields($entity, &$params) {
     // Regular fields have a 'name' property
     $value['name'] = 'custom_' . $key;
     $value['title'] = $value['label'];
-    $value['type'] = _getStandardTypeFromCustomDataType($value);
+    if ($value['data_type'] == 'Date' && CRM_Utils_Array::value('time_format', $value, 0) > 0) {
+      $value['data_type'] = 'DateTime';
+    }
+    $value['type'] = CRM_Utils_Array::value($value['data_type'], CRM_Core_BAO_CustomField::dataToType());
     $ret['custom_' . $key] = $value;
   }
   return $ret;
-}
-
-/**
- * Translate the custom field data_type attribute into a std 'type'.
- *
- * @param array $value
- *
- * @return int
- */
-function _getStandardTypeFromCustomDataType($value) {
-  $dataType = $value['data_type'];
-  //CRM-15792 - If date custom field contains timeformat change type to DateTime
-  if ($value['data_type'] == 'Date' && isset($value['time_format']) && $value['time_format'] > 0) {
-    $dataType = 'DateTime';
-  }
-  $mapping = array(
-    'String' => CRM_Utils_Type::T_STRING,
-    'Int' => CRM_Utils_Type::T_INT,
-    'Money' => CRM_Utils_Type::T_MONEY,
-    'Memo' => CRM_Utils_Type::T_LONGTEXT,
-    'Float' => CRM_Utils_Type::T_FLOAT,
-    'Date' => CRM_Utils_Type::T_DATE,
-    'DateTime' => CRM_Utils_Type::T_DATE + CRM_Utils_Type::T_TIME,
-    'Boolean' => CRM_Utils_Type::T_BOOLEAN,
-    'StateProvince' => CRM_Utils_Type::T_INT,
-    'File' => CRM_Utils_Type::T_STRING,
-    'Link' => CRM_Utils_Type::T_STRING,
-    'ContactReference' => CRM_Utils_Type::T_INT,
-    'Country' => CRM_Utils_Type::T_INT,
-  );
-  return $mapping[$dataType];
 }
 
 
@@ -2441,13 +2409,13 @@ function _civicrm_api3_field_value_check(&$params, $fieldName, $type = NULL) {
  *   List of all records.
  * @param string $idCol
  *   The property which defines the ID of a record
- * @param array $fields
+ * @param array $filterableFields
  *   List of filterable fields.
  *
  * @return array
  * @throws \API_Exception
  */
-function _civicrm_api3_basic_array_get($entity, $params, $records, $idCol, $fields) {
+function _civicrm_api3_basic_array_get($entity, $params, $records, $idCol, $filterableFields) {
   $options = _civicrm_api3_get_options_from_params($params, TRUE, $entity, 'get');
   // TODO // $sort = CRM_Utils_Array::value('sort', $options, NULL);
   $offset = CRM_Utils_Array::value('offset', $options);
@@ -2465,7 +2433,7 @@ function _civicrm_api3_basic_array_get($entity, $params, $records, $idCol, $fiel
       if ($k == 'id') {
         $k = $idCol;
       }
-      if (in_array($k, $fields) && $record[$k] != $v) {
+      if (in_array($k, $filterableFields) && $record[$k] != $v) {
         $match = FALSE;
         break;
       }

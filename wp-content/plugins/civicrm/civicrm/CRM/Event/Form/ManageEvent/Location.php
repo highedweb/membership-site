@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,7 +29,7 @@
  *
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  * $Id$
  *
  */
@@ -72,6 +72,7 @@ class CRM_Event_Form_ManageEvent_Location extends CRM_Event_Form_ManageEvent {
    */
   public function preProcess() {
     parent::preProcess();
+    $this->assign('selectedChild', 'location');
 
     $this->_values = $this->get('values');
     if ($this->_id && empty($this->_values)) {
@@ -227,6 +228,7 @@ class CRM_Event_Form_ManageEvent_Location extends CRM_Event_Form_ManageEvent {
       );
     }
 
+    $this->_values['address'] = array();
     // if 'create new loc' optioin is selected OR selected new loc is different
     // from old one, go ahead and delete the old loc provided thats not being
     // used by any other event

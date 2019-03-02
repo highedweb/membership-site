@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 class CRM_Core_I18n_Schema {
 
@@ -265,7 +265,7 @@ class CRM_Core_I18n_Schema {
       // add new columns
       foreach ($hash as $column => $type) {
         // CRM-7854: skip existing columns
-        if (CRM_Core_DAO::checkFieldExists($table, "{$column}_{$locale}", FALSE)) {
+        if (CRM_Core_BAO_SchemaHandler::checkIfFieldExists($table, "{$column}_{$locale}", FALSE)) {
           continue;
         }
         $queries[] = "ALTER TABLE {$table} ADD {$column}_{$locale} {$type}";

@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -27,7 +27,7 @@
 
 /**
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 
 /**
@@ -87,6 +87,9 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
       catch (CRM_Core_Exception $e) {
         CRM_Core_Error::statusBounce(ts('There is no valid processor for this subscription so it cannot be edited.'));
       }
+      catch (CiviCRM_API3_Exception $e) {
+        CRM_Core_Error::statusBounce(ts('There is no valid processor for this subscription so it cannot be edited.'));
+      }
       $this->_subscriptionDetails = CRM_Contribute_BAO_ContributionRecur::getSubscriptionDetails($this->contributionRecurID);
     }
 
@@ -142,8 +145,15 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
     $alreadyHardCodedFields = array('amount', 'installments');
     foreach ($this->editableScheduleFields as $editableScheduleField) {
       if (!in_array($editableScheduleField, $alreadyHardCodedFields)) {
-        $this->addField($editableScheduleField, array('entity' => 'ContributionRecur'));
+        $this->addField($editableScheduleField, array('entity' => 'ContributionRecur'), FALSE, FALSE);
       }
+    }
+
+    // when custom data is included in this page
+    if (!empty($_POST['hidden_custom'])) {
+      CRM_Custom_Form_CustomData::preProcess($this, NULL, NULL, 1, 'ContributionRecur', $this->contributionRecurID);
+      CRM_Custom_Form_CustomData::buildQuickForm($this);
+      CRM_Custom_Form_CustomData::setDefaultValues($this);
     }
 
     $this->assign('editableScheduleFields', array_diff($this->editableScheduleFields, $alreadyHardCodedFields));
@@ -171,7 +181,7 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
     $this->_defaults['financial_type_id'] = $this->_subscriptionDetails->financial_type_id;
     $this->_defaults['is_notify'] = 1;
     foreach ($this->editableScheduleFields as $field) {
-      $this->_defaults[$field] = $this->_subscriptionDetails->$field;
+      $this->_defaults[$field] = isset($this->_subscriptionDetails->$field) ? $this->_subscriptionDetails->$field : NULL;
     }
 
     return $this->_defaults;
@@ -204,6 +214,10 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
     if (CRM_Contribute_BAO_ContributionRecur::supportsFinancialTypeChange($this->contributionRecurID)) {
       $this->addEntityRef('financial_type_id', ts('Financial Type'), array('entity' => 'FinancialType'), !$this->_selfService);
     }
+
+    // Add custom data
+    $this->assign('customDataType', 'ContributionRecur');
+    $this->assign('entityID', $this->contributionRecurID);
 
     $type = 'next';
     if ($this->_selfService) {
@@ -243,7 +257,7 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
 
     $params['subscriptionId'] = $this->_subscriptionDetails->subscription_id;
     $updateSubscription = TRUE;
-    if ($this->_paymentProcessorObj->isSupported('changeSubscriptionAmount')) {
+    if ($this->_paymentProcessorObj->supports('changeSubscriptionAmount')) {
       $updateSubscription = $this->_paymentProcessorObj->changeSubscriptionAmount($message, $params);
     }
     if (is_a($updateSubscription, 'CRM_Core_Error')) {
@@ -253,8 +267,10 @@ class CRM_Contribute_Form_UpdateSubscription extends CRM_Core_Form {
       $msgType = 'error';
     }
     elseif ($updateSubscription) {
+      // Handle custom data
+      $params['custom'] = CRM_Core_BAO_CustomField::postProcess($params, $this->contributionRecurID, 'ContributionRecur');
       // save the changes
-      $result = CRM_Contribute_BAO_ContributionRecur::add($params);
+      CRM_Contribute_BAO_ContributionRecur::add($params);
       $status = ts('Recurring contribution has been updated to: %1, every %2 %3(s) for %4 installments.',
         array(
           1 => CRM_Utils_Money::format($params['amount'], $this->_subscriptionDetails->currency),

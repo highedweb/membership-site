@@ -2,9 +2,9 @@
 
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -379,7 +379,7 @@ if ( ! defined( 'CIVICRM_WPCLI_LOADED' ) ) {
 			$upload_dir = wp_upload_dir();
 			$settings_dir = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'civicrm' . DIRECTORY_SEPARATOR;
 			civicrm_setup( $upload_dir['basedir'] . DIRECTORY_SEPARATOR );
-			WP_CLI::launch( "chmod 0777 $settings_dir -R" );
+			WP_CLI::launch( "chmod 0755 $settings_dir -R" );
 
 			# now we've got some files in place, require PEAR DB and check db setup
 			$dsn = "mysql://{$dbuser}:{$dbpass}@{$dbhost}/{$dbname}?new_link=true";
@@ -654,7 +654,7 @@ if ( ! defined( 'CIVICRM_WPCLI_LOADED' ) ) {
 
 			$restore_backup_dir .= '/plugins/restore/' . $date;
 
-			if ( ! mkdir( $restore_backup_dir, 777, true ) ) {
+			if ( ! mkdir( $restore_backup_dir, 0755, true ) ) {
 				return WP_CLI::error( 'Failed creating directory: ' . $restore_backup_dir );
 			}
 
@@ -999,7 +999,7 @@ if ( ! defined( 'CIVICRM_WPCLI_LOADED' ) ) {
 			# begin upgrade
 
 			$backup_dir .= '/plugins/' . $date;
-			if ( ! mkdir( $backup_dir, 777, true ) ) {
+			if ( ! mkdir( $backup_dir, 0755, true ) ) {
 				return WP_CLI::error( 'Failed creating directory: ' . $backup_dir );
 			}
 
@@ -1144,7 +1144,7 @@ if ( ! defined( 'CIVICRM_WPCLI_LOADED' ) ) {
 				$parsed['dbsyntax'] = $str;
 			}
 
-			if ( ! count( $dsn ) ) {
+			if ( empty( $dsn ) ) {
 				return $parsed;
 			}
 
@@ -1293,7 +1293,7 @@ if ( ! defined( 'CIVICRM_WPCLI_LOADED' ) ) {
 			if ( $tarfile = $this->getOption( $option, false ) ) {
 				WP_CLI::launch( "gzip -d $tarfile" );
 				$tarfile = substr( $tarfile, 0, strlen( $tarfile ) - 3 );
-				$this->exec( "tar -xf $tarfile -C \"$destination_path\"" );
+				WP_CLI::launch( "tar -xf $tarfile -C \"$destination_path\"" );
 				return true;
 			} else {
 				return false;

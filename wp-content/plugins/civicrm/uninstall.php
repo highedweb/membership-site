@@ -2,9 +2,9 @@
 
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -29,14 +29,14 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  *
  */
 
 
-// kick out if uninstall not called from WordPress
+// Kick out if uninstall not called from WordPress
 if ( !defined( 'WP_UNINSTALL_PLUGIN' ) ) { exit(); }
 
 
-// delete options that this plugin has set
+// Delete options that this plugin has set
 delete_option( 'civicrm_activation_in_progress' );

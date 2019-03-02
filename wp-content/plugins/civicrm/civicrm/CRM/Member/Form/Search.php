@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 
 /**
@@ -84,17 +84,7 @@ class CRM_Member_Form_Search extends CRM_Core_Form_Search {
 
     $this->defaults = array();
 
-    /*
-     * we allow the controller to set force/reset externally, useful when we are being
-     * driven by the wizard framework
-     */
-
-    $this->_reset = CRM_Utils_Request::retrieve('reset', 'Boolean');
-    $this->_force = CRM_Utils_Request::retrieve('force', 'Boolean', $this, FALSE);
-    $this->_limit = CRM_Utils_Request::retrieve('limit', 'Positive', $this);
-    $this->_context = CRM_Utils_Request::retrieve('context', 'String', $this, FALSE, 'search');
-
-    $this->assign("context", $this->_context);
+    $this->loadStandardSearchOptionsFromUrl();
 
     // get user submitted values
     // get it from controller only if form has been submitted, else preProcess has set this
@@ -163,9 +153,7 @@ class CRM_Member_Form_Search extends CRM_Core_Form_Search {
         $this->addRowSelectors($rows);
       }
 
-      $permission = CRM_Core_Permission::getPermission();
-
-      $this->addTaskMenu(CRM_Member_Task::permissionedTaskTitles($permission));
+      $this->addTaskMenu(CRM_Member_Task::permissionedTaskTitles(CRM_Core_Permission::getPermission()));
     }
 
   }

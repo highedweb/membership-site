@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 class CRM_Report_Form_Mailing_Opened extends CRM_Report_Form {
 
@@ -68,6 +68,7 @@ class CRM_Report_Form_Mailing_Opened extends CRM_Report_Form {
    * Class constructor.
    */
   public function __construct() {
+    $this->optimisedForOnlyFullGroupBy = FALSE;
     $this->_columns = array();
 
     $this->_columns['civicrm_contact'] = array(
@@ -279,14 +280,7 @@ class CRM_Report_Form_Mailing_Opened extends CRM_Report_Form {
         ON civicrm_mailing_job.mailing_id = {$this->_aliases['civicrm_mailing']}.id
         AND civicrm_mailing_job.is_test = 0
     ";
-
-    if ($this->_phoneField) {
-      $this->_from .= "
-        LEFT JOIN civicrm_phone {$this->_aliases['civicrm_phone']}
-          ON {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_phone']}.contact_id
-          AND {$this->_aliases['civicrm_phone']}.is_primary = 1
-      ";
-    }
+    $this->joinPhoneFromContact();
   }
 
   public function where() {
@@ -295,13 +289,18 @@ class CRM_Report_Form_Mailing_Opened extends CRM_Report_Form {
   }
 
   public function groupBy() {
-    $groupBys = empty($this->_params['charts']) ? array("civicrm_mailing_event_queue.email_id") : array("{$this->_aliases['civicrm_mailing']}.id");
-
-    if (!empty($this->_params['unique_opens_value'])) {
-      $groupBys[] = "civicrm_mailing_event_queue.id";
+    $groupBys = array();
+    // Do not use group by clause if distinct = 0 mentioned in url params. flag is used in mailing report screen, default value is TRUE
+    // this report is used to show total opened and unique opened
+    if (CRM_Utils_Request::retrieve('distinct', 'Boolean', CRM_Core_DAO::$_nullObject, FALSE, TRUE)) {
+      $groupBys = empty($this->_params['charts']) ? array("civicrm_mailing_event_queue.email_id") : array("{$this->_aliases['civicrm_mailing']}.id");
+      if (!empty($this->_params['unique_opens_value'])) {
+        $groupBys[] = "civicrm_mailing_event_queue.id";
+      }
     }
-    $this->_select = CRM_Contact_BAO_Query::appendAnyValueToSelect($this->_selectClauses, $groupBys);
-    $this->_groupBy = "GROUP BY " . implode(', ', $groupBys);
+    if (!empty($groupBys)) {
+      $this->_groupBy = "GROUP BY " . implode(', ', $groupBys);
+    }
   }
 
   public function postProcess() {

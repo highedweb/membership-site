@@ -1,8 +1,8 @@
 {*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,9 +28,17 @@
 
 {if $action eq 4} {* when action is view *}
     {if $recur}
-        <h3>{ts}View Recurring Payment{/ts}</h3>
+        {if $recur.is_test}
+        <div class="help">
+          <strong>{ts}This is a TEST transaction{/ts}</strong>
+        </div>
+        {/if}
         <div class="crm-block crm-content-block crm-recurcontrib-view-block">
           <table class="crm-info-panel">
+            <tr>
+              <td class="label">{ts}From{/ts}</td>
+              <td class="bold"><a href="{crmURL p='civicrm/contact/view' q="cid=`$recur.contact_id`"}">{$displayName}</a></td>
+            </tr>
             <tr><td class="label">{ts}Amount{/ts}</td><td>{$recur.amount|crmMoney:$recur.currency}{if $is_test} ({ts}test{/ts}){/if}</td></tr>
             <tr><td class="label">{ts}Frequency{/ts}</td><td>every {$recur.frequency_interval} {$recur.frequency_unit}</td></tr>
             <tr><td class="label">{ts}Installments{/ts}</td><td>{$recur.installments}</td></tr>
@@ -56,36 +64,38 @@
               <td><a class="crm-hover-button" href='{crmURL p="civicrm/contact/view/membership" q="action=view&reset=1&cid=`$contactId`&id=`$recur.membership_id`&context=membership&selectedChild=member"}'>{$recur.membership_name}</a></td>
               </tr>
             {/if}
+            {include file="CRM/Custom/Page/CustomDataView.tpl"}
+
           </table>
           <div class="crm-submit-buttons"><a class="button cancel crm-form-submit" href="{crmURL p='civicrm/contact/view' q='action=browse&selectedChild=contribute'}">{ts}Done{/ts}</a></div>
         </div>
     {/if}
+
+  <script type="text/javascript">
+    var recurContribID = {$recur.id};
+    var contactID = {$contactId};
+    {literal}
+    CRM.$(function($) {
+      CRM.loadPage(
+        CRM.url(
+          'civicrm/contribute/contributionrecur-payments',
+          {
+            reset: 1,
+            id: recurContribID,
+            cid: contactID
+          },
+          'back'
+        ),
+        {
+          target : '#recurring-contribution-payments',
+          dialog : false
+        }
+      );
+    });
+    {/literal}
+  </script>
+  <div id="recurring-contribution-payments"></div>
 {/if}
 {if $recurRows}
-    {strip}
-    <table class="selector row-highlight">
-        <tr class="columnheader">
-            <th scope="col">{ts}Amount{/ts}</th>
-            <th scope="col">{ts}Frequency{/ts}</th>
-            <th scope="col">{ts}Start Date{/ts}</th>
-            <th scope="col">{ts}Installments{/ts}</th>
-            <th scope="col">{ts}Status{/ts}</th>
-            <th scope="col">&nbsp;</th>
-        </tr>
-
-        {foreach from=$recurRows item=row}
-            {assign var=id value=$row.id}
-            <tr id="contribution_recur-{$row.id}" data-action="cancel" class="crm-entity {cycle values="even-row,odd-row"}{if NOT $row.is_active} disabled{/if}">
-                <td>{$row.amount|crmMoney:$row.currency}{if $row.is_test} ({ts}test{/ts}){/if}</td>
-                <td>{ts}Every{/ts} {$row.frequency_interval} {$row.frequency_unit} </td>
-                <td>{$row.start_date|crmDate}</td>
-                <td>{$row.installments}</td>
-                <td>{$row.contribution_status}</td>
-                <td>
-                    {$row.action|replace:'xx':$row.recurId}
-                </td>
-            </tr>
-        {/foreach}
-    </table>
-    {/strip}
+  {include file="CRM/Contribute/Page/ContributionRecurSelector.tpl"}
 {/if}

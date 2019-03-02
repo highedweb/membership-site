@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,15 +28,9 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
- * $Id$
- *
+ * @copyright CiviCRM LLC (c) 2004-2019
  */
 class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
-
-  protected $_addressField = FALSE;
-
-  protected $_emailField = FALSE;
 
   public $_drilldownReport = array('contribute/detail' => 'Link to Detail Report');
 
@@ -47,14 +41,6 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
    */
   public function __construct() {
     self::validRelationships();
-
-    $config = CRM_Core_Config::singleton();
-    $campaignEnabled = in_array("CiviCampaign", $config->enableComponents);
-    if ($campaignEnabled) {
-      $getCampaigns = CRM_Campaign_BAO_Campaign::getPermissionedCampaigns(NULL, NULL, TRUE, FALSE, TRUE);
-      $this->activeCampaigns = $getCampaigns['campaigns'];
-      asort($this->activeCampaigns);
-    }
 
     $this->_columns = array(
       'civicrm_contact_household' => array(
@@ -216,27 +202,15 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
       ),
     );
 
-    if ($campaignEnabled && !empty($this->activeCampaigns)) {
-      $this->_columns['civicrm_contribution']['fields']['campaign_id'] = array(
-        'title' => ts('Campaign'),
-        'default' => 'false',
-      );
-      $this->_columns['civicrm_contribution']['filters']['campaign_id'] = array(
-        'title' => ts('Campaign'),
-        'operatorType' => CRM_Report_Form::OP_MULTISELECT,
-        'options' => $this->activeCampaigns,
-        'type' => CRM_Utils_Type::T_INT,
-      );
-    }
+    // If we have a campaign, build out the relevant elements
+    $this->addCampaignFields('civicrm_contribution');
+
     $this->_currencyColumn = 'civicrm_contribution_currency';
     parent::__construct();
   }
 
-  public function preProcess() {
-    parent::preProcess();
-  }
-
   public function select() {
+    // @todo remove this & use parent select.
     $this->_columnHeaders = $select = array();
     foreach ($this->_columns as $tableName => $table) {
       if (array_key_exists('fields', $table)) {
@@ -244,12 +218,6 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
           if (!empty($field['required']) ||
             !empty($this->_params['fields'][$fieldName])
           ) {
-            if ($tableName == 'civicrm_address') {
-              $this->_addressField = TRUE;
-            }
-            elseif ($tableName == 'civicrm_email') {
-              $this->_emailField = TRUE;
-            }
 
             if (!empty($field['statistics'])) {
               foreach ($field['statistics'] as $stat => $label) {
@@ -274,8 +242,6 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
   }
 
   public function from() {
-
-    $this->_from = NULL;
     $this->_from = "
         FROM  civicrm_relationship {$this->_aliases['civicrm_relationship']}
             LEFT  JOIN civicrm_contact {$this->_aliases['civicrm_contact_household']} ON
@@ -286,18 +252,8 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
             INNER JOIN civicrm_contribution {$this->_aliases['civicrm_contribution']} ON
                       ({$this->_aliases['civicrm_contribution']}.contact_id = {$this->_aliases['civicrm_relationship']}.$this->otherContact ) AND {$this->_aliases['civicrm_contribution']}.is_test = 0 ";
 
-    if ($this->_addressField) {
-      $this->_from .= "
-            LEFT JOIN civicrm_address  {$this->_aliases['civicrm_address']} ON
-                      {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_address']}.contact_id AND
-                      {$this->_aliases['civicrm_address']}.is_primary = 1\n ";
-    }
-    if ($this->_emailField) {
-      $this->_from .= "
-            LEFT JOIN civicrm_email {$this->_aliases['civicrm_email']} ON
-                      {$this->_aliases['civicrm_contact']}.id = {$this->_aliases['civicrm_email']}.contact_id AND
-                      {$this->_aliases['civicrm_email']}.is_primary = 1\n ";
-    }
+    $this->joinAddressFromContact();
+    $this->joinEmailFromContact();
 
     // for credit card type
     $this->addFinancialTrxnFromClause();
@@ -545,22 +501,6 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
         }
       }
 
-      // handle state province
-      if (array_key_exists('civicrm_address_state_province_id', $row)) {
-        if ($value = $row['civicrm_address_state_province_id']) {
-          $rows[$rowNum]['civicrm_address_state_province_id'] = CRM_Core_PseudoConstant::stateProvinceAbbreviation($value, FALSE);
-        }
-        $entryFound = TRUE;
-      }
-
-      // handle country
-      if (array_key_exists('civicrm_address_country_id', $row)) {
-        if ($value = $row['civicrm_address_country_id']) {
-          $rows[$rowNum]['civicrm_address_country_id'] = CRM_Core_PseudoConstant::country($value, FALSE);
-        }
-        $entryFound = TRUE;
-      }
-
       // convert display name to links
       if (array_key_exists('civicrm_contact_sort_name', $row) &&
         $rows[$rowNum]['civicrm_contact_sort_name'] &&
@@ -603,10 +543,12 @@ class CRM_Report_Form_Contribute_HouseholdSummary extends CRM_Report_Form {
       // convert campaign_id to campaign title
       if (array_key_exists('civicrm_contribution_campaign_id', $row)) {
         if ($value = $row['civicrm_contribution_campaign_id']) {
-          $rows[$rowNum]['civicrm_contribution_campaign_id'] = $this->activeCampaigns[$value];
+          $rows[$rowNum]['civicrm_contribution_campaign_id'] = $this->campaigns[$value];
           $entryFound = TRUE;
         }
       }
+
+      $entryFound = $this->alterDisplayAddressFields($row, $rows, $rowNum, NULL, NULL) ? TRUE : $entryFound;
 
       // skip looking further in rows, if first row itself doesn't
       if (!$entryFound) {

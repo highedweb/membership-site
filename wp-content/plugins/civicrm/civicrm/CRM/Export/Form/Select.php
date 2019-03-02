@@ -1,9 +1,9 @@
 <?php
 /*
  +--------------------------------------------------------------------+
- | CiviCRM version 4.7                                                |
+ | CiviCRM version 5                                                  |
  +--------------------------------------------------------------------+
- | Copyright CiviCRM LLC (c) 2004-2017                                |
+ | Copyright CiviCRM LLC (c) 2004-2019                                |
  +--------------------------------------------------------------------+
  | This file is a part of CiviCRM.                                    |
  |                                                                    |
@@ -28,7 +28,7 @@
 /**
  *
  * @package CRM
- * @copyright CiviCRM LLC (c) 2004-2017
+ * @copyright CiviCRM LLC (c) 2004-2019
  * $Id$
  *
  */
@@ -36,7 +36,7 @@
 /**
  * This class gets the name of the file to upload
  */
-class CRM_Export_Form_Select extends CRM_Core_Form {
+class CRM_Export_Form_Select extends CRM_Core_Form_Task {
 
   /**
    * Various Contact types.
@@ -70,8 +70,6 @@ class CRM_Export_Form_Select extends CRM_Core_Form {
 
   public $_componentTable;
 
-  public $_customSearchID;
-
   /**
    * Build all the data structures needed to build the form.
    *
@@ -83,23 +81,90 @@ class CRM_Export_Form_Select extends CRM_Core_Form {
     $this->preventAjaxSubmit();
 
     //special case for custom search, directly give option to download csv file
-    $this->_customSearchID = $this->get('customSearchID');
+    $customSearchID = $this->get('customSearchID');
+    if ($customSearchID) {
+      CRM_Export_BAO_Export::exportCustom($this->get('customSearchClass'),
+        $this->get('formValues'),
+        $this->get(CRM_Utils_Sort::SORT_ORDER)
+      );
+    }
 
     $this->_selectAll = FALSE;
     $this->_exportMode = self::CONTACT_EXPORT;
     $this->_componentIds = array();
     $this->_componentClause = NULL;
 
-    $stateMachine = $this->controller->getStateMachine();
-    $formName = CRM_Utils_System::getClassName($stateMachine);
-    $isStandalone = $formName == 'CRM_Export_StateMachine_Standalone';
+    // we need to determine component export
+    $components = array('Contact', 'Contribute', 'Member', 'Event', 'Pledge', 'Case', 'Grant', 'Activity');
+
+    // FIXME: This should use a modified version of CRM_Contact_Form_Search::getModeValue but it doesn't have all the contexts
+    // FIXME: Or better still, use CRM_Core_DAO_AllCoreTables::getBriefName($daoName) to get the $entityShortName
+    switch ($this->getQueryMode()) {
+      case CRM_Contact_BAO_Query::MODE_CONTRIBUTE:
+        $entityShortname = 'Contribute';
+        $entityDAOName = $entityShortname;
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_MEMBER:
+        $entityShortname = 'Member';
+        $entityDAOName = 'Membership';
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_EVENT:
+        $entityShortname = 'Event';
+        $entityDAOName = $entityShortname;
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_PLEDGE:
+        $entityShortname = 'Pledge';
+        $entityDAOName = $entityShortname;
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_CASE:
+        $entityShortname = 'Case';
+        $entityDAOName = $entityShortname;
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_GRANT:
+        $entityShortname = 'Grant';
+        $entityDAOName = $entityShortname;
+        break;
+
+      case CRM_Contact_BAO_Query::MODE_ACTIVITY:
+        $entityShortname = 'Activity';
+        $entityDAOName = $entityShortname;
+        break;
+
+      default:
+        // FIXME: Code cleanup, we may not need to do this $componentName code here.
+        $formName = CRM_Utils_System::getClassName($this->controller->getStateMachine());
+        $componentName = explode('_', $formName);
+        if ($formName == 'CRM_Export_StateMachine_Standalone') {
+          $componentName = array('CRM', $this->controller->get('entity'));
+        }
+        $entityShortname = $componentName[1]; // Contact
+        $entityDAOName = $entityShortname;
+        break;
+    }
+
+    if (in_array($entityShortname, $components)) {
+      $this->_exportMode = constant('CRM_Export_Form_Select::' . strtoupper($entityShortname) . '_EXPORT');
+      $formTaskClassName = "CRM_{$entityShortname}_Form_Task";
+      $taskClassName = "CRM_{$entityShortname}_Task";
+      if (isset($formTaskClassName::$entityShortname)) {
+        $this::$entityShortname = $formTaskClassName::$entityShortname;
+        if (isset($formTaskClassName::$tableName)) {
+          $this::$tableName = $formTaskClassName::$tableName;
+        }
+      }
+      else {
+        $this::$entityShortname = $entityShortname;
+        $this::$tableName = CRM_Core_DAO_AllCoreTables::getTableForClass(CRM_Core_DAO_AllCoreTables::getFullName($entityDAOName));
+      }
+    }
 
     // get the submitted values based on search
-    if ($this->_customSearchID) {
-      $values = $this->get('formValues');
-      $this->assign('exportCustomSearchField', TRUE);
-    }
-    elseif ($this->_action == CRM_Core_Action::ADVANCED) {
+    if ($this->_action == CRM_Core_Action::ADVANCED) {
       $values = $this->controller->exportValues('Advanced');
     }
     elseif ($this->_action == CRM_Core_Action::PROFILE) {
@@ -109,18 +174,7 @@ class CRM_Export_Form_Select extends CRM_Core_Form {
       $values = $this->controller->exportValues('Custom');
     }
     else {
-      // we need to determine component export
-      $componentName = explode('_', $formName);
-      $components = array('Contribute', 'Member', 'Event', 'Pledge', 'Case', 'Grant', 'Activity');
-
-      if ($isStandalone) {
-        $componentName = array('CRM', $this->controller->get('entity'));
-      }
-
-      if (in_array($componentName[1], $components)) {
-        $this->_exportMode = constant('CRM_Export_Form_Select::' . strtoupper($componentName[1]) . '_EXPORT');
-        $className = "CRM_{$componentName[1]}_Form_Task";
-        $className::preProcessCommon($this, !$isStandalone);
+      if (in_array($entityShortname, $components) && $entityShortname !== 'Contact') {
         $values = $this->controller->exportValues('Search');
       }
       else {
@@ -142,53 +196,17 @@ class CRM_Export_Form_Select extends CRM_Core_Form {
       }
     }
 
-    $componentMode = $this->get('component_mode');
-    switch ($componentMode) {
-      case 2:
-        CRM_Contribute_Form_Task::preProcessCommon($this, !$isStandalone);
-        $this->_exportMode = self::CONTRIBUTE_EXPORT;
-        $componentName = array('', 'Contribute');
-        break;
+    $formTaskClassName::preProcessCommon($this);
 
-      case 3:
-        CRM_Event_Form_Task::preProcessCommon($this, !$isStandalone);
-        $this->_exportMode = self::EVENT_EXPORT;
-        $componentName = array('', 'Event');
-        break;
+    // $component is used on CRM/Export/Form/Select.tpl to display extra information for contact export
+    ($this->_exportMode == self::CONTACT_EXPORT) ? $component = FALSE : $component = TRUE;
+    $this->assign('component', $component);
 
-      case 4:
-        CRM_Activity_Form_Task::preProcessCommon($this, !$isStandalone);
-        $this->_exportMode = self::ACTIVITY_EXPORT;
-        $componentName = array('', 'Activity');
-        break;
-
-      case 5:
-        CRM_Member_Form_Task::preProcessCommon($this, !$isStandalone);
-        $this->_exportMode = self::MEMBER_EXPORT;
-        $componentName = array('', 'Member');
-        break;
-
-      case 6:
-        CRM_Case_Form_Task::preProcessCommon($this, !$isStandalone);
-        $this->_exportMode = self::CASE_EXPORT;
-        $componentName = array('', 'Case');
-        break;
-    }
-
+    // Set the task title
+    $componentTasks = $taskClassName::taskTitles();
     $this->_task = $values['task'];
-    if ($this->_exportMode == self::CONTACT_EXPORT) {
-      $contactTasks = CRM_Contact_Task::taskTitles();
-      $taskName = $contactTasks[$this->_task];
-      $component = FALSE;
-      CRM_Contact_Form_Task::preProcessCommon($this, !$isStandalone);
-    }
-    else {
-      $this->assign('taskName', "Export $componentName[1]");
-      $className = "CRM_{$componentName[1]}_Task";
-      $componentTasks = $className::tasks();
-      $taskName = $componentTasks[$this->_task];
-      $component = TRUE;
-    }
+    $taskName = $componentTasks[$this->_task];
+    $this->assign('taskName', $taskName);
 
     if ($this->_componentTable) {
       $query = "
@@ -201,8 +219,7 @@ FROM   {$this->_componentTable}
       $totalSelectedRecords = count($this->_componentIds);
     }
     $this->assign('totalSelectedRecords', $totalSelectedRecords);
-    $this->assign('taskName', $taskName);
-    $this->assign('component', $component);
+
     // all records actions = save a search
     if (($values['radio_ts'] == 'ts_all') || ($this->_task == CRM_Contact_Task::SAVE_SEARCH)) {
       $this->_selectAll = TRUE;
@@ -231,7 +248,7 @@ FROM   {$this->_componentTable}
     $exportOptions = $mergeOptions = $postalMailing = array();
     $exportOptions[] = $this->createElement('radio',
       NULL, NULL,
-      ts('Export %1 fields', array(1 => empty($this->_customSearchID) ? 'PRIMARY' : 'custom search')),
+      ts('Export PRIMARY fields'),
       self::EXPORT_ALL,
       array('onClick' => 'showMappingOption( );')
     );
@@ -327,7 +344,7 @@ FROM   {$this->_componentTable}
    * @return bool|array
    *   mixed true or array of errors
    */
-  static public function formRule($params, $files, $self) {
+  public static function formRule($params, $files, $self) {
     $errors = array();
 
     if (CRM_Utils_Array::value('mergeOption', $params) == self::EXPORT_MERGE_SAME_ADDRESS &&
@@ -355,7 +372,7 @@ FROM   {$this->_componentTable}
   /**
    * Process the uploaded file.
    *
-   * @return void
+   * @throws \CRM_Core_Exception
    */
   public function postProcess() {
     $params = $this->controller->exportValues($this->_name);
@@ -396,28 +413,20 @@ FROM   {$this->_componentTable}
     }
 
     if ($exportOption == self::EXPORT_ALL) {
-      if ($this->_customSearchID) {
-        CRM_Export_BAO_Export::exportCustom($this->get('customSearchClass'),
-          $this->get('formValues'),
-          $this->get(CRM_Utils_Sort::SORT_ORDER)
-        );
-      }
-      else {
-        CRM_Export_BAO_Export::exportComponents($this->_selectAll,
-          $this->_componentIds,
-          (array) $this->get('queryParams'),
-          $this->get(CRM_Utils_Sort::SORT_ORDER),
-          NULL,
-          $this->get('returnProperties'),
-          $this->_exportMode,
-          $this->_componentClause,
-          $this->_componentTable,
-          $mergeSameAddress,
-          $mergeSameHousehold,
-          $exportParams,
-          $this->get('queryOperator')
-        );
-      }
+      CRM_Export_BAO_Export::exportComponents($this->_selectAll,
+        $this->_componentIds,
+        (array) $this->get('queryParams'),
+        $this->get(CRM_Utils_Sort::SORT_ORDER),
+        NULL,
+        $this->get('returnProperties'),
+        $this->_exportMode,
+        $this->_componentClause,
+        $this->_componentTable,
+        $mergeSameAddress,
+        $mergeSameHousehold,
+        $exportParams,
+        $this->get('queryOperator')
+      );
     }
 
     //reset map page
@@ -510,6 +519,15 @@ FROM   {$this->_componentTable}
     }
 
     return $options;
+  }
+
+  /**
+   * Get the query mode (eg. CRM_Core_BAO_Query::MODE_CASE)
+   *
+   * @return int
+   */
+  public function getQueryMode() {
+    return (int) ($this->queryMode ?: $this->controller->get('component_mode'));
   }
 
 }
