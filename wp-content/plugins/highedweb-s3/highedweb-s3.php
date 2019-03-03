@@ -102,7 +102,7 @@ if(!class_exists('HighEdWeb_S3_Plugin')) {
 		private function _get_priv_key() {
 		  // not sure exactly what the paths will be, so converted this to be relative to this plugin's placement.  Maybe we should move it elsewhere?
 		  // we should definitely prevent requesting of this file.
-		  $this->_keyfile = dirname(dirname(dirname(__FILE__))).'/heweb-cf.pem';
+		  $this->_keyfile = dirname(dirname(dirname(__FILE__))).'/uploads/private/heweb-cf.pem';
 			if ( ! file_exists( $this->_keyfile ) )
 				return false;
 			
