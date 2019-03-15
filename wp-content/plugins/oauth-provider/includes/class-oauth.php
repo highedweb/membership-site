@@ -570,7 +570,7 @@ class OP_OAuthServer {
    */
   private function get_version(&$request) {
     $version = $request->get_parameter("oauth_version");
-    $version = preg_replace('/[\\]/', '', $version);
+    $version = preg_replace('/\\/', '', $version);
     error_log("OAuth DEBUG: request modified version: $version");
     if (!$version) {
       // Service Providers MUST assume the protocol version to be 1.0 if this parameter is not present. 
