@@ -153,7 +153,9 @@ if ( isset( $_ENV['PANTHEON_ENVIRONMENT'] ) && 'dev' == $_ENV['PANTHEON_ENVIRONM
 	if ( ! defined( 'WP_DEBUG_LOG' ) ) {
 		define( 'WP_DEBUG_LOG', true );
 	}
-    ini_set( 'error_log', WP_CONTENT_DIR . '/uploads/debug.log' ); // Optionally overrides the debug.log location to a writable path.
+    $base_path = get_home_path();
+	$wp_content = $base_path . "/wp-content";
+    ini_set( 'error_log', $wp_content . '/uploads/debug.log' ); // Optionally overrides the debug.log location to a writable path.
 	if ( ! defined( 'WP_DEBUG_DISPLAY' ) ) {
 		define( 'WP_DEBUG_DISPLAY', false );
 	}
