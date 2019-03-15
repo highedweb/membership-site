@@ -578,7 +578,8 @@ class OP_OAuthServer {
       $version = sprintf('%1$.1f', doubleval($version));
     }
     if (!version_compare($version, $this->version, '=')) {
-        error_log("OAuth DEBUG: version: ".$version." /=/ this->version: ".$this->version );
+        $compare_result = version_compare($version, $this->version, '=');
+        error_log("OAuth DEBUG: version: $version /=/ this->version: $this->version Compare: $compare_result");
       throw new OP_OAuthException("OAuth version '$version' not supported");
     }
     return $version;
