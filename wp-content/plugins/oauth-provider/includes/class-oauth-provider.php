@@ -358,7 +358,7 @@ class WP_OAuthProvider {
 		if (!class_exists('XML_Serializer'))
 			include_once( 'pear/XML/Serializer.php' );
 
-		$serializer = &new XML_Serializer(array(
+		$serializer = new XML_Serializer(array(
 			'addDecl'          => TRUE ,
 			'encoding'         => get_bloginfo('charset') ,
 			'indent'           => "\t" ,
