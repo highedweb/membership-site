@@ -336,7 +336,7 @@ class WP_OAuthProvider {
 	// json encode
 	private function json_encode( $content ) {
 		if ( function_exists('json_encode') ) {
-			return json_encode($content);
+			return json_encode($content, JSON_UNESCAPED_SLASHES);
 		} else {
 			// For PHP < 5.2.0
 			if ( !class_exists('Services_JSON') ) {
@@ -1301,7 +1301,7 @@ EOT;
 				case 'json':
 				default:
 					$content_type = 'application/json';
-					$result = $this->json_encode($result);
+					$result = $this->json_encode($result, JSON_);
 					break;
 				}
 			} else {
