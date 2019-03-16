@@ -272,6 +272,7 @@ class WP_OAuthProvider {
 	private function get_request() {
 		$http_method = $_SERVER['REQUEST_METHOD'];
 		$http_url = $this->get_httpurl();
+		error_log("OAuth DEBUG: get_request:http_url: = $http_url");
 		$request = OP_OAuthRequest::from_request($http_method, $http_url, NULL);
 		if ( method_exists($request, 'unset_parameter') ) {
 			$request->unset_parameter('q');
