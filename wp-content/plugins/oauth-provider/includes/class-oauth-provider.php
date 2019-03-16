@@ -281,6 +281,8 @@ class WP_OAuthProvider {
 			unset($parameters['q']);
 			$request = new OP_OAuthRequest($http_method, $http_url, $parameters);
 		}
+		$request_out = print_r($request, true);
+        error_log("OAuth DEBUG: get_request:request: = $request_out");
 		return $request;
 	}
 
