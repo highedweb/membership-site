@@ -624,7 +624,7 @@ class OP_OAuthServer {
     if (!$consumer_key) {
       throw new OP_OAuthException("Invalid consumer key");
     }
-
+      error_log("OAuth DEBUG: get_consumer: consumer_key = $consumer_key");
     $consumer = $this->data_store->lookup_consumer($consumer_key);
     if (!$consumer) {
       throw new OP_OAuthException("Invalid consumer");
