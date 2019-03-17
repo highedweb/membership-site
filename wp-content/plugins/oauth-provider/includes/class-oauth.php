@@ -777,7 +777,7 @@ class OP_OAuthUtil {
     $params = array();
     if (preg_match_all('/('.($only_allow_oauth_parameters ? 'oauth_' : '').'[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', $header, $matches)) {
       foreach ($matches[1] as $i => $h) {
-        $params[$h] = OP_OAuthUtil::urldecode_rfc3986(empty($matches[3][$i]) ? trim($matches[4][$i],'"') : trim($matches[3][$i]),'"');
+        $params[$h] = OP_OAuthUtil::urldecode_rfc3986(empty($matches[3][$i]) ? str_replace('\"', '', ($matches[4][$i])) : str_replace('\"', '', ($matches[3][$i])));
       }
       if (isset($params['realm'])) {
         unset($params['realm']);
@@ -844,7 +844,7 @@ class OP_OAuthUtil {
     foreach ($pairs as $pair) {
       $split = explode('=', $pair, 2);
       $parameter = OP_OAuthUtil::urldecode_rfc3986($split[0]);
-      $value = isset($split[1]) ? trim(stripslashes(OP_OAuthUtil::urldecode_rfc3986($split[1])),'"') : '';
+      $value = isset($split[1]) ? str_replace('\"', '', (OP_OAuthUtil::urldecode_rfc3986($split[1]))) : '';
 
       if (isset($parsed_parameters[$parameter])) {
         // We have already recieved parameter(s) with this name, so add to the list
