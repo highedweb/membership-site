@@ -777,7 +777,7 @@ class OP_OAuthUtil {
     $params = array();
     if (preg_match_all('/('.($only_allow_oauth_parameters ? 'oauth_' : '').'[a-z_-]*)=(:?"([^"]*)"|([^,]*))/', $header, $matches)) {
       foreach ($matches[1] as $i => $h) {
-        $params[$h] = OP_OAuthUtil::urldecode_rfc3986(empty($matches[3][$i]) ? $matches[4][$i] : $matches[3][$i]);
+        $params[$h] = OP_OAuthUtil::urldecode_rfc3986(empty($matches[3][$i]) ? trim($matches[4][$i],'"') : trim($matches[3][$i]),'"');
       }
       if (isset($params['realm'])) {
         unset($params['realm']);
