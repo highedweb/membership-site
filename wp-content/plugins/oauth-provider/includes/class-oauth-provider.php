@@ -272,7 +272,6 @@ class WP_OAuthProvider {
 	private function get_request() {
 		$http_method = $_SERVER['REQUEST_METHOD'];
 		$http_url = $this->get_httpurl();
-		error_log("OAuth DEBUG: get_request:http_url: = $http_url");
 		$request = OP_OAuthRequest::from_request($http_method, $http_url, NULL);
 		if ( method_exists($request, 'unset_parameter') ) {
 			$request->unset_parameter('q');
@@ -282,7 +281,7 @@ class WP_OAuthProvider {
 			$request = new OP_OAuthRequest($http_method, $http_url, $parameters);
 		}
 		$request_out = print_r($request, true);
-        error_log("OAuth DEBUG: get_request:request: = $request_out");
+        error_log("OAuth DEBUG: get_request: Raw request: = $request_out");
 		return $request;
 	}
 
@@ -934,6 +933,8 @@ class WP_OAuthProvider {
 			header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 			header("HTTP/1.0 401 Unauthorized");
 			$result = __($e->getMessage(), $this->textdomain);
+            $request_out = print_r($result, true);
+            error_log("OAuth DEBUG: request_token: ERROR = $request_out");
 		}
 		$this->ob_end_all_clean();
 
@@ -976,6 +977,7 @@ class WP_OAuthProvider {
 			$callbackurl = $consumer->callback_url;
 		} catch ( OP_OAuthException $e ) {
 			header("HTTP/1.0 401 Unauthorized");
+            error_log("OAuth DEBUG: authorize(): ERROR in lookup_consumer_from_request_token()");
 			nocache_headers();
 			wp_die( __($e->getMessage(), $this->textdomain) );
 			exit;
@@ -1216,6 +1218,8 @@ EOT;
 			header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 			header("HTTP/1.0 401 Unauthorized");
 			$result = __($e->getMessage(), $this->textdomain);
+            $request_out = print_r($result, true);
+            error_log("OAuth DEBUG: access_token: ERROR = $request_out");
 		}
 
 		$this->ob_end_all_clean();
@@ -1344,6 +1348,7 @@ EOT;
 			if ($this->response_data_type !== 'json') {
 				header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 				header("HTTP/1.0 401 Unauthorized");
+                error_log("OAuth DEBUG: send_request: ERROR response_data_type != json");
 			}
 		}
 
