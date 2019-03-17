@@ -846,7 +846,7 @@ class OP_OAuthUtil {
     foreach ($pairs as $pair) {
       $split = explode('=', $pair, 2);
       $parameter = OP_OAuthUtil::urldecode_rfc3986($split[0]);
-      $value = isset($split[1]) ? OP_OAuthUtil::urldecode_rfc3986($split[1]) : '';
+      $value = isset($split[1]) ? stripslashes(OP_OAuthUtil::urldecode_rfc3986($split[1])) : '';
 
       if (isset($parsed_parameters[$parameter])) {
         // We have already recieved parameter(s) with this name, so add to the list
