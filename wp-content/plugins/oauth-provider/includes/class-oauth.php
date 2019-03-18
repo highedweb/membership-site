@@ -570,7 +570,6 @@ class OP_OAuthServer {
    */
   private function get_version(&$request) {
     $version = $request->get_parameter("oauth_version");
-    error_log("OAuth DEBUG: get_version(): version = $version");
     if (!$version) {
       // Service Providers MUST assume the protocol version to be 1.0 if this parameter is not present. 
       // Chapter 7.0 ("Accessing Protected Ressources")
@@ -579,8 +578,6 @@ class OP_OAuthServer {
       $version = sprintf('%1$.1f', doubleval($version));
     }
     if (!version_compare($version, $this->version, '=')) {
-        $compare_result = version_compare($version, $this->version, '=') ? "true" : "false";
-        error_log("OAuth DEBUG: version: $version /=/ this->version: $this->version Compare: $compare_result");
       throw new OP_OAuthException("OAuth version '$version' not supported");
     }
     return $version;
@@ -622,7 +619,7 @@ class OP_OAuthServer {
     if (!$consumer_key) {
       throw new OP_OAuthException("Invalid consumer key");
     }
-      error_log("OAuth DEBUG: get_consumer: consumer_key = $consumer_key");
+
     $consumer = $this->data_store->lookup_consumer($consumer_key);
     if (!$consumer) {
       throw new OP_OAuthException("Invalid consumer");

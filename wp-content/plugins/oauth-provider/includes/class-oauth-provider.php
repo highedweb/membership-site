@@ -280,8 +280,6 @@ class WP_OAuthProvider {
 			unset($parameters['q']);
 			$request = new OP_OAuthRequest($http_method, $http_url, $parameters);
 		}
-		$request_out = print_r($request, true);
-        error_log("OAuth DEBUG: get_request: Raw request: = $request_out");
 		return $request;
 	}
 
@@ -338,7 +336,7 @@ class WP_OAuthProvider {
 	// json encode
 	private function json_encode( $content ) {
 		if ( function_exists('json_encode') ) {
-			return json_encode($content, JSON_UNESCAPED_SLASHES);
+			return json_encode($content);
 		} else {
 			// For PHP < 5.2.0
 			if ( !class_exists('Services_JSON') ) {
@@ -908,8 +906,6 @@ class WP_OAuthProvider {
 			header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 			header("HTTP/1.0 401 Unauthorized");
 			$result = __($e->getMessage(), $this->textdomain);
-            $request_out = print_r($result, true);
-            error_log("OAuth DEBUG: consumer_key(): ERROR = $request_out");
 		}
 		$this->ob_end_all_clean();
 
@@ -935,8 +931,6 @@ class WP_OAuthProvider {
 			header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 			header("HTTP/1.0 401 Unauthorized");
 			$result = __($e->getMessage(), $this->textdomain);
-            $request_out = print_r($result, true);
-            error_log("OAuth DEBUG: request_token(): ERROR = $request_out");
 		}
 		$this->ob_end_all_clean();
 
@@ -979,7 +973,6 @@ class WP_OAuthProvider {
 			$callbackurl = $consumer->callback_url;
 		} catch ( OP_OAuthException $e ) {
 			header("HTTP/1.0 401 Unauthorized");
-            error_log("OAuth DEBUG: authorize(): ERROR in lookup_consumer_from_request_token()");
 			nocache_headers();
 			wp_die( __($e->getMessage(), $this->textdomain) );
 			exit;
@@ -1220,8 +1213,6 @@ EOT;
 			header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 			header("HTTP/1.0 401 Unauthorized");
 			$result = __($e->getMessage(), $this->textdomain);
-            $request_out = print_r($result, true);
-            error_log("OAuth DEBUG: access_token(): ERROR = $request_out");
 		}
 
 		$this->ob_end_all_clean();
@@ -1310,7 +1301,7 @@ EOT;
 				case 'json':
 				default:
 					$content_type = 'application/json';
-					$result = $this->json_encode($result, JSON_);
+					$result = $this->json_encode($result);
 					break;
 				}
 			} else {
@@ -1350,7 +1341,6 @@ EOT;
 			if ($this->response_data_type !== 'json') {
 				header('WWW-Authenticate: OAuth realm="' . $this->wp_site_url() . '"');
 				header("HTTP/1.0 401 Unauthorized");
-                error_log("OAuth DEBUG: send_request(): ERROR response_data_type != json");
 			}
 		}
 
