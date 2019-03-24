@@ -1,0 +1,9 @@
+﻿/* IE8 Overrides */
+ul.PopoutMenu ul{filter:progid:DXImageTransform.Microsoft.Shadow(color=#C0C0C0,strength=5,direction=135);}
+/* IE7 Overrides - attributes below this point should be prefixed with an asterisk */
+ul.PopoutMenu ul {*right:-245px;}
+.clearfix,.container_12,.ContentColumn,#PageInnerWrapper,.ContentColumn,.grid_1,.grid_2,.grid_3,.grid_4,.grid_9_half,.grid_5,.grid_6,.grid_7,.grid_8,.grid_9,.grid_10,.grid_11,.grid_12{*display:block;*zoom:1;}
+#PageOuterWrapper,#PageInnerWrapper,#UnitMastheadWrapper{*z-index:0;}
+.LocalNav{*z-index:1;}
+.ElementListH > li{*display:inline;}
+#PageFooter li{*display:inline;}
