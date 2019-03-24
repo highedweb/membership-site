@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 membership.highedweb.org Tech Deets
 ===============
 
