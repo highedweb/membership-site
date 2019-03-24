@@ -30,6 +30,12 @@ git branch -b temp-branch-name
 git checkout temp-branch-name
 ```
 
+You will likely need to change the default setting for [git push.default](https://git-scm.com/docs/git-config#Documentation/git-config.txt-pushdefault) as remote branch name does not match local:
+
+```
+git config push.default current upstream
+```
+
 Make changes as required and commit... then:
 
 ```
