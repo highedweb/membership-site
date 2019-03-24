@@ -3,7 +3,7 @@
 /*
  * Plugin Name: CB Change Mail Sender
  * Description: Easy to change mail sender name and email from wordpress default name and email.
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Md Abul Bashar
  * Author URI: http://www.codingbank.com
  */
@@ -59,7 +59,7 @@ function cb_mail_sender_text() {
 
 
 function cb_mail_sender_menu() {
-	add_submenu_page('options-general.php', __('CB Mail Sender Options', 'cb-mail'), __('CB Mail Sender', 'cb-mail'), 'manage_options', 'cb_mail_sender', 'cb_mail_sender_output');
+	add_menu_page(__('CB Mail Sender Options', 'cb-mail'), __('CB Mail Sender', 'cb-mail'), 'manage_options', 'cb_mail_sender', 'cb_mail_sender_output', 'dashicons-email');
 
 
 }

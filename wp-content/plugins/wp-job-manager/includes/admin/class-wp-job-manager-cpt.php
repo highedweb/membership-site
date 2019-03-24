@@ -306,9 +306,17 @@ class WP_Job_Manager_CPT {
 			return;
 		}
 
+		$allowed_html = array(
+			'option' => array(
+				'value' => array(),
+				'selected' => array(),
+				'class' => array(),
+			),
+		);
+
 		echo "<select name='job_listing_category' id='dropdown_job_listing_category'>";
 		echo '<option value="" ' . selected( isset( $_GET['job_listing_category'] ) ? $_GET['job_listing_category'] : '', '', false ) . '>' . esc_html__( 'Select category', 'wp-job-manager' ) . '</option>';
-		echo wp_kses_post( $walker->walk( $terms, 0, $r ) );
+		echo wp_kses( $walker->walk( $terms, 0, $r ), $allowed_html );
 		echo '</select>';
 
 	}
@@ -811,11 +819,11 @@ class WP_Job_Manager_CPT {
 		<script type="text/javascript">
 			jQuery( document ).ready( function($) {
 				<?php if ( ! empty( $display ) ) : ?>
-					jQuery( '#post-status-display' ).html( <?php echo wp_json_encode( $display ); ?> );
+					jQuery( '#post-status-display' ).html( decodeURIComponent( '<?php echo rawurlencode( (string) wp_specialchars_decode( $display ) ); ?>' ) );
 				<?php endif; ?>
 
 				var select = jQuery( '#post-status-select' ).find( 'select' );
-				jQuery( select ).html( <?php echo wp_json_encode( $options ); ?> );
+				jQuery( select ).html( decodeURIComponent( '<?php echo rawurlencode( (string) wp_specialchars_decode( $options ) ); ?>' ) );
 			} );
 		</script>
 		<?php

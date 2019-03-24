@@ -3,11 +3,11 @@
  * Plugin Name: WP Job Manager
  * Plugin URI: https://wpjobmanager.com/
  * Description: Manage job listings from the WordPress admin panel, and allow users to post jobs directly to your site.
- * Version: 1.31.3
+ * Version: 1.32.2
  * Author: Automattic
  * Author URI: https://wpjobmanager.com/
  * Requires at least: 4.7.0
- * Tested up to: 4.9
+ * Tested up to: 5.1
  * Text Domain: wp-job-manager
  * Domain Path: /languages/
  * License: GPL2+
@@ -63,7 +63,7 @@ class WP_Job_Manager {
 	 */
 	public function __construct() {
 		// Define constants.
-		define( 'JOB_MANAGER_VERSION', '1.31.3' );
+		define( 'JOB_MANAGER_VERSION', '1.32.2' );
 		define( 'JOB_MANAGER_MINIMUM_WP_VERSION', '4.7.0' );
 		define( 'JOB_MANAGER_PLUGIN_DIR', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 		define( 'JOB_MANAGER_PLUGIN_URL', untrailingslashit( plugins_url( basename( plugin_dir_path( __FILE__ ) ), basename( __FILE__ ) ) ) );
@@ -77,6 +77,7 @@ class WP_Job_Manager {
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-api.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-forms.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-geocode.php';
+		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-blocks.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-cache-helper.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/helper/class-wp-job-manager-helper.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/abstracts/abstract-wp-job-manager-email.php';
@@ -84,7 +85,16 @@ class WP_Job_Manager {
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-email-notifications.php';
 		include_once JOB_MANAGER_PLUGIN_DIR . '/includes/class-wp-job-manager-data-exporter.php';
 
-		add_action( 'rest_api_init', array( $this, 'rest_api' ) );
+		/**
+		 * This custom REST API implementation is deprecated and will be removed in 1.33.0.
+		 *
+		 * @see WP_Job_Manager::rest_api()
+		 * @see https://github.com/Automattic/WP-Job-Manager/issues/1625
+		 */
+		if ( defined( 'WPJM_REST_API_ENABLED' ) && WPJM_REST_API_ENABLED ) {
+			trigger_error( esc_html__( 'Constant `WPJM_REST_API_ENABLED` and custom REST API implementation is deprecated and will be removed in 1.33.0. Please use standard WP Core\'s implementation.', 'wp-job-manager' ) );
+			add_action( 'rest_api_init', array( $this, 'rest_api' ) );
+		}
 
 		if ( is_admin() ) {
 			include_once JOB_MANAGER_PLUGIN_DIR . '/includes/admin/class-wp-job-manager-admin.php';
@@ -188,9 +198,21 @@ class WP_Job_Manager {
 	/**
 	 * Initialize our REST API.
 	 *
+	 * NOTE: This custom, unsupported REST API implementation be removed in 1.33.0 and the constant `WPJM_REST_API_ENABLED`
+	 * will have no effect.
+	 *
+	 * @see https://developer.wordpress.org/rest-api/
+	 * @see https://github.com/Automattic/WP-Job-Manager/issues/1625
+	 *
+	 * @deprecated 1.32.0 Please use standard WP core REST API.
 	 * @return WP_Job_Manager_REST_API|WP_Error
 	 */
 	public function rest_api() {
+		_deprecated_function(
+			__CLASS__ . ':' . __FUNCTION__ . '()',
+			'1.32.0',
+			esc_html__( 'Standard REST API implementation from WP core', 'wp-job-manager' )
+		);
 		if ( null === $this->rest_api ) {
 			include_once JOB_MANAGER_PLUGIN_DIR . '/includes/rest-api/class-wp-job-manager-rest-api.php';
 			$this->rest_api = new WP_Job_Manager_REST_API( dirname( __FILE__ ) );
@@ -287,43 +309,20 @@ class WP_Job_Manager {
 	}
 
 	/**
+	 * Registers select2 assets when needed.
+	 */
+	public static function register_select2_assets() {
+		wp_register_script( 'select2', JOB_MANAGER_PLUGIN_URL . '/assets/js/select2/select2.full.min.js', array( 'jquery' ), '4.0.5' );
+		wp_register_style( 'select2', JOB_MANAGER_PLUGIN_URL . '/assets/js/select2/select2.min.css', array(), '4.0.5' );
+	}
+
+	/**
 	 * Registers and enqueues scripts and CSS.
+	 *
+	 * Note: For enhanced select, 1.32.0 moved to Select2. Chosen is currently packaged but will be removed in an
+	 * upcoming release.
 	 */
 	public function frontend_scripts() {
-		global $post;
-
-		/**
-		 * Starting in WP Job Manager 1.32.0, the chosen JS library and core frontend WPJM CSS will only be enqueued
-		 * when used on a particular page. Theme and plugin authors as well as people who have overloaded WPJM's default
-		 * template files should test this upcoming behavior.
-		 *
-		 * To test this behavior before 1.32.0, add this to your `wp-config.php`:
-		 * define( 'JOB_MANAGER_TEST_NEW_ASSET_BEHAVIOR', true );
-		 *
-		 * Unless this constant is defined, WP Job Manager will default to its old behavior: chosen JS library and
-		 * frontend styles are always enqueued.
-		 *
-		 * If your theme or plugin depend on the `frontend.css` or chosen JS library from WPJM core, you can use the
-		 * `job_manager_chosen_enabled` and `job_manager_enqueue_frontend_style` filters.
-		 *
-		 * Example code for a custom shortcode that depends on the chosen library:
-		 *
-		 * add_filter( 'job_manager_chosen_enabled', function( $chosen_used_on_page ) {
-		 *   global $post;
-		 *   if ( is_singular()
-		 *        && is_a( $post, 'WP_Post' )
-		 *        && has_shortcode( $post->post_content, 'resumes' )
-		 *   ) {
-		 *     $chosen_used_on_page = true;
-		 *   }
-		 *   return $chosen_used_on_page;
-		 * } );
-		 */
-		if ( ! defined( 'JOB_MANAGER_TEST_NEW_ASSET_BEHAVIOR' ) || true !== JOB_MANAGER_TEST_NEW_ASSET_BEHAVIOR ) {
-			add_filter( 'job_manager_chosen_enabled', '__return_true' );
-			add_filter( 'job_manager_enqueue_frontend_style', '__return_true' );
-		}
-
 		$ajax_url         = WP_Job_Manager_Ajax::get_endpoint();
 		$ajax_filter_deps = array( 'jquery', 'jquery-deserialize' );
 		$ajax_data        = array(
@@ -341,25 +340,25 @@ class WP_Job_Manager {
 		 */
 		$ajax_data['lang'] = apply_filters( 'wpjm_lang', null );
 
-		$chosen_shortcodes   = array( 'submit_job_form', 'job_dashboard', 'jobs' );
-		$chosen_used_on_page = has_wpjm_shortcode( null, $chosen_shortcodes );
+		$enhanced_select_shortcodes   = array( 'submit_job_form', 'job_dashboard', 'jobs' );
+		$enhanced_select_used_on_page = has_wpjm_shortcode( null, $enhanced_select_shortcodes );
 
 		/**
-		 * Filter the use of the chosen library.
-		 *
-		 * NOTE: See above. Before WP Job Manager 1.32.0 is released, `job_manager_enqueue_frontend_style` will be filtered to `true` by default.
-		 *
-		 * @since 1.19.0
-		 *
-		 * @param bool $chosen_used_on_page Defaults to only when there are known shortcodes on the page.
+		 * Set the constant `JOB_MANAGER_DISABLE_CHOSEN_LEGACY_COMPAT` to true to test for future behavior once
+		 * this legacy code is removed and `chosen` is no longer packaged with the plugin.
 		 */
-		if ( apply_filters( 'job_manager_chosen_enabled', $chosen_used_on_page ) ) {
-			wp_register_script( 'chosen', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-chosen/chosen.jquery.min.js', array( 'jquery' ), '1.1.0', true );
-			wp_register_script( 'wp-job-manager-term-multiselect', JOB_MANAGER_PLUGIN_URL . '/assets/js/term-multiselect.min.js', array( 'jquery', 'chosen' ), JOB_MANAGER_VERSION, true );
-			wp_register_script( 'wp-job-manager-multiselect', JOB_MANAGER_PLUGIN_URL . '/assets/js/multiselect.min.js', array( 'jquery', 'chosen' ), JOB_MANAGER_VERSION, true );
-			wp_enqueue_style( 'chosen', JOB_MANAGER_PLUGIN_URL . '/assets/css/chosen.css', array(), '1.1.0' );
-			$ajax_filter_deps[] = 'chosen';
+		if ( ! defined( 'JOB_MANAGER_DISABLE_CHOSEN_LEGACY_COMPAT' ) || ! JOB_MANAGER_DISABLE_CHOSEN_LEGACY_COMPAT ) {
+			if ( is_wpjm_taxonomy() || is_wpjm_job_listing() || is_wpjm_page() ) {
+				$enhanced_select_used_on_page = true;
+			}
 
+			// Register the script for dependencies that still require it.
+			if ( ! wp_script_is( 'chosen', 'registered' ) ) {
+				wp_register_script( 'chosen', JOB_MANAGER_PLUGIN_URL . '/assets/js/jquery-chosen/chosen.jquery.min.js', array( 'jquery' ), '1.1.0', true );
+				wp_register_style( 'chosen', JOB_MANAGER_PLUGIN_URL . '/assets/css/chosen.css', array(), '1.1.0' );
+			}
+
+			// Backwards compatibility for third-party themes/plugins while they transition to Select2.
 			wp_localize_script(
 				'chosen', 'job_manager_chosen_multiselect_args',
 				apply_filters(
@@ -367,6 +366,55 @@ class WP_Job_Manager {
 						'search_contains' => true,
 					)
 				)
+			);
+
+			/**
+			 * Filter the use of the deprecated chosen library. Themes and plugins should migrate to Select2. This will be
+			 * removed in an upcoming major release.
+			 *
+			 * @since 1.19.0
+			 * @deprecated 1.32.0 Migrate to job_manager_select2_enabled and enable only on pages that need it.
+			 *
+			 * @param bool $chosen_used_on_page
+			 */
+			if ( apply_filters( 'job_manager_chosen_enabled', false ) ) {
+				_deprecated_hook( 'job_manager_chosen_enabled', '1.32.0', 'job_manager_select2_enabled' );
+
+				// Assume if this filter returns true that the current page should have the multi-select scripts.
+				$enhanced_select_used_on_page = true;
+
+				wp_enqueue_script( 'chosen' );
+				wp_enqueue_style( 'chosen' );
+			}
+		}
+
+		/**
+		 * Filter the use of the enhanced select.
+		 *
+		 * Note: Don't depend on `select2` being registered/enqueued in customizations.
+		 *
+		 * @since 1.32.0
+		 *
+		 * @param bool $enhanced_select_used_on_page Defaults to only when there are known shortcodes on the page.
+		 */
+		if ( apply_filters( 'job_manager_enhanced_select_enabled', $enhanced_select_used_on_page ) ) {
+			self::register_select2_assets();
+			wp_register_script( 'wp-job-manager-term-multiselect', JOB_MANAGER_PLUGIN_URL . '/assets/js/term-multiselect.min.js', array( 'jquery', 'select2' ), JOB_MANAGER_VERSION, true );
+			wp_register_script( 'wp-job-manager-multiselect', JOB_MANAGER_PLUGIN_URL . '/assets/js/multiselect.min.js', array( 'jquery', 'select2' ), JOB_MANAGER_VERSION, true );
+			wp_enqueue_style( 'select2' );
+
+			$ajax_filter_deps[] = 'select2';
+
+			$select2_args = array();
+			if ( is_rtl() ) {
+				$select2_args['dir'] = 'rtl';
+			}
+
+			$select2_args['width'] = '100%';
+
+			wp_localize_script(
+				'select2', 'job_manager_select2_args',
+				apply_filters( 'job_manager_select2_args', $select2_args )
 			);
 		}
 
@@ -427,7 +475,21 @@ class WP_Job_Manager {
 		 * Filter whether to enqueue WPJM core's frontend scripts. By default, they will only be enqueued on WPJM related
 		 * pages.
 		 *
-		 * NOTE: See above. Before WP Job Manager 1.32.0 is released, `job_manager_enqueue_frontend_style` will be filtered to `true` by default.
+		 * If your theme or plugin depend on `frontend.css` from WPJM core, you can use the
+		 * `job_manager_enqueue_frontend_style` filter.
+		 *
+		 * Example code for a custom shortcode that depends on the frontend style:
+		 *
+		 * add_filter( 'job_manager_enqueue_frontend_style', function( $frontend_used_on_page ) {
+		 *   global $post;
+		 *   if ( is_singular()
+		 *        && is_a( $post, 'WP_Post' )
+		 *        && has_shortcode( $post->post_content, 'resumes' )
+		 *   ) {
+		 *     $frontend_used_on_page = true;
+		 *   }
+		 *   return $frontend_used_on_page;
+		 * } );
 		 *
 		 * @since 1.30.0
 		 *

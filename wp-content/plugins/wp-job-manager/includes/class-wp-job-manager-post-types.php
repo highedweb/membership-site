@@ -7,6 +7,8 @@
  */
 class WP_Job_Manager_Post_Types {
 
+	const PERMALINK_OPTION_NAME = 'job_manager_permalinks';
+
 	/**
 	 * The single instance of the class.
 	 *
@@ -34,6 +36,7 @@ class WP_Job_Manager_Post_Types {
 	 */
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_post_types' ), 0 );
+		add_action( 'init', array( $this, 'prepare_block_editor' ) );
 		add_filter( 'admin_head', array( $this, 'admin_head' ) );
 		add_action( 'job_manager_check_for_expired_jobs', array( $this, 'check_for_expired_jobs' ) );
 		add_action( 'job_manager_delete_old_previews', array( $this, 'delete_old_previews' ) );
@@ -70,6 +73,53 @@ class WP_Job_Manager_Post_Types {
 
 		// Single job content.
 		$this->job_content_filter( true );
+	}
+
+	/**
+	 * Prepare CPTs for special block editor situations.
+	 */
+	public function prepare_block_editor() {
+		add_filter( 'allowed_block_types', array( $this, 'force_classic_block' ), 10, 2 );
+
+		if ( false === job_manager_multi_job_type() ) {
+			add_filter( 'rest_prepare_taxonomy', array( $this, 'hide_job_type_block_editor_selector' ), 10, 3 );
+		}
+	}
+
+	/**
+	 * Forces job listings to just have the classic block. This is necessary with the use of the classic editor on
+	 * the frontend.
+	 *
+	 * @param array   $allowed_block_types
+	 * @param WP_Post $post
+	 * @return array
+	 */
+	public function force_classic_block( $allowed_block_types, $post ) {
+		if ( 'job_listing' === $post->post_type ) {
+			return array( 'core/freeform' );
+		}
+		return $allowed_block_types;
+	}
+
+	/**
+	 * Filters a taxonomy returned from the REST API.
+	 *
+	 * Allows modification of the taxonomy data right before it is returned.
+	 *
+	 * @param WP_REST_Response $response  The response object.
+	 * @param object           $taxonomy  The original taxonomy object.
+	 * @param WP_REST_Request  $request   Request used to generate the response.
+	 *
+	 * @return WP_REST_Response
+	 */
+	public function hide_job_type_block_editor_selector( $response, $taxonomy, $request ) {
+		if (
+			'job_listing_type' === $taxonomy->name
+			 && 'edit' === $request->get_param( 'context' )
+		) {
+			$response->data['visibility']['show_ui'] = false;
+		}
+		return $response;
 	}
 
 	/**
@@ -143,6 +193,9 @@ class WP_Job_Manager_Post_Types {
 							'assign_terms' => $admin_capability,
 						),
 						'rewrite'               => $rewrite,
+						'show_in_rest'          => true,
+						'rest_base'             => 'job-categories',
+
 					)
 				)
 			);
@@ -170,9 +223,9 @@ class WP_Job_Manager_Post_Types {
 				apply_filters(
 					'register_taxonomy_job_listing_type_args',
 					array(
-						'hierarchical'  => true,
-						'label'         => $plural,
-						'labels'        => array(
+						'hierarchical'         => true,
+						'label'                => $plural,
+						'labels'               => array(
 							'name'              => $plural,
 							'singular_name'     => $singular,
 							'menu_name'         => ucwords( $plural ),
@@ -193,19 +246,32 @@ class WP_Job_Manager_Post_Types {
 							// translators: Placeholder %s is the singular label of the job listing job type taxonomy type.
 							'new_item_name'     => sprintf( __( 'New %s Name', 'wp-job-manager' ), $singular ),
 						),
-						'show_ui'       => true,
-						'show_tagcloud' => false,
-						'public'        => $public,
-						'capabilities'  => array(
+						'show_ui'              => true,
+						'show_tagcloud'        => false,
+						'public'               => $public,
+						'capabilities'         => array(
 							'manage_terms' => $admin_capability,
 							'edit_terms'   => $admin_capability,
 							'delete_terms' => $admin_capability,
 							'assign_terms' => $admin_capability,
 						),
-						'rewrite'       => $rewrite,
+						'rewrite'              => $rewrite,
+						'show_in_rest'         => true,
+						'rest_base'            => 'job-types',
+						'meta_box_sanitize_cb' => array( $this, 'sanitize_job_type_meta_box_input' ),
 					)
 				)
 			);
+			if ( function_exists( 'wpjm_job_listing_employment_type_enabled' ) && wpjm_job_listing_employment_type_enabled() ) {
+				register_meta( 'term', 'employment_type', array(
+					'object_subtype'    => 'job_listing_type',
+					'show_in_rest'      => true,
+					'type'              => 'string',
+					'single'            => true,
+					'description'       => esc_html__( 'Employment Type', 'wp-job-manager' ),
+					'sanitize_callback' => array( $this, 'sanitize_employment_type' ),
+				) );
+			}
 		}
 
 		/**
@@ -222,7 +288,7 @@ class WP_Job_Manager_Post_Types {
 		 * @param bool $enable_job_archive_page
 		 */
 		if ( apply_filters( 'job_manager_enable_job_archive_page', current_theme_supports( 'job-manager-templates' ) ) ) {
-			$has_archive = _x( 'jobs', 'Post type archive slug - resave permalinks after changing this', 'wp-job-manager' );
+			$has_archive = $permalink_structure['jobs_archive_rewrite_slug'];
 		} else {
 			$has_archive = false;
 		}
@@ -239,7 +305,7 @@ class WP_Job_Manager_Post_Types {
 			apply_filters(
 				'register_post_type_job_listing',
 				array(
-					'labels'              => array(
+					'labels'                => array(
 						'name'                  => $plural,
 						'singular_name'         => $singular,
 						'menu_name'             => __( 'Job Listings', 'wp-job-manager' ),
@@ -271,20 +337,25 @@ class WP_Job_Manager_Post_Types {
 						'use_featured_image'    => __( 'Use as company logo', 'wp-job-manager' ),
 					),
 					// translators: Placeholder %s is the plural label of the job listing post type.
-					'description'         => sprintf( __( 'This is where you can create and manage %s.', 'wp-job-manager' ), $plural ),
-					'public'              => true,
-					'show_ui'             => true,
-					'capability_type'     => 'job_listing',
-					'map_meta_cap'        => true,
-					'publicly_queryable'  => true,
-					'exclude_from_search' => false,
-					'hierarchical'        => false,
-					'rewrite'             => $rewrite,
-					'query_var'           => true,
-					'supports'            => array( 'title', 'editor', 'custom-fields', 'publicize', 'thumbnail' ),
-					'has_archive'         => $has_archive,
-					'show_in_nav_menus'   => false,
-					'delete_with_user'    => true,
+					'description'           => sprintf( __( 'This is where you can create and manage %s.', 'wp-job-manager' ), $plural ),
+					'public'                => true,
+					'show_ui'               => true,
+					'capability_type'       => 'job_listing',
+					'map_meta_cap'          => true,
+					'publicly_queryable'    => true,
+					'exclude_from_search'   => false,
+					'hierarchical'          => false,
+					'rewrite'               => $rewrite,
+					'query_var'             => true,
+					'supports'              => array( 'title', 'editor', 'custom-fields', 'publicize', 'thumbnail' ),
+					'has_archive'           => $has_archive,
+					'show_in_nav_menus'     => false,
+					'delete_with_user'      => true,
+					'show_in_rest'          => true,
+					'rest_base'             => 'job-listings',
+					'rest_controller_class' => 'WP_REST_Posts_Controller',
+					'template'              => array( array( 'core/freeform' ) ),
+					'template_lock'         => 'all',
 				)
 			)
 		);
@@ -292,7 +363,7 @@ class WP_Job_Manager_Post_Types {
 		/**
 		 * Feeds
 		 */
-		add_feed( 'job_feed', array( $this, 'job_feed' ) );
+		add_feed( self::get_job_feed_name(), array( $this, 'job_feed' ) );
 
 		/**
 		 * Post status
@@ -347,6 +418,20 @@ class WP_Job_Manager_Post_Types {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * Sanitize job type meta box input data from WP admin.
+	 *
+	 * @param WP_Taxonomy $taxonomy  Taxonomy being sterilized.
+	 * @param mixed       $input     Raw term data from the 'tax_input' field.
+	 * @return int[]|int
+	 */
+	public function sanitize_job_type_meta_box_input( $taxonomy, $input ) {
+		if ( is_array( $input ) ) {
+			return array_map( 'intval', $input );
+		}
+		return intval( $input );
 	}
 
 	/**
@@ -469,7 +554,7 @@ class WP_Job_Manager_Post_Types {
 	public function add_feed_query_args( $wp ) {
 
 		// Let's leave if not the job feed.
-		if ( ! isset( $wp->query_vars['feed'] ) || 'job_feed' !== $wp->query_vars['feed'] ) {
+		if ( ! isset( $wp->query_vars['feed'] ) || self::get_job_feed_name() !== $wp->query_vars['feed'] ) {
 			return;
 		}
 
@@ -676,6 +761,44 @@ class WP_Job_Manager_Post_Types {
 	}
 
 	/**
+	 * Returns the name of the job RSS feed.
+	 *
+	 * @return string
+	 */
+	public static function get_job_feed_name() {
+		/**
+		 * Change the name of the job feed.
+		 *
+		 * NOTE: When you override this, you must re-save permalink settings to clear the rewrite cache.
+		 *
+		 * @since 1.32.0
+		 *
+		 * @param string $job_feed_name Slug used for the job feed.
+		 */
+		return apply_filters( 'job_manager_job_feed_name', 'job_feed' );
+	}
+
+	/**
+	 * Get the permalink settings directly from the option.
+	 *
+	 * @return array Permalink settings option.
+	 */
+	public static function get_raw_permalink_settings() {
+		/**
+		 * Option `wpjm_permalinks` was renamed to match other options in 1.32.0.
+		 *
+		 * Reference to the old option and support for non-standard plugin updates will be removed in 1.34.0.
+		 */
+		$legacy_permalink_settings = '[]';
+		if ( false !== get_option( 'wpjm_permalinks', false ) ) {
+			$legacy_permalink_settings = wp_json_encode( get_option( 'wpjm_permalinks', array() ) );
+			delete_option( 'wpjm_permalinks' );
+		}
+
+		return (array) json_decode( get_option( self::PERMALINK_OPTION_NAME, $legacy_permalink_settings ), true );
+	}
+
+	/**
 	 * Retrieves permalink settings.
 	 *
 	 * @see https://github.com/woocommerce/woocommerce/blob/3.0.8/includes/wc-core-functions.php#L1573
@@ -688,19 +811,34 @@ class WP_Job_Manager_Post_Types {
 			switch_to_locale( get_locale() );
 		}
 
-		$permalinks = wp_parse_args(
-			(array) get_option( 'wpjm_permalinks', array() ),
+		$permalink_settings = self::get_raw_permalink_settings();
+
+		// First-time activations will get this cleared on activation.
+		if ( ! array_key_exists( 'jobs_archive', $permalink_settings ) ) {
+			// Create entry to prevent future checks.
+			$permalink_settings['jobs_archive'] = '';
+			if ( current_theme_supports( 'job-manager-templates' ) ) {
+				// This isn't the first activation and the theme supports it. Set the default to legacy value.
+				$permalink_settings['jobs_archive'] = _x( 'jobs', 'Post type archive slug - resave permalinks after changing this', 'wp-job-manager' );
+			}
+			update_option( self::PERMALINK_OPTION_NAME, wp_json_encode( $permalink_settings ) );
+		}
+
+		$permalinks         = wp_parse_args(
+			$permalink_settings,
 			array(
 				'job_base'      => '',
 				'category_base' => '',
 				'type_base'     => '',
+				'jobs_archive'  => '',
 			)
 		);
 
-		// Ensure rewrite slugs are set.
-		$permalinks['job_rewrite_slug']      = untrailingslashit( empty( $permalinks['job_base'] ) ? _x( 'job', 'Job permalink - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['job_base'] );
-		$permalinks['category_rewrite_slug'] = untrailingslashit( empty( $permalinks['category_base'] ) ? _x( 'job-category', 'Job category slug - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['category_base'] );
-		$permalinks['type_rewrite_slug']     = untrailingslashit( empty( $permalinks['type_base'] ) ? _x( 'job-type', 'Job type slug - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['type_base'] );
+		// Ensure rewrite slugs are set. Use legacy translation options if not.
+		$permalinks['job_rewrite_slug']          = untrailingslashit( empty( $permalinks['job_base'] ) ? _x( 'job', 'Job permalink - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['job_base'] );
+		$permalinks['category_rewrite_slug']     = untrailingslashit( empty( $permalinks['category_base'] ) ? _x( 'job-category', 'Job category slug - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['category_base'] );
+		$permalinks['type_rewrite_slug']         = untrailingslashit( empty( $permalinks['type_base'] ) ? _x( 'job-type', 'Job type slug - resave permalinks after changing this', 'wp-job-manager' ) : $permalinks['type_base'] );
+		$permalinks['jobs_archive_rewrite_slug'] = untrailingslashit( empty( $permalinks['jobs_archive'] ) ? 'job-listings' : $permalinks['jobs_archive'] );
 
 		// Restore the original locale.
 		if ( function_exists( 'restore_current_locale' ) && did_action( 'admin_init' ) ) {
@@ -849,7 +987,21 @@ class WP_Job_Manager_Post_Types {
 		$structured_data = wpjm_get_job_listing_structured_data();
 		if ( ! empty( $structured_data ) ) {
 			echo '<!-- WP Job Manager Structured Data -->' . "\r\n";
-			echo '<script type="application/ld+json">' . wp_json_encode( $structured_data ) . '</script>';
+			echo '<script type="application/ld+json">' . wpjm_esc_json( wp_json_encode( $structured_data ), true ) . '</script>';
 		}
+	}
+
+	/**
+	 * Sanitize and verify employment type.
+	 *
+	 * @param string $employment_type
+	 * @return string
+	 */
+	public function sanitize_employment_type( $employment_type ) {
+		$employment_types = wpjm_job_listing_employment_type_options();
+		if ( ! isset( $employment_types[ $employment_type ] ) ) {
+			return null;
+		}
+		return $employment_type;
 	}
 }

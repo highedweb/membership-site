@@ -57,6 +57,9 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 	 */
 	public function __construct() {
 		add_action( 'wp', array( $this, 'process' ) );
+		add_action( 'submit_job_form_start', array( $this, 'output_submit_form_nonce_field' ) );
+		add_action( 'preview_job_form_start', array( $this, 'output_preview_form_nonce_field' ) );
+
 		if ( $this->use_recaptcha_field() ) {
 			add_action( 'submit_job_form_end', array( $this, 'display_recaptcha_field' ) );
 			add_action( 'submit_job_form_validate_fields', array( $this, 'validate_recaptcha_field' ) );
@@ -79,6 +82,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 				),
 				'done'    => array(
 					'name'     => __( 'Done', 'wp-job-manager' ),
+					'before'   => array( $this, 'done_before' ),
 					'view'     => array( $this, 'done' ),
 					'priority' => 30,
 				),
@@ -120,7 +124,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 					$this->job_id = 0;
 					$this->step   = 0;
 				}
-			} elseif ( ! in_array( $job_status, apply_filters( 'job_manager_valid_submit_job_statuses', array( 'preview' ) ), true ) ) {
+			} elseif ( ! in_array( $job_status, apply_filters( 'job_manager_valid_submit_job_statuses', array( 'preview', 'draft' ) ), true ) ) {
 				$this->job_id = 0;
 				$this->step   = 0;
 			}
@@ -454,7 +458,7 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 	public function submit() {
 		$this->init_fields();
 
-		// Load data if neccessary.
+		// Load data if necessary.
 		if ( $this->job_id ) {
 			$job = get_post( $this->job_id );
 			foreach ( $this->fields as $group_key => $group_fields ) {
@@ -537,6 +541,8 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 				return;
 			}
 
+			$this->check_submit_form_nonce_field();
+
 			// Validate required.
 			$validation_status = $this->validate_fields( $values );
 			if ( is_wp_error( $validation_status ) ) {
@@ -598,8 +604,13 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 				throw new Exception( __( 'You must be signed in to post a new listing.', 'wp-job-manager' ) );
 			}
 
+			$post_status = '';
+			if ( ! $this->job_id || 'draft' === get_post_status( $this->job_id ) ) {
+				$post_status = 'preview';
+			}
+
 			// Update the job.
-			$this->save_job( $values['job']['job_title'], $values['job']['job_description'], $this->job_id ? '' : 'preview', $values );
+			$this->save_job( $values['job']['job_title'], $values['job']['job_description'], $post_status, $values );
 			$this->update_job_data( $values );
 
 			// Successful, show next step.
@@ -700,6 +711,15 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 		if ( empty( $attachment_url ) ) {
 			return 0;
 		}
+
+		$attachment_url_parts = parse_url( $attachment_url );
+
+		// Relative paths aren't allowed.
+		if ( false !== strpos( $attachment_url_parts['path'], '../' ) ) {
+			return 0;
+		}
+
+		$attachment_url = sprintf( '%s://%s%s', $attachment_url_parts['scheme'], $attachment_url_parts['host'], $attachment_url_parts['path'] );
 
 		$attachment_url = str_replace( array( $upload_dir['baseurl'], WP_CONTENT_URL, site_url( '/' ) ), array( $upload_dir['basedir'], WP_CONTENT_DIR, ABSPATH ), $attachment_url );
 		if ( empty( $attachment_url ) || ! is_string( $attachment_url ) ) {
@@ -844,6 +864,8 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 			return;
 		}
 
+		$this->check_preview_form_nonce_field();
+
 		// Edit = show submit form again.
 		if ( ! empty( $_POST['edit_job'] ) ) {
 			$this->step --;
@@ -873,10 +895,62 @@ class WP_Job_Manager_Form_Submit_Job extends WP_Job_Manager_Form {
 	}
 
 	/**
+	 * Output the nonce field on job submission form.
+	 */
+	public function output_submit_form_nonce_field() {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+		wp_nonce_field( 'submit-job-' . $this->job_id, '_wpjm_nonce' );
+	}
+
+	/**
+	 * Check the nonce field on the submit form.
+	 */
+	public function check_submit_form_nonce_field() {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+		if ( empty( $_REQUEST['_wpjm_nonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpjm_nonce'], 'submit-job-' . $this->job_id ) ) {
+			wp_nonce_ays( 'submit-job-' . $this->job_id );
+			die();
+		}
+	}
+
+	/**
+	 * Output the nonce field on job preview form.
+	 */
+	public function output_preview_form_nonce_field() {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+		wp_nonce_field( 'preview-job-' . $this->job_id, '_wpjm_nonce' );
+	}
+
+	/**
+	 * Check the nonce field on the preview form.
+	 */
+	public function check_preview_form_nonce_field() {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+		if ( empty( $_REQUEST['_wpjm_nonce'] ) || ! wp_verify_nonce( $_REQUEST['_wpjm_nonce'], 'preview-job-' . $this->job_id ) ) {
+			wp_nonce_ays( 'preview-job-' . $this->job_id );
+			die();
+		}
+	}
+
+	/**
 	 * Displays the final screen after a job listing has been submitted.
 	 */
 	public function done() {
-		do_action( 'job_manager_job_submitted', $this->job_id );
 		get_job_manager_template( 'job-submitted.php', array( 'job' => get_post( $this->job_id ) ) );
+	}
+
+	/**
+	 * Handles the job submissions before the view is called.
+	 */
+	public function done_before() {
+		do_action( 'job_manager_job_submitted', $this->job_id );
 	}
 }

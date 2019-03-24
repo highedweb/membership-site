@@ -8,7 +8,7 @@
  * @author      Automattic
  * @package     WP Job Manager
  * @category    Template
- * @version     1.31.1
+ * @version     1.32.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -70,6 +70,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 														$actions['edit'] = array( 'label' => __( 'Edit', 'wp-job-manager' ), 'nonce' => false );
 													}
 												break;
+												case 'draft' :
+												case 'preview' :
+													$actions['continue'] = array( 'label' => __( 'Continue Submission', 'wp-job-manager' ), 'nonce' => true );
+													break;
 											}
 
 											$actions['delete'] = array( 'label' => __( 'Delete', 'wp-job-manager' ), 'nonce' => true );
