@@ -197,7 +197,9 @@ class CiviCRM_Admin_Utilities_Single {
 		if ( ! $this->setting_exists( 'css_bootstrap' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_bootstrap', $settings['css_bootstrap'] );
 			$save = true;
 
@@ -207,7 +209,9 @@ class CiviCRM_Admin_Utilities_Single {
 		if ( ! $this->setting_exists( 'css_custom' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_custom', $settings['css_custom'] );
 			$save = true;
 
@@ -217,18 +221,46 @@ class CiviCRM_Admin_Utilities_Single {
 		if ( ! $this->setting_exists( 'css_custom_public' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_custom_public', $settings['css_custom_public'] );
 			$save = true;
 
 		}
 
-		// Override  CiviCRM Default CSS setting may not exist.
+		// Override CiviCRM Default CSS setting may not exist.
 		if ( ! $this->setting_exists( 'css_admin' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_admin', $settings['css_admin'] );
+			$save = true;
+
+		}
+
+		// Suppress Email setting may not exist.
+		if ( ! $this->setting_exists( 'email_suppress' ) ) {
+
+			// Add it from defaults.
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
+			$this->setting_set( 'email_suppress', $settings['email_suppress'] );
+			$save = true;
+
+		}
+
+		// Hide "Manage Groups" menu item setting may not exist.
+		if ( ! $this->setting_exists( 'admin_bar_groups' ) ) {
+
+			// Add it from defaults.
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
+			$this->setting_set( 'admin_bar_groups', $settings['admin_bar_groups'] );
 			$save = true;
 
 		}
@@ -274,6 +306,12 @@ class CiviCRM_Admin_Utilities_Single {
 
 		// Add contact link to the 'user-edit.php' page.
 		add_action( 'personal_options', array( $this, 'profile_extras' ) );
+
+		// Intercept email updates in CiviCRM.
+		add_action( 'civicrm_pre', array( $this, 'email_pre_update' ), 10, 4 );
+
+		// Maybe suppress notification emails.
+		add_filter( 'send_email_change_email', array( $this, 'email_suppress' ), 10, 3 );
 
 		// If the debugging flag is set.
 		if ( CIVICRM_ADMIN_UTILITIES_DEBUG === true ) {
@@ -340,6 +378,66 @@ class CiviCRM_Admin_Utilities_Single {
 
 		// Include template.
 		include( CIVICRM_ADMIN_UTILITIES_PATH . 'assets/templates/user-edit.php' );
+
+	}
+
+
+
+	/**
+	 * Set property when a CiviCRM contact's primary email address is updated.
+	 *
+	 * @since 0.6.5
+	 *
+	 * @param string $op The type of database operation.
+	 * @param string $objectName The type of object.
+	 * @param integer $objectId The ID of the object.
+	 * @param object $objectRef The object.
+	 */
+	public function email_pre_update( $op, $objectName, $objectId, $objectRef ) {
+
+		// Target our operation.
+		if ( $op != 'edit' ) return;
+
+		// Target our object type.
+		if ( $objectName != 'Email' ) return;
+
+		// Bail if we have no email.
+		if ( ! isset( $objectRef['email'] ) ) return;
+
+		// Set a property to check in `email_suppress()` below.
+		$this->email_sync = true;
+
+	}
+
+
+
+	/**
+	 * Suppress notification email when WordPress user email changes.
+	 *
+	 * @since 0.6.5
+	 *
+	 * @param bool $send Whether to send the email.
+	 * @param array $user The original user array.
+	 * @param array $userdata The updated user array.
+	 */
+	public function email_suppress( $send, $user, $userdata ) {
+
+		// Bail if email suppression is not enabled.
+		if ( $this->setting_get( 'email_suppress', '0' ) == '0' ) return $send;
+
+		// Did this change originate with CiviCRM?
+		if ( isset( $this->email_sync ) AND $this->email_sync === true ) {
+
+			// Unset property.
+			unset( $this->email_sync );
+
+			// Do not notify.
+			$send = false;
+
+		}
+
+		// --<
+		return $send;
 
 	}
 
@@ -608,6 +706,12 @@ class CiviCRM_Admin_Utilities_Single {
 
 		}
 
+		// Init suppress email checkbox.
+		$email_suppress = '';
+		if ( $this->setting_get( 'email_suppress', '0' ) == '1' ) {
+			$email_suppress = ' checked="checked"';
+		}
+
 		// Assume access form has been fixed.
 		$access_form_fixed = true;
 
@@ -629,6 +733,12 @@ class CiviCRM_Admin_Utilities_Single {
 		$admin_bar = '';
 		if ( $this->setting_get( 'admin_bar', '0' ) == '1' ) {
 			$admin_bar = ' checked="checked"';
+		}
+
+		// Init hide "Manage Groups" admin bar menu item checkbox.
+		$admin_bar_groups = '';
+		if ( $this->setting_get( 'admin_bar_groups', '0' ) == '1' ) {
+			$admin_bar_groups = ' checked="checked"';
 		}
 
 		// Get post type options.
@@ -1235,20 +1345,33 @@ class CiviCRM_Admin_Utilities_Single {
 	 */
 	public function kam_is_active() {
 
-		// Init return.
-		$kam = false;
-
 		// Kick out if no CiviCRM.
 		if ( ! $this->plugin->is_civicrm_initialised() ) return $kam;
 
+		// Get current version of CiviCRM.
+		$civicrm_version = CRM_Utils_System::version();
+
+		// Init parsed version.
+		$version = $civicrm_version;
+
+		// We only need the major and minor parts.
+		$version_tmp = explode( '.', $civicrm_version );
+		if ( isset( $version_tmp[1] ) ) {
+			$version = $version_tmp[0] . '.' . $version_tmp[1];
+		}
+
+		// KAM is included in core from 5.12 onwards.
+		if ( version_compare( $version, '5.12', '>=' ) ) {
+			return true;
+		}
+
 		// Kick out if no KAM function.
-		if ( ! function_exists( 'kam_civicrm_coreResourceList' ) ) return $kam;
+		if ( ! function_exists( 'kam_civicrm_coreResourceList' ) ) {
+			return false;
+		}
 
-		// KAM is present.
-		$kam = true;
-
-		// --<
-		return $kam;
+		// KAM must be present.
+		return true;
 
 	}
 
@@ -1405,8 +1528,16 @@ class CiviCRM_Admin_Utilities_Single {
 			'href' => $this->get_link( 'civicrm/contact/search/advanced', 'reset=1' ),
 		) );
 
+		// Maybe hide "Manage Groups" menu item.
+		if ( $this->setting_get( 'admin_bar_groups', '0' ) == '1' ) {
+			add_filter( 'civicrm_admin_utilities_manage_groups_menu_item', '__return_false' );
+		}
+
 		/**
 		 * Allow or deny access to the "Manage Groups" item.
+		 *
+		 * This now has a setting per site which adds a callback to this filter
+		 * at the default priority. See above.
 		 *
 		 * @see https://github.com/christianwach/civicrm-admin-utilities/issues/8
 		 *
@@ -1821,8 +1952,11 @@ class CiviCRM_Admin_Utilities_Single {
 		// Override CiviCRM Default in wp-admin.
 		$settings['css_admin'] = '0'; // Load CiviCRM Default Stylesheet.
 
-		// Override default CiviCRM CSS in wp-admin
+		// Override default CiviCRM CSS in wp-admin.
 		$settings['css_admin'] = '0'; // Do not override by default.
+
+		// Suppress notification email.
+		$settings['email_suppress'] = '0'; // Do not suppress by default.
 
 		// Fix WordPress Access Control table.
 		$settings['prettify_access'] = '1';
@@ -1833,8 +1967,11 @@ class CiviCRM_Admin_Utilities_Single {
 		// Init post types with defaults.
 		$settings['post_types'] = array( 'post', 'page' );
 
-		// Add menu to admin bar.
+		// Add Shortcuts Menu to admin bar.
 		$settings['admin_bar'] = '1';
+
+		// Do not hide "Manage Groups" menu item from Shortcuts Menu.
+		$settings['admin_bar_groups'] = '0';
 
 		/**
 		 * Filter default settings.
@@ -1896,6 +2033,7 @@ class CiviCRM_Admin_Utilities_Single {
 		$civicrm_admin_utilities_post_types = array();
 		$civicrm_admin_utilities_cache = '';
 		$civicrm_admin_utilities_admin_bar = '';
+		$civicrm_admin_utilities_admin_bar_groups = '';
 		$civicrm_admin_utilities_styles_default = '';
 		$civicrm_admin_utilities_styles_nav = '';
 		$civicrm_admin_utilities_styles_shoreditch = '';
@@ -1903,6 +2041,7 @@ class CiviCRM_Admin_Utilities_Single {
 		$civicrm_admin_utilities_styles_custom = '';
 		$civicrm_admin_utilities_styles_custom_public = '';
 		$civicrm_admin_utilities_styles_admin = '';
+		$civicrm_admin_utilities_email_suppress = '';
 
 		// Get variables.
 		extract( $_POST );
@@ -1972,6 +2111,13 @@ class CiviCRM_Admin_Utilities_Single {
 			$this->setting_set( 'css_admin', '0' );
 		}
 
+		// Did we ask to suppress Notification Emails?
+		if ( $civicrm_admin_utilities_email_suppress == '1' ) {
+			$this->setting_set( 'email_suppress', '1' );
+		} else {
+			$this->setting_set( 'email_suppress', '0' );
+		}
+
 		// Get existing access setting.
 		$existing_access = $this->setting_get( 'prettify_access', '0' );
 		if ( $civicrm_admin_utilities_access != $existing_access ) {
@@ -2008,6 +2154,13 @@ class CiviCRM_Admin_Utilities_Single {
 			$this->setting_set( 'admin_bar', '1' );
 		} else {
 			$this->setting_set( 'admin_bar', '0' );
+		}
+
+		// Did we ask to hide the "Manage Groups" menu item from the shortcuts menu?
+		if ( $civicrm_admin_utilities_admin_bar_groups == '1' ) {
+			$this->setting_set( 'admin_bar_groups', '1' );
+		} else {
+			$this->setting_set( 'admin_bar_groups', '0' );
 		}
 
 		// Save options.

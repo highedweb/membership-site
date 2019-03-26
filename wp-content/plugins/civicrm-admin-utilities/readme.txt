@@ -3,8 +3,8 @@ Contributors: needle, cuny-academic-commons
 Donate link: https://www.paypal.me/interactivist
 Tags: civicrm, admin, utility, styling, menu
 Requires at least: 4.4
-Tested up to: 5.0
-Stable tag: 0.6.4
+Tested up to: 5.1
+Stable tag: 0.6.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,6 +25,7 @@ CiviCRM Admin Utilities modifies CiviCRM's behaviour in single site and multisit
 * Allows you to choose which Post Types the CiviCRM shortcode button appears on
 * In WordPress multisite, allows you to hide CiviCRM on sub-sites
 * Allows you to remove "administer CiviCRM" capabilities from sub-site administrators
+* Allows suppression of the "change of email" notification when a CiviCRM Contact's primary email is changed
 
 ### CiviCRM Admin Theme
 
@@ -68,6 +69,12 @@ Network Administrators can now set site defaults for any further activations of 
 
 
 == Changelog ==
+
+= 0.6.5 =
+
+* Enable suppression of email notification when a CiviCRM Contact's primary email is changed
+* Introduce setting to hide "Manage Groups" menu item
+* Compatibility with new menu in CiviCRM 5.12.x
 
 = 0.6.4 =
 

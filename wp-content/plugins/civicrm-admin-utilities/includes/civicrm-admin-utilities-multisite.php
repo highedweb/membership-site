@@ -71,18 +71,13 @@ class CiviCRM_Admin_Utilities_Multisite {
 		// Initialise when plugin is loaded.
 		add_action( 'civicrm_admin_utilities_loaded', array( $this, 'initialise' ) );
 
-		// If this plugin is network activated.
-		if ( $this->plugin->is_network_activated() ) {
-
-			/*
-			 * Override Single Site default settings.
-			 *
-			 * This filter must be added prior to `register_hooks()` because the
-			 * Single Site class will have already loaded its settings by then.
-			 */
-			add_filter( 'civicrm_admin_utilities_settings_default', array( $this, 'settings_override' ) );
-
-		}
+		/*
+		 * Override Single Site default settings.
+		 *
+		 * This filter must be added prior to `register_hooks()` because the
+		 * Single Site class will have already loaded its settings by then.
+		 */
+		add_filter( 'civicrm_admin_utilities_settings_default', array( $this, 'settings_override' ) );
 
 	}
 
@@ -210,7 +205,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'css_bootstrap' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_bootstrap', $settings['css_bootstrap'] );
 			$save = true;
 
@@ -220,7 +217,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'css_custom' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_custom', $settings['css_custom'] );
 			$save = true;
 
@@ -230,7 +229,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'css_custom_public' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_custom_public', $settings['css_custom_public'] );
 			$save = true;
 
@@ -240,7 +241,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'css_admin' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'css_admin', $settings['css_admin'] );
 			$save = true;
 
@@ -250,7 +253,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'restrict_settings_access' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'restrict_settings_access', $settings['restrict_settings_access'] );
 			$save = true;
 
@@ -260,7 +265,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'restrict_domain_access' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'restrict_domain_access', $settings['restrict_domain_access'] );
 			$save = true;
 
@@ -270,8 +277,34 @@ class CiviCRM_Admin_Utilities_Multisite {
 		if ( ! $this->setting_exists( 'restrict_administer' ) ) {
 
 			// Add it from defaults.
-			$settings = $this->settings_get_defaults();
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
 			$this->setting_set( 'restrict_administer', $settings['restrict_administer'] );
+			$save = true;
+
+		}
+
+		// Suppress Email setting may not exist.
+		if ( ! $this->setting_exists( 'email_suppress' ) ) {
+
+			// Add it from defaults.
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
+			$this->setting_set( 'email_suppress', $settings['email_suppress'] );
+			$save = true;
+
+		}
+
+		// Hide "Manage Groups" menu item setting may not exist.
+		if ( ! $this->setting_exists( 'admin_bar_groups' ) ) {
+
+			// Add it from defaults.
+			if ( ! isset( $settings ) ) {
+				$settings = $this->settings_get_defaults();
+			}
+			$this->setting_set( 'admin_bar_groups', $settings['admin_bar_groups'] );
 			$save = true;
 
 		}
@@ -651,10 +684,22 @@ class CiviCRM_Admin_Utilities_Multisite {
 			$prettify_access = ' checked="checked"';
 		}
 
+		// Init suppress email checkbox.
+		$email_suppress = '';
+		if ( $this->setting_get( 'email_suppress', '0' ) == '1' ) {
+			$email_suppress = ' checked="checked"';
+		}
+
 		// Init admin bar checkbox.
 		$admin_bar = '';
 		if ( $this->setting_get( 'admin_bar', '0' ) == '1' ) {
 			$admin_bar = ' checked="checked"';
+		}
+
+		// Init hide "Manage Groups" admin bar menu item checkbox.
+		$admin_bar_groups = '';
+		if ( $this->setting_get( 'admin_bar_groups', '0' ) == '1' ) {
+			$admin_bar_groups = ' checked="checked"';
 		}
 
 		// Get selected post types.
@@ -1017,6 +1062,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 		// Override default CiviCRM CSS in wp-admin.
 		$settings['css_admin'] = '0'; // Do not override by default.
 
+		// Suppress notification email.
+		$settings['email_suppress'] = '0'; // Do not suppress by default.
+
 		// Fix WordPress Access Control table.
 		$settings['prettify_access'] = '1';
 
@@ -1028,6 +1076,9 @@ class CiviCRM_Admin_Utilities_Multisite {
 
 		// Add menu to admin bar.
 		$settings['admin_bar'] = '1';
+
+		// Do not hide "Manage Groups" menu item from Shortcuts Menu.
+		$settings['admin_bar_groups'] = '0';
 
 		/**
 		 * Filter default network settings.
@@ -1087,7 +1138,7 @@ class CiviCRM_Admin_Utilities_Multisite {
 		// Init return.
 		$result = false;
 
-		// was the "Network Settings" form submitted?
+		// Was the "Network Settings" form submitted?
 		if ( isset( $_POST['civicrm_admin_utilities_network_settings_submit'] ) ) {
 			return $this->settings_network_update();
 		}
@@ -1120,6 +1171,7 @@ class CiviCRM_Admin_Utilities_Multisite {
 		$civicrm_admin_utilities_access = '';
 		$civicrm_admin_utilities_post_types = array();
 		$civicrm_admin_utilities_admin_bar = '';
+		$civicrm_admin_utilities_admin_bar_groups = '';
 		$civicrm_admin_utilities_styles_default = '';
 		$civicrm_admin_utilities_styles_nav = '';
 		$civicrm_admin_utilities_styles_shoreditch = '';
@@ -1127,6 +1179,7 @@ class CiviCRM_Admin_Utilities_Multisite {
 		$civicrm_admin_utilities_styles_custom = '';
 		$civicrm_admin_utilities_styles_custom_public = '';
 		$civicrm_admin_utilities_styles_admin = '';
+		$civicrm_admin_utilities_email_suppress = '';
 
 		// Get variables.
 		extract( $_POST );
@@ -1215,6 +1268,13 @@ class CiviCRM_Admin_Utilities_Multisite {
 			$this->setting_set( 'css_admin', '0' );
 		}
 
+		// Did we ask to suppress Notification Emails?
+		if ( $civicrm_admin_utilities_email_suppress == '1' ) {
+			$this->setting_set( 'email_suppress', '1' );
+		} else {
+			$this->setting_set( 'email_suppress', '0' );
+		}
+
 		// Did we ask to fix the access form?
 		if ( $civicrm_admin_utilities_access == '1' ) {
 			$this->setting_set( 'prettify_access', '1' );
@@ -1245,6 +1305,13 @@ class CiviCRM_Admin_Utilities_Multisite {
 			$this->setting_set( 'admin_bar', '1' );
 		} else {
 			$this->setting_set( 'admin_bar', '0' );
+		}
+
+		// Did we ask to hide the "Manage Groups" menu item from the shortcuts menu?
+		if ( $civicrm_admin_utilities_admin_bar_groups == '1' ) {
+			$this->setting_set( 'admin_bar_groups', '1' );
+		} else {
+			$this->setting_set( 'admin_bar_groups', '0' );
 		}
 
 		// Save options.
@@ -1343,7 +1410,7 @@ class CiviCRM_Admin_Utilities_Multisite {
 
 		// Test for other than string.
 		if ( ! is_string( $setting_name ) ) {
-			die( __( 'You must supply the setting as a string to setting_set()', 'civicrm-admin-utilities' ) );
+			die( __( 'The setting name must be passed as a string to setting_set()', 'civicrm-admin-utilities' ) );
 		}
 
 		// Set setting.

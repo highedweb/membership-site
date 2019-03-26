@@ -205,10 +205,27 @@
 
 		<hr />
 
+		<h3><?php _e( 'User Options', 'civicrm-admin-utilities' ); ?></h3>
+
+		<p><?php _e( 'When the primary email for a CiviCRM Contact is changed, CiviCRM updates the email address of the corresponding  WordPress user. This triggers an email to be sent to the user.', 'civicrm-admin-utilities' ); ?></p>
+
+		<table class="form-table">
+
+			<tr>
+				<th scope="row"><?php _e( 'User notification', 'civicrm-admin-utilities' ); ?></th>
+				<td>
+					<input type="checkbox" class="settings-checkbox" name="civicrm_admin_utilities_email_suppress" id="civicrm_admin_utilities_email_suppress" value="1"<?php echo $email_suppress; ?> />
+					<label class="civicrm_admin_utilities_settings_label" for="civicrm_admin_utilities_email_suppress"><?php _e( 'Check this to suppress the email to the WordPress user.', 'civicrm-admin-utilities' ); ?></label>
+				</td>
+			</tr>
+
+		</table>
+
+		<hr />
+
 		<h3><?php _e( 'Fix WordPress Access Control form', 'civicrm-admin-utilities' ); ?></h3>
 
-		<p><?php _e( 'Checking this option fixes the appearance of the WordPress Access Control form.', 'civicrm-admin-utilities' ); ?></li>
-		</ol>
+		<p><?php _e( 'Checking this option fixes the appearance of the WordPress Access Control form.', 'civicrm-admin-utilities' ); ?></p>
 
 		<table class="form-table">
 
@@ -235,6 +252,15 @@
 				<td>
 					<input type="checkbox" class="settings-checkbox" name="civicrm_admin_utilities_admin_bar" id="civicrm_admin_utilities_admin_bar" value="1"<?php echo $admin_bar; ?> />
 					<label class="civicrm_admin_utilities_settings_label" for="civicrm_admin_utilities_admin_bar"><?php _e( 'Check this to add a CiviCRM Shortcuts Menu to the WordPress admin bar.', 'civicrm-admin-utilities' ); ?></label>
+				</td>
+			</tr>
+
+			<tr>
+				<th scope="row"><?php _e( 'Hide "Manage Groups"', 'civicrm-admin-utilities' ); ?></th>
+				<td>
+					<input type="checkbox" class="settings-checkbox" name="civicrm_admin_utilities_admin_bar_groups" id="civicrm_admin_utilities_admin_bar_groups" value="1"<?php echo $admin_bar_groups; ?> />
+					<label class="civicrm_admin_utilities_settings_label" for="civicrm_admin_utilities_admin_bar_groups"><?php _e( 'Check this to hide the "Manage Groups" menu item from the CiviCRM Shortcuts Menu.', 'civicrm-admin-utilities' ); ?></label>
+					<p class="description"><?php _e( 'There is no permission or capability that can be checked to find out if a user has access to the "Manage Groups" screen. Check this to hide the menu item. More granular permissions can be applied via the <code style="font-style: normal">civicrm_admin_utilities_manage_groups_menu_item</code> filter if they are required, for example, on a per-user basis.', 'civicrm-admin-utilities' ); ?></p>
 				</td>
 			</tr>
 

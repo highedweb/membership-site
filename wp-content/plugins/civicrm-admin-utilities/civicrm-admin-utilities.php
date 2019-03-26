@@ -4,7 +4,7 @@ Plugin Name: CiviCRM Admin Utilities
 Plugin URI: https://github.com/christianwach/civicrm-admin-utilities
 Description: Optionally modifies CiviCRM's behaviour and appearance in single site and multisite installs.
 Author: Christian Wach
-Version: 0.6.4
+Version: 0.6.5
 Author URI: http://haystack.co.uk
 Text Domain: civicrm-admin-utilities
 Domain Path: /languages
@@ -15,7 +15,7 @@ Depends: CiviCRM
 
 
 // Set our version here.
-define( 'CIVICRM_ADMIN_UTILITIES_VERSION', '0.6.4' );
+define( 'CIVICRM_ADMIN_UTILITIES_VERSION', '0.6.5' );
 
 // Trigger logging of 'civicrm_pre' and 'civicrm_post'.
 if ( ! defined( 'CIVICRM_ADMIN_UTILITIES_DEBUG' ) ) {
@@ -103,10 +103,6 @@ class CiviCRM_Admin_Utilities {
 
 		// Enable translation.
 		$this->enable_translation();
-
-		// Init only when CiviCRM is fully installed.
-		if ( ! defined( 'CIVICRM_INSTALLED' ) ) return;
-		if ( ! CIVICRM_INSTALLED ) return;
 
 		// Bail if CiviCRM plugin is not present.
 		if ( ! function_exists( 'civi_wp' ) ) return;
@@ -261,6 +257,10 @@ class CiviCRM_Admin_Utilities {
 	 * @return bool True if CiviCRM initialised, false otherwise.
 	 */
 	public function is_civicrm_initialised() {
+
+		// Init only when CiviCRM is fully installed.
+		if ( ! defined( 'CIVICRM_INSTALLED' ) ) return false;
+		if ( ! CIVICRM_INSTALLED ) return false;
 
 		// Bail if no CiviCRM init function.
 		if ( ! function_exists( 'civi_wp' ) ) return false;
